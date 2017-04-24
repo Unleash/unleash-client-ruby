@@ -36,6 +36,7 @@ or
 Unleash::Client.configure do |config|
   config.hostname = 'foobar.FIXME.domain'
 end
+```
 
 ## Development
 

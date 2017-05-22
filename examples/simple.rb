@@ -2,13 +2,23 @@
 
 require 'unleash'
 
+puts "foo start"
+
 Unleash.configure do |config|
-  config.server = 'http://unleash.herokuapp.com/api'
+  config.url = 'http://unleash.herokuapp.com/api'
+  config.app_name = 'simple-test'
 end
+
 
 # or:
 
-UNLEASH = Unleash.new( server: 'http://unleash.herokuapp.com/api' )
+# UNLEASH = Unleash.new( url: 'http://unleash.herokuapp.com/api' )
+@unleash = Unleash::Client.new
+#( url: 'http://unleash.herokuapp.com/api', app_name: 'simple-test2' )
 
-puts "foo" if @unleash.is_enabled("AwesomeFeature")
+if @unleash.is_enabled?("AwesomeFeature")
+  puts "AwesomeFeature is enabled"
+else
+  puts "AwesomeFeature is not enabled"
+end
 

@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'unleash/client/version'
+require 'unleash/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "unleash-client"
-  spec.version       = Unleash::Client::VERSION
+  spec.name          = "unleash"
+  spec.version       = Unleash::VERSION
   spec.authors       = ["Renato Arruda"]
   spec.email         = ["renato.arruda@finn.no"]
   spec.licenses      = ["ALv2"]

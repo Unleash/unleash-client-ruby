@@ -1,10 +1,15 @@
-require "unleash/client/version"
+require "unleash/configuration"
+
+require 'pp'
 
 module Unleash
-  module Client
-    # Your code goes here...
 
-    def self.configure
+  class Client
+    def initialize(*args)
     end
+
+    def is_enabled?(feature, *args)
+    end
+
   end
 end

@@ -2,9 +2,9 @@ require 'unleash/strategy/util'
 
 module Unleash
   module Strategy
-    class GradualRolloutUserId < Base
+    class GradualRolloutSessionId < Base
       def name
-        'gradualRolloutUserId'
+        'gradualRolloutSessionId'
       end
 
       # need: params[:percentage], params[:groupId], context.user_id,
@@ -13,7 +13,7 @@ module Unleash
         return false if context.class.name != 'Unleash::Context'
 
         percentage = Integer(params[:percentage] || 0)
-        ( percentage > 0 && get_normalized_number(context.user_id, params[:groupId] || "") <= percentage )
+        ( percentage > 0 && get_normalized_number(context.session_id, params[:groupId] || "") <= percentage )
       end
     end
   end

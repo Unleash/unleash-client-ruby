@@ -7,11 +7,11 @@ module Unleash
         'gradualRolloutRandom'
       end
 
-      # need: :percentage
+      # need: params[:percentage]
       def is_enabled?(params = {})
         return false if params.nil? || params.size == 0
-        percentage = Integer(params[:percentage] || 0)
 
+        percentage = Integer(params[:percentage] || 0)
         randomNumber = Random.rand(100) + 1
 
         ( percentage >= randomNumber )

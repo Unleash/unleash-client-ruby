@@ -1,6 +1,7 @@
 module Unleash
   module Strategy
     module Util
+      module_function
 
       TWO_31 = 2 ** 31
       TWO_32 = 2 ** 32

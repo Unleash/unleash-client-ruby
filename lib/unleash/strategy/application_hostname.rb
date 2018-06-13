@@ -21,7 +21,7 @@ module Unleash
       def is_enabled?(params = {})
         return false if params.nil? || params.size == 0
 
-        params[:hostnames].split(",").map{|h| h.downcase }.include?(hostname)
+        params['hostnames'].split(",").map{|h| h.downcase }.include?(hostname)
       end
     end
   end

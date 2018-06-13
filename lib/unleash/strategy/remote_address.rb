@@ -5,12 +5,12 @@ module Unleash
         'remoteAddress'
       end
 
-      # need: params[:ips], context.remote_address
+      # need: params['ips'], context.remote_address
       def is_enabled?(params = {}, context = nil)
         return false if params.nil? || params.size == 0
         return false if context.class.name != 'Unleash::Context'
 
-        ips = (params[:ips] || "").split(',')
+        ips = (params['ips'] || "").split(',')
         ips.include?( context.remote_address )
       end
     end

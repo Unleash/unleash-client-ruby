@@ -20,6 +20,8 @@ module Unleash
       self.retry_limit      = opts[:retry_limit] || 1
 
       self.backup_file   = opts[:backup_file] || nil
+
+      refresh_backup_file!
     end
 
     def validate!
@@ -28,7 +30,7 @@ module Unleash
       end
     end
 
-    def refresh_backup_file
+    def refresh_backup_file!
       if self.backup_file.nil?
         self.backup_file = Dir.tmpdir + "/unleash-#{app_name}-repo.json"
       end

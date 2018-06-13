@@ -1,25 +1,25 @@
-require "unleash/version"
-require "unleash/configuration"
-require "unleash/client"
-# require "unleash/strategy/*"
-
-require 'pp'
+require 'unleash/version'
+require 'unleash/configuration'
+require 'unleash/client'
+require 'logger'
 
 module Unleash
+    class << self
+        attr_accessor :configuration, :toggle_fetcher, :toggles, :logger
+    end
 
-  # Hold configuration
-  class << self
-    attr_accessor :configuration
-  end
+    def self.initialize
+      self.toggles = []
+    end
 
-  def self.configure(opts = {})
-    self.configuration ||= Unleash::Configuration.new(opts)
+    # Support for configuration via yield:
+    def self.configure(opts = {})
+      self.configuration ||= Unleash::Configuration.new(opts)
 
-    yield(configuration)
+      yield(configuration)
 
-    configuration.validate!
-    configuration.refresh_backup_file
-  end
-
+      configuration.validate!
+      configuration.refresh_backup_file!
+    end
 
 end

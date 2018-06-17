@@ -5,11 +5,12 @@ require 'logger'
 
 module Unleash
     class << self
-        attr_accessor :configuration, :toggle_fetcher, :toggles, :logger
+        attr_accessor :configuration, :toggle_fetcher, :toggles, :toggle_metrics, :reporter, :logger
     end
 
     def self.initialize
       self.toggles = []
+      self.toggle_metrics = {}
     end
 
     # Support for configuration via yield:

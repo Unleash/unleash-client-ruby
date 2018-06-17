@@ -24,11 +24,6 @@ Or install it yourself as:
 
     $ gem install unleash-client
 
-## Usage
-
-TODO: Write usage instructions here
-
-
 ### Configure
 
 ```
@@ -36,11 +31,32 @@ UNLEASH = Unleash::Client.new( hostname: 'foobar.FIXME.domain' )
 ```
 
 or
+
 ```
 Unleash::Client.configure do |config|
   config.hostname = 'foobar.FIXME.domain'
 end
 ```
+
+## Usage
+
+```
+require 'unleash'
+require 'unleash/context'
+
+@unleash = Unleash::Client.new( hostname: 'foobar.FIXME.domain' )
+
+feature_name = "AwesomeFeature"
+unleash_context = Unleash::Context.new
+unleash_context.user_id = 123
+
+if @unleash.is_enabled?(feature_name, unleash_context)
+  puts " #{feature_name} is enabled according to unleash"
+else
+  puts " #{feature_name} is disabled according to unleash"
+end
+```
+
 
 ## Development
 
@@ -50,8 +66,9 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Local test client
 
+```
 bundle exec examples/simple.rb
-
+```
 
 ## Contributing
 

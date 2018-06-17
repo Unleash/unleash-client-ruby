@@ -13,15 +13,19 @@ module Unleash
       self.url           = opts[:url]         || 'http://unleash.herokuapp.com/api'
       self.instance_id   = opts[:instance_id] || SecureRandom.uuid
 
-      self.disable_metrics  = opts[:disable_metrics] || false
+      self.disable_metrics  = opts[:disable_metrics]  || false
       self.refresh_interval = opts[:refresh_interval] || 15
-      self.metrics_interval = opts[:metrics_interval] || nil
+      self.metrics_interval = opts[:metrics_interval] || 10
       self.timeout          = opts[:timeout] || 30
       self.retry_limit      = opts[:retry_limit] || 1
 
       self.backup_file   = opts[:backup_file] || nil
 
       refresh_backup_file!
+    end
+
+    def metrics_interval_in_millis
+      self.metrics_interval * 1_000
     end
 
     def validate!

@@ -6,13 +6,14 @@ require 'thread'
 module Unleash
 
   class ToggleFetcher
-    attr_accessor :toggle_cache, :toggle_lock, :toggle_resource, :etag
+    attr_accessor :toggle_cache, :toggle_lock, :toggle_resource, :etag, :retry_count
 
     def initialize
+      self.etag = nil
+      self.toggle_cache = nil
       self.toggle_lock = Mutex.new
       self.toggle_resource = ConditionVariable.new
-      self.toggle_cache = nil
-      self.etag = nil
+      self.retry_count = 0
 
       # start by fetching synchronously, and failing back to reading the backup file.
       begin
@@ -23,7 +24,7 @@ module Unleash
         raise e
       end
 
-      #once that is in place, start the fetcher loop
+      # once we have initialized, start the fetcher loop
       self.start_periodic_fetcher_thread
     end
 
@@ -36,9 +37,13 @@ module Unleash
           begin
             Unleash.logger.debug "periodic_fetcher_thread (fetching):"
             remote_toggles = fetch()
+            self.retry_count = 0
           rescue Exception => e
-            Unleash.logger.error "An exception happened when retrieving features from the Unleash Server", e
+            self.retry_count += 1
+            Unleash.logger.error "periodic_fetcher_thread exception when retrieving features from the Unleash Server (#{self.retry_count}/#{Unleash.configuration.retry_count})", e
           end
+
+          break if self.retry_count > Unleash.configuration.retry_count
         end
       end
     end
@@ -65,32 +70,34 @@ module Unleash
 
       response = http.request(request)
 
-      if response.code == '304'
-        Unleash.logger.debug "No changes according to the unleash server, nothing to do."
-        return
-      end
+      Unleash.logger.debug "No changes according to the unleash server, nothing to do." if response.code == '304'
+      return if response.code == '304'
 
-      if response.code != '200'
-        raise IOError, "unable to fetch features from the unleash server." \
-         " It returned a non 200 HTTP result."
-      end
+      raise IOError, "Unleash server returned a non 200/304 HTTP result." if response.code != '200'
 
       self.etag = response['ETag']
-      begin
-        response_hash = JSON.parse(response.body)
-      rescue JSON::ParserError => e
-        Unleash.logger.error "invalid JSON returned by unleash server, attempting to read from backup file."
-        raise e
-      end
+      response_hash = JSON.parse(response.body)
 
-      if response_hash['version'] != 1
-        raise NotImplemented, "version of features provided by unleash server" \
-          " is unsupported by this client."
-      else
+      if response_hash['version'] == 1
         features = response_hash['features']
+      else
+        raise NotImplemented, "Version of features provided by unleash server" \
+          " is unsupported by this client."
       end
 
       # always synchronize with the local cache when fetching:
+      synchronize_with_local_cache!(features)
+
+      Unleash.logger.info "Flush changes to running client variable"
+      update_client!
+
+      Unleash.logger.info "Saved to toggle cache, will save to disk now"
+      save!
+    end
+
+    private
+
+    def synchronize_with_local_cache!(features)
       if self.toggle_cache != features
         self.toggle_lock.synchronize do
           self.toggle_cache = features
@@ -99,16 +106,9 @@ module Unleash
         # notify all threads waiting for this resource to no longer wait
         self.toggle_resource.broadcast
       end
-
-      Unleash.logger.info "flush changes to running client variable"
-      update_client
-
-      Unleash.logger.info "Saved to toggle cache, will save to disk now"
-      save!
     end
 
-    private
-    def update_client
+    def update_client!
       if Unleash.toggles != self.toggles
         Unleash.logger.info "Updating toggles to main client, there has been a change in the server."
         Unleash.toggles = self.toggles
@@ -126,39 +126,34 @@ module Unleash
         self.toggle_lock.synchronize do
           file.write(self.toggle_cache.to_json)
         end
-      # rescue IOError => e
-        # some error occur.
-        # raise e
       rescue Exception => e
+        # This is not really the end of the world. Swallowing the exception.
         Unleash.logger.error "Unable to save backup file."
-        # this is not really the end of the world. consider swallowing the exception.
-        raise e
       ensure
         file.close unless file.nil?
       end
     end
 
     def read!
-      Unleash.logger.info "read!()"
-      backup_file = Unleash.configuration.backup_file
-      return nil unless File.exists?(backup_file)
+      Unleash.logger.debug "read!()"
+      return nil unless File.exists?(Unleash.configuration.backup_file)
 
       begin
-        file = File.open(backup_file, "r")
+        file = File.open(Unleash.configuration.backup_file, "r")
         line_cache = ""
         file.each_line do |line|
           line_cache += line
         end
 
         backup_as_hash = JSON.parse(line_cache)
+        synchronize_with_local_cache!(backup_as_hash)
 
-        self.toggle_lock.synchronize do
-          self.toggle_cache = backup_as_hash
-        end
       rescue IOError => e
-        # some error occur.
+        Unleash.logger.error "Unable to read the backup_file."
       rescue JSON::ParserError => e
         Unleash.logger.error "Unable to parse JSON from existing backup_file."
+      rescue Exception => e
+        Unleash.logger.error "Unable to extract valid data from backup_file."
       ensure
         file.close unless file.nil?
       end

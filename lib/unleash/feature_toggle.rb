@@ -1,3 +1,4 @@
+require 'unleash/activation_strategy'
 require 'unleash/strategy/base'
 require 'unleash/strategy/default'
 require 'unleash/strategy/application_hostname'
@@ -20,19 +21,6 @@ module Unleash
     default: Unleash::Strategy::Default.new,
   }
 
-  class ActivationStrategy
-    attr_accessor :name, :params
-
-    def initialize(name, params = {})
-      self.name = name
-      if params.is_a?(Hash)
-        self.params = params
-      else
-        Unleash.logger.warning "Invalid params provided for ActivationStrategy #{params}"
-        self.params = {}
-      end
-    end
-  end
 
   class FeatureToggle
     attr_accessor :name, :enabled, :strategies, :choices, :choices_lock
@@ -49,14 +37,15 @@ module Unleash
       # Unleash.logger.debug "strategies:"
       # ap self.strategies
 
-      self.choices = {false => 0, true => 0}
+      # self.choices = {false => 0, true => 0}
+      # Unleash.toggle_metrics.increment(self.name,self.choices)
     end
 
     def to_s
       "<FeatureToggle: name=#{self.name},enabled=#{self.enabled},choices=#{self.choices},strategies=#{self.strategies}>"
     end
 
-    def is_enabled?(context = nil)
+    def is_enabled?(context = nil, default_result)
       if context.class.name != 'Unleash::Context'
         Unleash.logger.error "Provided context is not of the correct type, please use Unleash::Context"
         context = nil
@@ -68,18 +57,15 @@ module Unleash
         Unleash.logger.debug "Strategy #{s.name} returned #{r} with context #{context}" #"for params #{s.params} "
         r
       }.any?
-      Unleash.logger.debug "FeatureToggle (enabled:#{self.enabled} and Strategies combined returned #{result}"
+      result ||= default_result
 
-      self.choices[result] = 0 if self.choices[result].nil?
-      self.choices[result] += 1
-      Unleash.logger.debug "incremented result #{result} for #{self}"
+      Unleash.logger.debug "FeatureToggle (enabled:#{self.enabled} default_result:#{default_result} and Strategies combined returned #{result})"
+
+      choice = result ? :yes : :no
+      Unleash.toggle_metrics.increment(name, choice) unless Unleash.configuration.disable_metrics
+
       return result
     end
 
-    def report
-      result = self.choices
-      Unleash.logger.info "Feature report for #{self.name}: #{result}"
-      return {'yes': result[true] || 0, 'no': result[false] || 0}
-    end
   end
 end

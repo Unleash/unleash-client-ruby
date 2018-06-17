@@ -17,9 +17,13 @@ module Unleash
         'applicationHostname'
       end
 
+      # def is_enabled?(params = {})
+      #   is_enabled?(params, nil)
+      # end
+
       # need: :params[:hostnames]
-      def is_enabled?(params = {})
-        return false if params.nil? || params.size == 0
+      def is_enabled?(params = {}, context = nil)
+        return false if params.nil? || params.size == 0 || params['hostnames'].nil?
 
         params['hostnames'].split(",").map{|h| h.downcase }.include?(hostname)
       end

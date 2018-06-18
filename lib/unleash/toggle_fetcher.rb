@@ -1,4 +1,5 @@
 require 'unleash/configuration'
+require 'unleash/scheduled_executor'
 require 'net/http'
 require 'json'
 require 'thread'
@@ -25,27 +26,8 @@ module Unleash
       end
 
       # once we have initialized, start the fetcher loop
-      self.start_periodic_fetcher_thread
-    end
-
-    def start_periodic_fetcher_thread
-      periodic_fetcher_thread = Thread.new do
-        loop do
-          Unleash.logger.debug "periodic_fetcher_thread sleeping for #{Unleash.configuration.refresh_interval}"
-          sleep Unleash.configuration.refresh_interval
-
-          begin
-            Unleash.logger.debug "periodic_fetcher_thread (fetching):"
-            remote_toggles = fetch()
-            self.retry_count = 0
-          rescue Exception => e
-            self.retry_count += 1
-            Unleash.logger.error "periodic_fetcher_thread exception when retrieving features from the Unleash Server (#{self.retry_count}/#{Unleash.configuration.retry_count})", e
-          end
-
-          break if self.retry_count > Unleash.configuration.retry_count
-        end
-      end
+      scheduledExecutor = Unleash::ScheduledExecutor.new('ToggleFetcher', Unleash.configuration.refresh_interval)
+      scheduledExecutor.run { remote_toggles = fetch() }
     end
 
     def toggles

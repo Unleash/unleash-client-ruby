@@ -1,6 +1,6 @@
 require 'unleash/configuration'
 require 'unleash/toggle_fetcher'
-require 'unleash/reporter'
+require 'unleash/metrics_reporter'
 require 'unleash/feature_toggle'
 require 'logger'
 require 'time'
@@ -25,7 +25,11 @@ module Unleash
 
       unless Unleash.configuration.disable_metrics
         Unleash.toggle_metrics = Unleash::Metrics.new
-        Unleash.reporter = Unleash::Reporter.new
+        Unleash.reporter = Unleash::MetricsReporter.new
+        scheduledExecutor = Unleash::ScheduledExecutor.new('MetricsReporter', Unleash.configuration.metrics_interval)
+        scheduledExecutor.run do
+          Unleash.reporter.send
+        end
       end
       register
     end
@@ -40,19 +44,10 @@ module Unleash
           return default_value
         end
 
-
         toggle = Unleash::FeatureToggle.new(toggle_as_hash)
+        toggle_result = toggle.is_enabled?(context, default_value)
 
-
-        toggle_is_enabled = toggle.is_enabled?(context) || default_value
-
-        # need to save these reports somewhere a bit more global...
-        Unleash.logger.debug "Unleash::Client.is_enabled?  report:"
-        ap Unleash.toggle_metrics
-
-
-        Unleash.reporter.send
-        return toggle_is_enabled
+        return toggle_result
     end
 
     private
@@ -62,7 +57,7 @@ module Unleash
         'instanceId': Unleash.configuration.instance_id,
         'sdkVersion': "unleash-client-ruby:" + Unleash::VERSION,
         'strategies': Unleash::STRATEGIES.keys,
-        'started': Time.now.iso8601,
+        'started': Time.now.iso8601(Unleash::TIME_RESOLUTION),
         'interval': Unleash.configuration.metrics_interval_in_millis
       }
     end

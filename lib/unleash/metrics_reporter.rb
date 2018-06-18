@@ -1,34 +1,12 @@
 require 'unleash/configuration'
+require 'unleash/metrics'
 require 'net/http'
 require 'json'
 require 'time'
 
 module Unleash
 
-  class Metrics
-    attr_accessor :features
-
-    def initialize
-      self.features = {}
-    end
-
-    def to_s
-      self.features.to_json
-    end
-
-    def increment(feature, choice)
-      raise "InvalidArgument choice must be :yes or :no" unless [:yes, :no].include? choice
-
-      self.features[feature] = {yes: 0, no: 0} unless self.features.include? feature
-      self.features[feature][choice] += 1
-    end
-
-    def reset
-      self.features = {}
-    end
-  end
-
-  class Reporter
+  class MetricsReporter
     attr_accessor :last_time, :client
 
     def initialize
@@ -45,8 +23,8 @@ module Unleash
         'appName': Unleash.configuration.app_name,
         'instanceId': Unleash.configuration.instance_id,
         'bucket': {
-          'start': start.iso8601,
-          'stop': stop.iso8601,
+          'start': start.iso8601(Unleash::TIME_RESOLUTION),
+          'stop': stop.iso8601(Unleash::TIME_RESOLUTION),
           'toggles': Unleash.toggle_metrics.features
         }
       }

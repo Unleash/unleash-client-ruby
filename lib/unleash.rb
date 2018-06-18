@@ -4,23 +4,25 @@ require 'unleash/client'
 require 'logger'
 
 module Unleash
-    class << self
-        attr_accessor :configuration, :toggle_fetcher, :toggles, :toggle_metrics, :reporter, :logger
-    end
+  TIME_RESOLUTION = 3
 
-    def self.initialize
-      self.toggles = []
-      self.toggle_metrics = {}
-    end
+  class << self
+    attr_accessor :configuration, :toggle_fetcher, :toggles, :toggle_metrics, :reporter, :logger
+  end
 
-    # Support for configuration via yield:
-    def self.configure(opts = {})
-      self.configuration ||= Unleash::Configuration.new(opts)
+  def self.initialize
+    self.toggles = []
+    self.toggle_metrics = {}
+  end
 
-      yield(configuration)
+  # Support for configuration via yield:
+  def self.configure(opts = {})
+    self.configuration ||= Unleash::Configuration.new(opts)
 
-      configuration.validate!
-      configuration.refresh_backup_file!
-    end
+    yield(configuration)
+
+    configuration.validate!
+    configuration.refresh_backup_file!
+  end
 
 end

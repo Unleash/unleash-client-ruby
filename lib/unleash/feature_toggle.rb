@@ -36,9 +36,6 @@ module Unleash
       # Unleash.logger.debug "FeatureToggle params: #{params}"
       # Unleash.logger.debug "strategies:"
       # ap self.strategies
-
-      # self.choices = {false => 0, true => 0}
-      # Unleash.toggle_metrics.increment(self.name,self.choices)
     end
 
     def to_s

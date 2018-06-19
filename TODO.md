@@ -4,16 +4,13 @@ TODO
 
 Implement:
 ----------
- * Thread the Reporter code
- * Abstract the Thread/sleep loop with scheduled_executor
- * Correctly
+ * Configurable Logging (logger + level)
+ * Document on using it with Rails
 
 
 To test: (and write tests for)
 --------
- * All of strategies
  * everything else :)
-
 
 To consider:
 ------------
@@ -25,9 +22,12 @@ DONE:
 -----
  * Client registration with the server.
  * Reporter of the status of the feature toggles used.
+ * Abstract the Thread/sleep loop with scheduled_executor
+ * Thread the Reporter code
+ * Tests for All of strategies
+ * Configure via yield/blk
 
-
-rails:
+Rails:
 ```
 Unleash::Context.session_id = session.id
 Unleash::Context.user_id = current_user.id  # from devise

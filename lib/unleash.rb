@@ -16,13 +16,12 @@ module Unleash
   end
 
   # Support for configuration via yield:
-  def self.configure(opts = {})
-    self.configuration ||= Unleash::Configuration.new(opts)
-
+  def self.configure()
+    self.configuration ||= Unleash::Configuration.new
     yield(configuration)
 
-    configuration.validate!
-    configuration.refresh_backup_file!
+    self.configuration.validate!
+    self.configuration.refresh_backup_file!
   end
 
 end

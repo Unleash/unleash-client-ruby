@@ -2,11 +2,7 @@
 
 Unleash client so you can roll out your features with confidence.
 
-## Current status
-
-This client is still a WIP. It works, but it is missing some core functionality.
-
-It is definetly not production ready code at this point, and it comes with no warranties.
+Leverage the [Unleash Server](https://github.com/Unleash/unleash) for powerful feature toggling in your ruby/rails applications.
 
 ## Installation
 

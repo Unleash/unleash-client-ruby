@@ -8,8 +8,11 @@ puts ">> START simple.rb"
 # Unleash.configure do |config|
 #   config.url = 'http://unleash.herokuapp.com/api'
 #   config.app_name = 'simple-test'
+#   config.refresh_interval = 2
+#   config.metrics_interval = 2
+#   config.retry_limit = 2
 # end
-
+# @unleash = Unleash::Client.new
 
 # or:
 
@@ -19,9 +22,6 @@ puts ">> START simple.rb"
   metrics_interval: 2,
   retry_limit: 2,
 )
-
-# @unleash2 = Unleash::Client.new
-#( url: 'http://unleash.herokuapp.com/api', app_name: 'simple-test2' )
 
 # feature_name = "AwesomeFeature"
 feature_name = "4343443"

@@ -11,7 +11,7 @@ module Unleash
 
   class Client
     def initialize(*opts)
-      Unleash.configuration = Unleash::Configuration.new(*opts)
+      Unleash.configuration ||= Unleash::Configuration.new(*opts)
       Unleash.configuration.validate!
 
       # TODO: client library logging should be an option!

@@ -3,18 +3,20 @@ require 'unleash/strategy/util'
 module Unleash
   module Strategy
     class GradualRolloutRandom < Base
-      def initialize
-      end
-
       def name
         'gradualRolloutRandom'
       end
 
       # need: params['percentage']
-      def is_enabled?(params = {})
-        return false if params.nil? || params.size == 0
+      def is_enabled?(params = {}, context = nil)
+        return false unless params.is_a?(Hash) && params.has_key?('percentage')
 
-        percentage = Integer(params['percentage'] || 0)
+        begin
+          percentage = Integer(params['percentage'] || 0)
+        rescue ArgumentError => e
+          return false
+        end
+
         randomNumber = Random.rand(100) + 1
 
         ( percentage >= randomNumber )

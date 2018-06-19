@@ -11,15 +11,12 @@ module Unleash
 
   class Client
     def initialize(*opts)
-      # TODO: client library logging should be an option!
-      Unleash.logger = Logger.new(STDOUT)
-      Unleash.logger.level = Logger::DEBUG
-
       Unleash.configuration = Unleash::Configuration.new(*opts)
       Unleash.configuration.validate!
 
-      # Unleash.logger.debug "Running configuration:"
-      # ap Unleash.configuration
+      # TODO: client library logging should be an option!
+      Unleash.logger = Logger.new(STDOUT)
+      Unleash.logger.level = Logger::DEBUG # Logger::FATAL
 
       Unleash.toggle_fetcher = Unleash::ToggleFetcher.new
 

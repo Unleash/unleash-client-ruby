@@ -5,11 +5,11 @@ module Unleash
         'userWithId'
       end
 
-      # need: params['userIds'], context.user_id,
+      # requires: params['userIds'], context.user_id,
       def is_enabled?(params = {}, context = nil)
-        return false if params.nil? || params.size == 0
-        return false if params['userIds'].class.name != 'String'
-        return false if context.class.name != 'Unleash::Context'
+        return false unless params.is_a?(Hash) && params.has_key?('userIds')
+        return false unless params.fetch('userIds', nil).is_a? String
+        return false unless context.class.name == 'Unleash::Context'
 
         params['userIds'].split(",").map(&:strip).include?(context.user_id)
       end

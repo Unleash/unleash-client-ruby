@@ -6,11 +6,10 @@ module Unleash
       TWO_31 = 2 ** 31
       TWO_32 = 2 ** 32
 
-
+      # convert the two strings () into a number between 1 and 100
       def get_normalized_number(identifier, group_id)
         java_hash_code("#{identifier}:#{group_id}") % 100 + 1
       end
-
 
       # This returns same result as java hashCode() does
       def java_hash_code(str)

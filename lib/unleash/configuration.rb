@@ -6,11 +6,11 @@ module Unleash
     attr_accessor :url, :app_name, :instance_id,
       :disable_metrics, :timeout, :retry_limit,
       :refresh_interval, :metrics_interval,
-      :backup_file
+      :backup_file, :log_level
 
-    def initialize(opts)
+    def initialize(opts = {})
       self.app_name      = opts[:app_name]    || nil
-      self.url           = opts[:url]         || 'http://unleash.herokuapp.com/api'
+      self.url           = opts[:url]         || nil
       self.instance_id   = opts[:instance_id] || SecureRandom.uuid
 
       self.disable_metrics  = opts[:disable_metrics]  || false
@@ -21,6 +21,8 @@ module Unleash
 
       self.backup_file   = opts[:backup_file] || nil
 
+      self.log_level = opts[:log_level] || 'FATAL'
+
       refresh_backup_file!
     end
 
@@ -29,7 +31,7 @@ module Unleash
     end
 
     def validate!
-      if self.app_name.nil?
+      if self.app_name.nil? or self.url.nil?
         raise ArgumentError, "URL and app_name are required"
       end
     end

@@ -5,7 +5,7 @@ module Unleash
         'default'
       end
 
-      def is_enabled?(params = {})
+      def is_enabled?(params = {}, context = nil)
         true
       end
     end

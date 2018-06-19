@@ -7,11 +7,11 @@ module Unleash
 
       # need: params['ips'], context.remote_address
       def is_enabled?(params = {}, context = nil)
-        return false if params.nil? || params.size == 0
-        return false if context.class.name != 'Unleash::Context'
+        return false unless params.is_a?(Hash) && params.has_key?('ips')
+        return false unless params.fetch('ips', nil).is_a? String
+        return false unless context.class.name == 'Unleash::Context'
 
-        ips = (params['ips'] || "").split(',')
-        ips.include?( context.remote_address )
+        params['ips'].split(',').map(&:strip).include?( context.remote_address )
       end
     end
   end

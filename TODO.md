@@ -4,7 +4,6 @@ TODO
 
 Implement:
 ----------
- * Configurable Logging (logger + level)
  * Document on using it with Rails
 
 
@@ -26,6 +25,7 @@ DONE:
  * Thread the Reporter code
  * Tests for All of strategies
  * Configure via yield/blk
+ * Configurable Logging (logger + level)
 
 Rails:
 ```

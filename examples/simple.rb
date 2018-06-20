@@ -21,6 +21,7 @@ puts ">> START simple.rb"
   refresh_interval: 2,
   metrics_interval: 2,
   retry_limit: 2,
+  log_level: Logger::DEBUG,
 )
 
 # feature_name = "AwesomeFeature"

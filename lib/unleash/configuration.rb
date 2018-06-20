@@ -6,7 +6,7 @@ module Unleash
     attr_accessor :url, :app_name, :instance_id,
       :disable_metrics, :timeout, :retry_limit,
       :refresh_interval, :metrics_interval,
-      :backup_file, :log_level
+      :backup_file, :logger, :log_level
 
     def initialize(opts = {})
       self.app_name      = opts[:app_name]    || nil
@@ -21,7 +21,17 @@ module Unleash
 
       self.backup_file   = opts[:backup_file] || nil
 
-      self.log_level = opts[:log_level] || 'FATAL'
+      self.logger    = opts[:logger] || Logger.new(STDOUT)
+      self.log_level = opts[:log_level] || Logger::ERROR
+
+
+      if opts[:logger].nil?
+        # on default logger, use custom formatter that includes thread_name:
+        self.logger.formatter = proc do |severity, datetime, progname, msg|
+          thread_name = (Thread.current[:name] || "Unleash").rjust(16, ' ')
+          "[#{datetime.iso8601(6)} #{thread_name} #{severity.ljust(5, ' ')}] : #{msg}\n"
+        end
+      end
 
       refresh_backup_file!
     end

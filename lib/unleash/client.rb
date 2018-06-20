@@ -14,9 +14,8 @@ module Unleash
       Unleash.configuration ||= Unleash::Configuration.new(*opts)
       Unleash.configuration.validate!
 
-      # TODO: client library logging should be an option!
-      Unleash.logger = Logger.new(STDOUT)
-      Unleash.logger.level = Logger::DEBUG # Logger::FATAL
+      Unleash.logger = Unleash.configuration.logger
+      Unleash.logger.level = Unleash.configuration.log_level
 
       Unleash.toggle_fetcher = Unleash::ToggleFetcher.new
 

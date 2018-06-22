@@ -4,16 +4,20 @@ TODO
 
 Implement:
 ----------
- * Document on using it with Rails
+ * Switch hashing function to use murmurhash3 as per https://github.com/Unleash/unleash/issues/247
+ * Document usage with Rails
 
 
 To test: (and write tests for)
 --------
+ * Implement spec test for ruby client specs using https://github.com/Unleash/client-specification/blob/master/05-gradual-rollout-random-strategy.json (similar to the examples below) to ensure consistent client behaviour.
+   * java: https://github.com/Unleash/unleash-client-java/compare/master...integration-spec
+   * node: https://github.com/Unleash/unleash-client-node/compare/client-specification?expand=1
  * everything else :)
 
 To consider:
 ------------
- * Not using class hierarchy for strategies
+ * Not using class hierarchy for strategies (more duck typing)
  * Compliant to https://github.com/rubocop-hq/ruby-style-guide
  * Remove the extreme amount of comments and logs
 

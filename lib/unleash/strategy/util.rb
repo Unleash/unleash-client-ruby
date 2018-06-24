@@ -1,25 +1,14 @@
+require 'murmurhash3'
+
 module Unleash
   module Strategy
     module Util
       module_function
-
-      TWO_31 = 2 ** 31
-      TWO_32 = 2 ** 32
+      NORMALIZER = 100
 
       # convert the two strings () into a number between 1 and 100
       def get_normalized_number(identifier, group_id)
-        java_hash_code("#{identifier}:#{group_id}") % 100 + 1
-      end
-
-      # This returns same result as java hashCode() does
-      def java_hash_code(str)
-        size = str.size
-        hash = 0
-        str.chars.each_with_index do |ch, i|
-          hash += ch.ord * (31 ** (size-(i+1)))
-          hash = hash % TWO_32 - TWO_31
-        end
-        hash
+        MurmurHash3::V32.str_hash("#{group_id}:#{identifier}") % NORMALIZER + 1
       end
     end
   end

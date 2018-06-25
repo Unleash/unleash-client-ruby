@@ -5,8 +5,6 @@ require 'unleash/feature_toggle'
 require 'logger'
 require 'time'
 
-require 'awesome_print'
-
 module Unleash
 
   class Client

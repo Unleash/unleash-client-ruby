@@ -34,8 +34,7 @@ module Unleash
         .map{|s| ActivationStrategy.new(s['name'], s['parameters'])} || []
 
       # Unleash.logger.debug "FeatureToggle params: #{params}"
-      # Unleash.logger.debug "strategies:"
-      # ap self.strategies
+      # Unleash.logger.debug "strategies: #{self.strategies}"
     end
 
     def to_s

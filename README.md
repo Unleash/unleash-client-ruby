@@ -22,20 +22,21 @@ Or install it yourself as:
 
 ### Configure
 
-It is required to configure the hostname of the unleash server.
+It is **required** to configure the `hostname` of the unleash server.
 
-It is highly recommended to configure `app_name` and the `instance_id`.
+It is **highly recommended** to configure `app_name` and the `instance_id`.
 
 ```ruby
 Unleash::Client.configure do |config|
   config.hostname = 'host.domain'
+  config.app_name = 'my_ruby_app'
 end
 ```
 
 or instantiate the client with the valid configuration:
 
 ```ruby
-UNLEASH = Unleash::Client.new(hostname: 'host.domain')
+UNLEASH = Unleash::Client.new(hostname: 'host.domain', app_name: 'my_ruby_app')
 ```
 
 ## Usage in a plain Ruby Application
@@ -44,7 +45,7 @@ UNLEASH = Unleash::Client.new(hostname: 'host.domain')
 require 'unleash'
 require 'unleash/context'
 
-@unleash = Unleash::Client.new(hostname: 'host.domain')
+@unleash = Unleash::Client.new(hostname: 'host.domain', app_name: 'my_ruby_app')
 
 feature_name = "AwesomeFeature"
 unleash_context = Unleash::Context.new
@@ -59,7 +60,7 @@ end
 
 ## Usage in a Rails Application
 
-Note: known to not work currently with (puma)[https://github.com/puma/puma].
+Note: known to not work currently with [puma](https://github.com/puma/puma).
 
 #### Add Initializer
 
@@ -72,7 +73,7 @@ Unleash::Client.configure do |config|
   # config.instance_id = "#{Socket.gethostname}"
 end
 ```
-For `config.instance_id` use a string with a unique identification for the running instance. For example: it could be the hostname, if you only run one App per host. Or the docker image id, if you are running in docker. If it is not set the client will generate an unique UUID for each execution.
+For `config.instance_id` use a string with a unique identification for the running instance. For example: it could be the hostname, if you only run one App per host. Or the docker container id, if you are running in docker. If it is not set the client will generate an unique UUID for each execution.
 
 
 #### Set Unleash::Context

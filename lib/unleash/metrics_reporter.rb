@@ -46,15 +46,19 @@ module Unleash
       request = Net::HTTP::Post.new(uri.request_uri, headers)
       request.body = generated_report.to_json
 
-      Unleash.logger.debug "Report to sent: #{request.body}"
+      if generated_report.is_a?(Hash) && generated_report.fetch(:bucket, {}).fetch(:toggles, {}).size == 0
+        Unleash.logger.debug "Suppressed sending metrics to unleash server as bucket payload would be empty."
+        return
+      else
+        Unleash.logger.debug "Report to sent: #{request.body}"
+      end
 
-      # Send the request
       response = http.request(request)
 
       if ['200','202'].include? response.code
-        Unleash.logger.debug "Report sent to unleash server."
+        Unleash.logger.debug "Report sent to unleash server sucessfully. Server responded with http code #{response.code}"
       else
-        Unleash.logger.error "Error when sending report to unleash server. It responded with code #{response.code}."
+        Unleash.logger.error "Error when sending report to unleash server. Server responded with http code #{response.code}."
       end
 
     end

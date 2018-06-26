@@ -8,10 +8,11 @@ Gem::Specification.new do |spec|
   spec.version       = Unleash::VERSION
   spec.authors       = ["Renato Arruda"]
   spec.email         = ["renato.arruda@finn.no"]
-  spec.licenses      = ["ALv2"]
+  spec.licenses      = ["Apache-2.0"]
 
   spec.summary       = %q{Unleash feature toggle client.}
-  # spec.description   = %q{TODO: Write a longer description or delete this line.}
+  spec.description   = %q{Unleash is a feature toggle system, that gives you a great overview
+    over all feature toggles across all your applications and services.}
   spec.homepage      = "https://github.com/rarruda/unleash-client-ruby"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'

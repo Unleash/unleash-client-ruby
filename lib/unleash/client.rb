@@ -28,7 +28,7 @@ module Unleash
       register
     end
 
-    def is_enabled?(feature, context, default_value = false)
+    def is_enabled?(feature, context = nil, default_value = false)
         Unleash.logger.debug "Unleash::Client.is_enabled? feature: #{feature} with context #{context}"
 
         toggle_as_hash = Unleash.toggles.select{ |toggle| toggle['name'] == feature }.first
@@ -66,8 +66,6 @@ module Unleash
       headers = {'Content-Type' => 'application/json'}
       request = Net::HTTP::Post.new(uri.request_uri, headers)
       request.body = info.to_json
-
-      ap request.body
 
       # Send the request
       response = http.request(request)

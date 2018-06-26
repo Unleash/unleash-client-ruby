@@ -41,16 +41,16 @@ module Unleash
       "<FeatureToggle: name=#{self.name},enabled=#{self.enabled},choices=#{self.choices},strategies=#{self.strategies}>"
     end
 
-    def is_enabled?(context = nil, default_result)
-      if context.class.name != 'Unleash::Context'
-        Unleash.logger.error "Provided context is not of the correct type, please use Unleash::Context"
+    def is_enabled?(context, default_result)
+      if not ['NilClass', 'Unleash::Context'].include? context.class.name
+        Unleash.logger.error "Provided context is not of the correct type #{context.class.name}, please use Unleash::Context"
         context = nil
       end
 
       result = self.enabled && self.strategies.select{ |s|
         strategy = Unleash::STRATEGIES.fetch(s.name.to_sym, :unknown)
         r = strategy.is_enabled?(s.params, context)
-        Unleash.logger.debug "Strategy #{s.name} returned #{r} with context #{context}" #"for params #{s.params} "
+        Unleash.logger.debug "Strategy #{s.name} returned #{r} with context: #{context}" #"for params #{s.params} "
         r
       }.any?
       result ||= default_result

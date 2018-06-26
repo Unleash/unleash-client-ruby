@@ -1,5 +1,6 @@
 require 'unleash/version'
 require 'unleash/configuration'
+require 'unleash/context'
 require 'unleash/client'
 require 'logger'
 

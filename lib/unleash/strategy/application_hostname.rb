@@ -5,7 +5,6 @@ module Unleash
     class ApplicationHostname < Base
       attr_accessor :hostname
 
-      public
       def initialize
         self.hostname = Socket.gethostname || 'undefined'
       end

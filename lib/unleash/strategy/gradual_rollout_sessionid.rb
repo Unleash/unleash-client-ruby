@@ -13,7 +13,7 @@ module Unleash
         return false unless context.class.name == 'Unleash::Context'
 
         percentage = Integer(params['percentage'] || 0)
-        ( percentage > 0 && Util.get_normalized_number(context.session_id, params['groupId'] || "") <= percentage )
+        (percentage > 0 && Util.get_normalized_number(context.session_id, params['groupId'] || "") <= percentage)
       end
     end
   end

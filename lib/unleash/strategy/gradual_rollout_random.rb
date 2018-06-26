@@ -19,7 +19,7 @@ module Unleash
 
         randomNumber = Random.rand(100) + 1
 
-        ( percentage >= randomNumber )
+        (percentage >= randomNumber)
       end
     end
   end

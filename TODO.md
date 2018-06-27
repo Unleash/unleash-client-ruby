@@ -33,6 +33,5 @@ DONE:
  * Configure via yield/blk
  * Configurable Logging (logger + level)
  * Switch hashing function to use murmurhash3 as per https://github.com/Unleash/unleash/issues/247
- * Only report metrics to unleash-server, if there is content in bucket
  * Document usage with Rails
 

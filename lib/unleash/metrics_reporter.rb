@@ -46,12 +46,7 @@ module Unleash
       request = Net::HTTP::Post.new(uri.request_uri, headers)
       request.body = generated_report.to_json
 
-      if generated_report.is_a?(Hash) && generated_report.fetch(:bucket, {}).fetch(:toggles, {}).size == 0
-        Unleash.logger.debug "Suppressed sending metrics to unleash server as bucket payload would be empty."
-        return
-      else
-        Unleash.logger.debug "Report to sent: #{request.body}"
-      end
+      Unleash.logger.debug "Report to sent: #{request.body}"
 
       response = http.request(request)
 

@@ -7,13 +7,13 @@ Gem::Specification.new do |spec|
   spec.name          = "unleash"
   spec.version       = Unleash::VERSION
   spec.authors       = ["Renato Arruda"]
-  spec.email         = ["renato.arruda@finn.no"]
+  spec.email         = ["rarruda@rarruda.org"]
   spec.licenses      = ["Apache-2.0"]
 
   spec.summary       = %q{Unleash feature toggle client.}
   spec.description   = %q{Unleash is a feature toggle system, that gives you a great overview
     over all feature toggles across all your applications and services.}
-  spec.homepage      = "https://github.com/rarruda/unleash-client-ruby"
+  spec.homepage      = "https://github.com/unleash/unleash-client-ruby"
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
     f.match(%r{^(test|spec|features)/})

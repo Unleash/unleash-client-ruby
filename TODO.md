@@ -1,10 +1,13 @@
 TODO
 ====
 
+The Ruby client should be pretty stable now. But no warranty is given, and some work still remains.
+
 
 Implement:
 ----------
- * ...
+ * Support for allowing custom strategies.
+ * Possibility for custom HTTP headers when interacting with unleash server.
 
 To test: (and write tests for)
 --------
@@ -17,8 +20,8 @@ To test: (and write tests for)
 To consider:
 ------------
  * Not using class hierarchy for strategies (more duck typing)
- * Compliant to https://github.com/rubocop-hq/ruby-style-guide
- * Remove the extreme amount of comments and logs
+ * Better compliance to https://github.com/rubocop-hq/ruby-style-guide
+ * Reduce the amount of comments and logs
 
 DONE:
 -----

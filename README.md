@@ -20,11 +20,13 @@ Or install it yourself as:
 
     $ gem install unleash
 
-### Configure
+## Configure
 
 It is **required** to configure the `hostname` of the unleash server.
 
 It is **highly recommended** to configure `app_name` and the `instance_id`.
+
+For other options please see `lib/unleash/configuration.rb`.
 
 ```ruby
 Unleash::Client.configure do |config|
@@ -105,6 +107,24 @@ if UNLEASH.is_enabled? "AwesomeFeature", @unleash_context
 end
 ```
 
+## Local test client
+
+```
+bundle exec examples/simple.rb
+```
+
+## Available Strategies
+
+This client comes with these strategies out of the box:
+
+ * ApplicationHostnameStrategy
+ * DefaultStrategy
+ * GradualRolloutRandomStrategy
+ * GradualRolloutSessionIdStrategy
+ * GradualRolloutUserIdStrategy
+ * RemoteAddressStrategy
+ * UnknowndStrategy
+ * UserWithIdStrategy
 
 
 ## Development
@@ -113,13 +133,11 @@ After checking out the repo, run `bin/setup` to install dependencies. Then, run 
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
-## Local test client
+See [TODO.md] for known limitations, and feature roadmap.
 
-```
-bundle exec examples/simple.rb
-```
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/rarruda/unleash-client-ruby.
+Bug reports and pull requests are welcome on GitHub at https://github.com/unleash/unleash-client-ruby.
 
+Please include tests with any pull requests, to avoid regressions.

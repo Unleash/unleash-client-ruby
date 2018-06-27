@@ -1,6 +1,5 @@
 module Unleash
 
-  # NOTE: not used (yet?)
   class ScheduledExecutor
     attr_accessor :name, :interval, :max_exceptions, :retry_count
 

@@ -46,7 +46,7 @@ module Unleash
       request = Net::HTTP::Post.new(uri.request_uri, headers)
       request.body = generated_report.to_json
 
-      Unleash.logger.debug "Report to sent: #{request.body}"
+      Unleash.logger.debug "Report to send: #{request.body}"
 
       response = http.request(request)
 

@@ -4,6 +4,7 @@ module Unleash
   module Strategy
     module Util
       module_function
+
       NORMALIZER = 100
 
       # convert the two strings () into a number between 1 and 100

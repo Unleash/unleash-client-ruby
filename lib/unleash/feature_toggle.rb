@@ -1,27 +1,6 @@
 require 'unleash/activation_strategy'
-require 'unleash/strategy/base'
-require 'unleash/strategy/default'
-require 'unleash/strategy/application_hostname'
-require 'unleash/strategy/gradual_rollout_random'
-require 'unleash/strategy/gradual_rollout_sessionid'
-require 'unleash/strategy/gradual_rollout_userid'
-require 'unleash/strategy/remote_address'
-require 'unleash/strategy/user_with_id'
-require 'unleash/strategy/unknown'
 
 module Unleash
-  STRATEGIES = {
-    applicationHostname: Unleash::Strategy::ApplicationHostname.new,
-    gradualRolloutRandom: Unleash::Strategy::GradualRolloutRandom.new,
-    gradualRolloutSessionId: Unleash::Strategy::GradualRolloutSessionId.new,
-    gradualRolloutUserId: Unleash::Strategy::GradualRolloutUserId.new,
-    remoteAddress: Unleash::Strategy::RemoteAddress.new,
-    userWithId: Unleash::Strategy::UserWithId.new,
-    unknown: Unleash::Strategy::Unknown.new,
-    default: Unleash::Strategy::Default.new,
-  }
-
-
   class FeatureToggle
     attr_accessor :name, :enabled, :strategies, :choices, :choices_lock
 

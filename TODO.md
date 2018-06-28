@@ -6,7 +6,6 @@ The Ruby client should be pretty stable now. But no warranty is given, and some 
 
 Implement:
 ----------
- * Support for allowing custom strategies.
  * Possibility for custom HTTP headers when interacting with unleash server.
 
 To test: (and write tests for)
@@ -34,4 +33,5 @@ DONE:
  * Configurable Logging (logger + level)
  * Switch hashing function to use murmurhash3 as per https://github.com/Unleash/unleash/issues/247
  * Document usage with Rails
+ * Support for allowing custom strategies.
 

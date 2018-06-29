@@ -1,4 +1,5 @@
 require "bundler/setup"
+require "unleash"
 require "unleash/client"
 
 require 'coveralls'

@@ -9,7 +9,7 @@ module Unleash
       if params.is_a?(Hash)
         self.params = params
       else
-        Unleash.logger.warning "Invalid params provided for ActivationStrategy #{params}"
+        Unleash.logger.warn "Invalid params provided for ActivationStrategy #{params}"
         self.params = {}
       end
     end

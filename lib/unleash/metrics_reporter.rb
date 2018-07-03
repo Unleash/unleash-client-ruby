@@ -43,6 +43,10 @@ module Unleash
       http.use_ssl = true if uri.scheme == 'https'
       http.open_timeout = Unleash.configuration.timeout # in seconds
       http.read_timeout = Unleash.configuration.timeout # in seconds
+      headers = {}
+      if Unleash.configuration.custom_http_headers.is_a? Hash
+        headers = Unleash.configuration.custom_http_headers
+      end
       headers = {'Content-Type' => 'application/json'}
       request = Net::HTTP::Post.new(uri.request_uri, headers)
       request.body = generated_report.to_json

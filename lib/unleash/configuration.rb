@@ -4,6 +4,7 @@ require 'tmpdir'
 module Unleash
   class Configuration
     attr_accessor :url, :app_name, :instance_id,
+      :custom_http_headers,
       :disable_metrics, :timeout, :retry_limit,
       :refresh_interval, :metrics_interval,
       :backup_file, :logger, :log_level
@@ -13,6 +14,7 @@ module Unleash
       self.url           = opts[:url]         || nil
       self.instance_id   = opts[:instance_id] || SecureRandom.uuid
 
+      self.custom_http_headers = opts[:custom_http_headers] || {}
       self.disable_metrics  = opts[:disable_metrics]  || false
       self.refresh_interval = opts[:refresh_interval] || 15
       self.metrics_interval = opts[:metrics_interval] || 10

@@ -12,6 +12,7 @@ module Unleash
 
   STRATEGIES = Unleash::Strategy.constants
     .select { |c| Unleash::Strategy.const_get(c).is_a? Class }
+    .select { |c| !['NotImplemented', 'Base'].include?(c.to_s) }
     .map { |c|
       lowered_c = c.to_s
       lowered_c[0] = lowered_c[0].downcase

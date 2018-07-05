@@ -68,8 +68,13 @@ module Unleash
       request = Net::HTTP::Post.new(uri.request_uri, headers)
       request.body = info.to_json
 
-      # Send the request
-      response = http.request(request)
+      # Send the request, if possible
+      begin
+        response = http.request(request)
+      rescue Exception => e
+        Unleash.logger.error "unable to register client with unleash server due to exception #{e.class}:'#{e}'."
+        Unleash.logger.error "stacktrace: #{e.backtrace}"
+      end
     end
   end
 end

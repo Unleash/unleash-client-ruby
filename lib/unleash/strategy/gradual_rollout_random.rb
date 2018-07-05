@@ -8,7 +8,7 @@ module Unleash
       end
 
       # need: params['percentage']
-      def is_enabled?(params = {}, context = nil)
+      def is_enabled?(params = {}, _context = nil)
         return false unless params.is_a?(Hash) && params.has_key?('percentage')
 
         begin
@@ -17,9 +17,7 @@ module Unleash
           return false
         end
 
-        randomNumber = Random.rand(100) + 1
-
-        (percentage >= randomNumber)
+        (percentage >= Random.rand(1..100))
       end
     end
   end

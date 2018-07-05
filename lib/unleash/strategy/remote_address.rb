@@ -11,7 +11,7 @@ module Unleash
         return false unless params.fetch('ips', nil).is_a? String
         return false unless context.class.name == 'Unleash::Context'
 
-        params['ips'].split(',').map(&:strip).include?( context.remote_address )
+        params['ips'].split(',').map(&:strip).include?(context.remote_address)
       end
     end
   end

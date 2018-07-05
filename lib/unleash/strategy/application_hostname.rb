@@ -14,7 +14,7 @@ module Unleash
       end
 
       # need: :params[:hostnames]
-      def is_enabled?(params = {}, context = nil)
+      def is_enabled?(params = {}, _context = nil)
         return false unless params.is_a?(Hash) && params.has_key?('hostnames')
 
         params['hostnames'].split(",").map(&:strip).map{|h| h.downcase }.include?(self.hostname)

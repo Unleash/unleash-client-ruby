@@ -1,0 +1,11 @@
+Naming/PredicateName:
+  NameWhitelist:
+    - is_enabled?
+
+Metrics/LineLength:
+  Max: 120
+
+Style/RedundantSelf:
+  Enabled: false
+Style/PreferredHashMethods:
+  Enabled: false

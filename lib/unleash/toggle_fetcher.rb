@@ -111,7 +111,8 @@ module Unleash
         end
       rescue Exception => e
         # This is not really the end of the world. Swallowing the exception.
-        Unleash.logger.error "Unable to save backup file."
+        Unleash.logger.error "Unable to save backup file. Exception thrown #{e.class}:'#{e}'"
+        Unleash.logger.error "stacktrace: #{e.backtrace}"
       ensure
         file.close unless file.nil?
       end
@@ -136,7 +137,8 @@ module Unleash
       rescue JSON::ParserError => e
         Unleash.logger.error "Unable to parse JSON from existing backup_file."
       rescue Exception => e
-        Unleash.logger.error "Unable to extract valid data from backup_file."
+        Unleash.logger.error "Unable to extract valid data from backup_file. Exception thrown #{e.class}:'#{e}'"
+        Unleash.logger.error "stacktrace: #{e.backtrace}"
       ensure
         file.close unless file.nil?
       end

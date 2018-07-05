@@ -24,8 +24,8 @@ module Unleash
             self.retry_count = 0
           rescue Exception => e
             self.retry_count += 1
-            Unleash.logger.error "thread #{name} throwing exception (#{self.retry_count} of #{self.max_exceptions})"
-            Unleash.logger.error e
+            Unleash.logger.error "thread #{name} threw exception #{e.class}:'#{e}' (#{self.retry_count}/#{self.max_exceptions})"
+            Unleash.logger.error "stacktrace: #{e.backtrace}"
           end
 
           break if self.retry_count > self.max_exceptions

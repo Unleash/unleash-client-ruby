@@ -61,6 +61,7 @@ module Unleash
 
       uri = URI(Unleash.configuration.client_register_url)
       http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true if uri.scheme == 'https'
       http.open_timeout = Unleash.configuration.timeout # in seconds
       http.read_timeout = Unleash.configuration.timeout # in seconds
       headers = {'Content-Type' => 'application/json'}

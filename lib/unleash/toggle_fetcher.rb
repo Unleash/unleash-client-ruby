@@ -45,6 +45,7 @@ module Unleash
 
       uri = URI(Unleash.configuration.fetch_toggles_url)
       http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true if uri.scheme == 'https'
       http.open_timeout = Unleash.configuration.timeout # in seconds
       http.read_timeout = Unleash.configuration.timeout # in seconds
       request = Net::HTTP::Get.new(uri.request_uri)

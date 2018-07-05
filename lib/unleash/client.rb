@@ -16,6 +16,7 @@ module Unleash
       Unleash.logger.level = Unleash.configuration.log_level
 
       Unleash.toggle_fetcher = Unleash::ToggleFetcher.new
+      register
 
       unless Unleash.configuration.disable_metrics
         Unleash.toggle_metrics = Unleash::Metrics.new
@@ -25,7 +26,6 @@ module Unleash
           Unleash.reporter.send
         end
       end
-      register
     end
 
     def is_enabled?(feature, context = nil, default_value = false)

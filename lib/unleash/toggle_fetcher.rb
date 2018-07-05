@@ -22,7 +22,6 @@ module Unleash
       rescue Exception => e
         Unleash.logger.warn "ToggleFetcher was unable to fetch from the network, attempting to read from backup file."
         read!
-        raise e
       end
 
       # once we have initialized, start the fetcher loop
@@ -131,6 +130,7 @@ module Unleash
 
         backup_as_hash = JSON.parse(line_cache)
         synchronize_with_local_cache!(backup_as_hash)
+        update_client!
 
       rescue IOError => e
         Unleash.logger.error "Unable to read the backup_file."

@@ -47,14 +47,12 @@ module Unleash
       http.use_ssl = true if uri.scheme == 'https'
       http.open_timeout = Unleash.configuration.timeout # in seconds
       http.read_timeout = Unleash.configuration.timeout # in seconds
-      request = Net::HTTP::Get.new(uri.request_uri)
+      headers = {}
+      headers.merge(Unleash.configuration.custom_http_headers || {})
+      headers['Content-Type'] = 'application/json'
+      headers['If-None-Match'] = self.etag unless self.etag.nil?
 
-      if Unleash.configuration.custom_http_headers.is_a? Hash
-        Unleash.configuration.custom_http_headers.each{ |k,v|
-          request[k] = v
-        }
-      end
-      request['If-None-Match'] = self.etag unless self.etag.nil?
+      request = Net::HTTP::Get.new(uri.request_uri, headers)
 
       response = http.request(request)
 

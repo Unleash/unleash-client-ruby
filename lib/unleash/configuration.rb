@@ -14,7 +14,11 @@ module Unleash
       self.url           = opts[:url]         || nil
       self.instance_id   = opts[:instance_id] || SecureRandom.uuid
 
-      self.custom_http_headers = (opts[:custom_http_headers].is_a? Hash) ? opts[:custom_http_headers] : {}
+      if opts[:custom_http_headers].is_a?(Hash) || opts[:custom_http_headers].nil?
+        self.custom_http_headers = opts[:custom_http_headers] || {}
+      else
+        raise ArgumentError, "custom_http_headers must be a hash."
+      end
       self.disable_metrics  = opts[:disable_metrics]  || false
       self.refresh_interval = opts[:refresh_interval] || 15
       self.metrics_interval = opts[:metrics_interval] || 10
@@ -48,7 +52,6 @@ module Unleash
       end
 
       if ! self.custom_http_headers.is_a?(Hash)
-        self.custom_http_headers = {}
         raise ArgumentError, "custom_http_headers must be a hash."
       end
     end

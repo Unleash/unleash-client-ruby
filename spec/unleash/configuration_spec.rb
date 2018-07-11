@@ -4,6 +4,10 @@ require "unleash/configuration"
 RSpec.describe Unleash do
 
   describe 'Configuration' do
+    before do
+      Unleash.configuration = nil
+    end
+
     it "should have the correct defaults" do
       config = Unleash::Configuration.new
 
@@ -24,7 +28,7 @@ RSpec.describe Unleash do
     end
 
     it "should by default be invalid" do
-      config = Unleash::Configuration.new()
+      config = Unleash::Configuration.new
       expect{ config.validate! }.to raise_error(ArgumentError)
     end
 
@@ -82,8 +86,7 @@ RSpec.describe Unleash do
       end.to raise_error(ArgumentError)
     end
 
-    # TODO: consider having consisten behaviour?
-    it "should swallow silently invalid custom_http_headers if set via client" do
+    it "should not accept invalid custom_http_headers via new client" do
       WebMock.stub_request(:post, "http://test-url//client/register").
         with(
           headers: {
@@ -94,14 +97,12 @@ RSpec.describe Unleash do
           }).
         to_return(status: 200, body: "", headers: {})
 
-      client = Unleash::Client.new(
+      expect{ Unleash::Client.new(
         url: 'https://testurl/api',
         app_name: 'test-app',
         custom_http_headers: 123.0,
-        disable_metrics: true)
-
-      expect(Unleash.configuration.custom_http_headers).to eq({})
-      expect{ Unleash.configuration.validate! }.not_to raise_error
+        disable_metrics: true
+      ) }.to raise_error(ArgumentError)
     end
   end
 end

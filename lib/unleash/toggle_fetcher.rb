@@ -38,6 +38,7 @@ module Unleash
     end
 
     # rename to refresh_from_server!  ??
+    # TODO: should simplify by moving uri / http initialization to class initialization
     def fetch
       Unleash.logger.debug "fetch()"
       Unleash.logger.debug "ETag: #{self.etag}" unless self.etag.nil?
@@ -47,8 +48,8 @@ module Unleash
       http.use_ssl = true if uri.scheme == 'https'
       http.open_timeout = Unleash.configuration.timeout # in seconds
       http.read_timeout = Unleash.configuration.timeout # in seconds
-      headers = {}
-      headers.merge(Unleash.configuration.custom_http_headers || {})
+
+      headers = (Unleash.configuration.custom_http_headers || {}).dup
       headers['Content-Type'] = 'application/json'
       headers['If-None-Match'] = self.etag unless self.etag.nil?
 

@@ -12,7 +12,7 @@ Leverage the [Unleash Server](https://github.com/Unleash/unleash) for powerful f
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'unleash', '~> 0.1.1'
+gem 'unleash', '~> 0.1.3'
 ```
 
 And then execute:

@@ -83,11 +83,22 @@ RSpec.describe Unleash do
     end
 
     # TODO: consider having consisten behaviour?
-    xit "should swallow silently invalid custom_http_headers if set via client" do
+    it "should swallow silently invalid custom_http_headers if set via client" do
+      WebMock.stub_request(:post, "http://test-url//client/register").
+        with(
+          headers: {
+          'Accept'=>'*/*',
+          'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Type'=>'application/json',
+          'User-Agent'=>'Ruby'
+          }).
+        to_return(status: 200, body: "", headers: {})
+
       client = Unleash::Client.new(
         url: 'https://testurl/api',
         app_name: 'test-app',
-        custom_http_headers: 123.0)
+        custom_http_headers: 123.0,
+        disable_metrics: true)
 
       expect(Unleash.configuration.custom_http_headers).to eq({})
       expect{ Unleash.configuration.validate! }.not_to raise_error

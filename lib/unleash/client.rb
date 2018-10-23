@@ -31,7 +31,7 @@ module Unleash
     def is_enabled?(feature, context = nil, default_value = false)
         Unleash.logger.debug "Unleash::Client.is_enabled? feature: #{feature} with context #{context}"
 
-        toggle_as_hash = Unleash.toggles.select{ |toggle| toggle['name'] == feature }.first
+        toggle_as_hash = Unleash.toggles.select{ |toggle| toggle['name'] == feature }.first if Unleash.toggles
 
         if toggle_as_hash.nil?
           Unleash.logger.debug "Unleash::Client.is_enabled? feature: #{feature} not found"

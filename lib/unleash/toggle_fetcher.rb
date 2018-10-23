@@ -53,7 +53,7 @@ module Unleash
       headers['Content-Type'] = 'application/json'
       headers['If-None-Match'] = self.etag unless self.etag.nil?
 
-      request = Net::HTTP::Get.new(uri.request_uri, headers)
+      request = Net::HTTP::Get.new(uri.request_uri + "?instance_id=#{Unleash.configuration.instance_id}", headers)
 
       response = http.request(request)
 

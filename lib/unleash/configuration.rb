@@ -63,7 +63,7 @@ module Unleash
     end
 
     def fetch_toggles_url
-      self.url + '/client/features'
+      self.url + '/features'
     end
 
     def client_metrics_url

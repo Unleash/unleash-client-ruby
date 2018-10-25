@@ -65,7 +65,7 @@ module Unleash
       http.open_timeout = Unleash.configuration.timeout # in seconds
       http.read_timeout = Unleash.configuration.timeout # in seconds
 
-      headers = (Unleash.configuration.custom_http_headers || {}).dup
+      headers = (Unleash.configuration.get_http_headers || {}).dup
       headers['Content-Type'] = 'application/json'
 
       request = Net::HTTP::Post.new(uri.request_uri, headers)

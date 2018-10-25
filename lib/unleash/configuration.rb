@@ -62,6 +62,13 @@ module Unleash
       end
     end
 
+    def get_http_headers
+      {
+        'UNLEASH-INSTANCEID' => self.instance_id,
+        'UNLEASH-APPNAME' => self.app_name
+      }.merge(custom_http_headers.dup)
+    end
+
     def fetch_toggles_url
       self.url + '/client/features'
     end

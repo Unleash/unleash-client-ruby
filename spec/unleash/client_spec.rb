@@ -45,11 +45,15 @@ RSpec.describe Unleash do
       a_request(:post, "http://test-url//client/register")
       .with( headers: {'Content-Type': 'application/json'})
       .with( headers: {'X-API-KEY': '123', 'Content-Type': 'application/json'})
+      .with( headers: {'UNLEASH-APPNAME': 'my-test-app'})
+      .with( headers: {'UNLEASH-INSTANCEID': 'rspec/test'})
     ).to have_been_made.once
 
     expect(
       a_request(:get, "http://test-url//client/features")
       .with( headers: {'X-API-KEY': '123'})
+      .with( headers: {'UNLEASH-APPNAME': 'my-test-app'})
+      .with( headers: {'UNLEASH-INSTANCEID': 'rspec/test'})
     ).to have_been_made.once
 
     # Test now sending of metrics
@@ -58,6 +62,8 @@ RSpec.describe Unleash do
       a_request(:post, "http://test-url//client/metrics")
       .with( headers: {'Content-Type': 'application/json'})
       .with( headers: {'X-API-KEY': '123', 'Content-Type': 'application/json'})
+      .with( headers: {'UNLEASH-APPNAME': 'my-test-app'})
+      .with( headers: {'UNLEASH-INSTANCEID': 'rspec/test'})
     ).to have_been_made.once
   end
 

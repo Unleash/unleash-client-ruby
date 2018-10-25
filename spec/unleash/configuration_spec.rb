@@ -73,7 +73,9 @@ RSpec.describe Unleash do
         custom_http_headers: {'X-API-KEY': '123'})
 
       expect{ config.validate! }.not_to raise_error
-      expect(config.custom_http_headers).to eq({'X-API-KEY': '123'})
+      expect(config.custom_http_headers).to include({'X-API-KEY': '123'})
+      expect(config.get_http_headers).to include({'UNLEASH-APPNAME' => 'test-app'})
+      expect(config.get_http_headers).to include('UNLEASH-INSTANCEID')
     end
 
     it "should not accept invalid custom_http_headers via yield" do

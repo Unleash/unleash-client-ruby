@@ -49,7 +49,7 @@ module Unleash
       http.open_timeout = Unleash.configuration.timeout # in seconds
       http.read_timeout = Unleash.configuration.timeout # in seconds
 
-      headers = (Unleash.configuration.custom_http_headers || {}).dup
+      headers = (Unleash.configuration.get_http_headers || {}).dup
       headers['Content-Type'] = 'application/json'
       headers['If-None-Match'] = self.etag unless self.etag.nil?
 

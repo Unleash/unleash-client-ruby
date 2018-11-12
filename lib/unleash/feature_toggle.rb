@@ -22,7 +22,7 @@ module Unleash
 
     def is_enabled?(context, default_result)
       if not ['NilClass', 'Unleash::Context'].include? context.class.name
-        Unleash.logger.error "Provided context is not of the correct type #{context.class.name}, please use Unleash::Context"
+        Unleash.logger.error "Provided context is not of the correct type #{context.class.name}, please use Unleash::Context. Context set to nil."
         context = nil
       end
 

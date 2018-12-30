@@ -5,7 +5,7 @@ require "unleash/context"
 RSpec.describe Unleash::Strategy::UserWithId do
   describe '#is_enabled?' do
     let(:strategy) { Unleash::Strategy::UserWithId.new }
-    let(:unleash_context) { Unleash::Context.new(user_id: 'bob') }
+    let(:unleash_context) { Unleash::Context.new({'userId' => 'bob'}) }
 
     it 'should be enabled with correct params' do
       expect(strategy.is_enabled?({'userIds' =>'alice,bob,carol,dave'}, unleash_context)).to be_truthy

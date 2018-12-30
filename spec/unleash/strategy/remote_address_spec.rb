@@ -4,7 +4,7 @@ require "unleash/strategy/remote_address"
 RSpec.describe Unleash::Strategy::RemoteAddress do
   describe '#is_enabled?' do
     let(:strategy) { Unleash::Strategy::RemoteAddress.new }
-    let(:unleash_context) { Unleash::Context.new(remote_address: '127.0.0.1') }
+    let(:unleash_context) { Unleash::Context.new({'remoteAddress' => '127.0.0.1'}) }
 
     it 'should be enabled with correct params' do
       expect(strategy.is_enabled?({'IPs' => '192.168.0.1,127.0.0.1,172.12.0.1'}, unleash_context)).to be_truthy

@@ -4,7 +4,7 @@ require "unleash/strategy/gradual_rollout_userid"
 RSpec.describe Unleash::Strategy::GradualRolloutUserId do
   describe '#is_enabled?' do
     let(:strategy) { Unleash::Strategy::GradualRolloutUserId.new }
-    let(:unleash_context) { Unleash::Context.new(user_id: 'alice') }
+    let(:unleash_context) { Unleash::Context.new({'userId' => 'alice'}) }
     let(:percentage) { Unleash::Strategy::Util.get_normalized_number(unleash_context.user_id, "") }
 
     it 'return true when percentage set is gt the number returned by the hash function' do

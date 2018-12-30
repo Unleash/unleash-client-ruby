@@ -11,8 +11,9 @@ Gem::Specification.new do |spec|
   spec.licenses      = ["Apache-2.0"]
 
   spec.summary       = %q{Unleash feature toggle client.}
-  spec.description   = %q{Unleash is a feature toggle system, that gives you a great overview
-    over all feature toggles across all your applications and services.}
+  spec.description   = %q{This is the ruby client for Unleash, a powerful feature toggle system
+    that gives you a great overview over all feature toggles across all your applications and services.}
+
   spec.homepage      = "https://github.com/unleash/unleash-client-ruby"
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|

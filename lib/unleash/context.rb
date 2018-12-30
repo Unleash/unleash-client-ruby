@@ -5,9 +5,9 @@ module Unleash
 
     def initialize(params = {})
       params_is_a_hash = params.is_a?(Hash)
-      self.user_id    = params_is_a_hash ? params.fetch(:user_id, '') : ''
-      self.session_id = params_is_a_hash ? params.fetch(:session_id, '') : ''
-      self.remote_address = params_is_a_hash ? params.fetch(:remote_address, '') : ''
+      self.user_id    = params_is_a_hash ? params.fetch('userId', '') : ''
+      self.session_id = params_is_a_hash ? params.fetch('sessionId', '') : ''
+      self.remote_address = params_is_a_hash ? params.fetch('remoteAddress', '') : ''
       self.properties = params_is_a_hash && params[:properties].is_a?(Hash) ? params.fetch(:properties, {}) : {}
     end
 

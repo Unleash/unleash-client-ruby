@@ -10,3 +10,6 @@
 
 # rspec failure tracking
 .rspec_status
+
+# Clone of the client-specification
+/client-specification/

@@ -5,10 +5,12 @@ module Unleash
     attr_accessor :name, :enabled, :strategies, :choices, :choices_lock
 
     def initialize(params={})
-      self.name = params['name'] || nil
-      self.enabled = params['enabled'] || false
+      params = {} if params.nil?
 
-      self.strategies = params['strategies']
+      self.name = params.fetch('name', nil)
+      self.enabled = params.fetch('enabled', false)
+
+      self.strategies = params.fetch('strategies', [])
         .select{|s| ( s.key?('name') && Unleash::STRATEGIES.key?(s['name'].to_sym) ) }
         .map{|s| ActivationStrategy.new(s['name'], s['parameters'])} || []
 
@@ -26,12 +28,12 @@ module Unleash
         context = nil
       end
 
-      result = self.enabled && self.strategies.select{ |s|
+      result = self.enabled && ( self.strategies.select{ |s|
         strategy = Unleash::STRATEGIES.fetch(s.name.to_sym, :unknown)
         r = strategy.is_enabled?(s.params, context)
         Unleash.logger.debug "Strategy #{s.name} returned #{r} with context: #{context}" #"for params #{s.params} "
         r
-      }.any?
+      }.any? || self.strategies.empty? )
       result ||= default_result
 
       Unleash.logger.debug "FeatureToggle (enabled:#{self.enabled} default_result:#{default_result} and Strategies combined returned #{result})"

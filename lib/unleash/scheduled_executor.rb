@@ -46,6 +46,7 @@ module Unleash
       if self.running?
         Unleash.logger.warn "thread #{name} will exit!"
         self.thread.exit
+        self.thread.join if self.running?
       end
     end
   end

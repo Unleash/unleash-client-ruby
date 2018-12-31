@@ -1,17 +1,18 @@
 module Unleash
 
   class ScheduledExecutor
-    attr_accessor :name, :interval, :max_exceptions, :retry_count
+    attr_accessor :name, :interval, :max_exceptions, :retry_count, :thread
 
     def initialize(name, interval, max_exceptions = 5)
       self.name = name || ''
       self.interval = interval
       self.max_exceptions = max_exceptions
       self.retry_count = 0
+      self.thread = nil
     end
 
     def run(&blk)
-      thread = Thread.new do
+      self.thread = Thread.new do
         Thread.current[:name] = self.name
 
         loop do
@@ -29,11 +30,22 @@ module Unleash
           end
 
           if self.retry_count > self.max_exceptions
-            Unleash.logger.info "thread #{name} retry_count (#{self.retry_count}) exceeded max_exceptions (#{self.max_exceptions}). Stopping with retries."
+            Unleash.logger.error "thread #{name} retry_count (#{self.retry_count}) exceeded max_exceptions (#{self.max_exceptions}). Stopping with retries."
             break
           end
         end
-        Unleash.logger.info "thread #{name} ended"
+        Unleash.logger.warn "thread #{name} loop ended"
+      end
+    end
+
+    def running?
+      self.thread.is_a?(Thread) && self.thread.alive?
+    end
+
+    def exit
+      if self.running?
+        Unleash.logger.warn "thread #{name} will exit!"
+        self.thread.exit
       end
     end
   end

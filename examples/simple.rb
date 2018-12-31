@@ -50,4 +50,12 @@ else
   puts "> #{feature_name} is not enabled"
 end
 
+puts "> shutting down client..."
+
+@unleash.shutdown
+
+sleep 1
+
 puts ">> END simple.rb"
+
+

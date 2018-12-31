@@ -52,14 +52,14 @@ Argument | Description | Required? |  Type |  Default Value|
 `instance_id` | Identifier for the running instance of program. Important so you can trace back to where metrics are being collected from. **Highly recommended be be set.** | N | String | random UUID |
 `refresh_interval` | How often the unleash client should check with the server for configuration changes. | N | Integer |  15 |
 `metrics_interval` | How often the unleash client should send metrics to server. | N | Integer | 10 |
-`disable_client` | Disables all communication with the Unleash server. If set, `is_enabled?` will always answer with the `default_value` and configuration validation is skipped. Defeats the entire purpose of using unleash, but can be useful in when running tests. | N | Boolean | F |
-`disable_metrics` | Disables sending metrics to Unleash server. | N | Boolean | F |
+`disable_client` | Disables all communication with the Unleash server. If set, `is_enabled?` will always answer with the `default_value` and configuration validation is skipped. Defeats the entire purpose of using unleash, but can be useful in when running tests. | N | Boolean | `false` |
+`disable_metrics` | Disables sending metrics to Unleash server. | N | Boolean | `false` |
 `custom_http_headers` | Custom headers to send to Unleash. | N | Hash | {} |
 `timeout` | How long to wait for the connection to be established or wait in reading state (open_timeout/read_timeout) | N | Integer | 30 |
 `retry_limit` | How many consecutive failures in connecting to the Unleash server are allowed before giving up. | N | Integer | 1 |
-`backup_file` | Filename to store the last known state from the Unleash server. Best to not change this from the default. | N | `Dir.tmpdir + "/unleash-#{app_name}-repo.json` |
-`logger` | Specify a custom `Logger` class to handle logs from the client. | N | `Logger.new(STDOUT)` |
-`log_level` | Change the log level for the `Logger` class. | N | `Logger::ERROR` |
+`backup_file` | Filename to store the last known state from the Unleash server. Best to not change this from the default. | N | String | `Dir.tmpdir + "/unleash-#{app_name}-repo.json` |
+`logger` | Specify a custom `Logger` class to handle logs from the client. | N | Class | `Logger.new(STDOUT)` |
+`log_level` | Change the log level for the `Logger` class. Constant from `Logger::Severity`. | N | Constant | `Logger::ERROR` |
 
 For in a more in depth look, please see `lib/unleash/configuration.rb`.
 

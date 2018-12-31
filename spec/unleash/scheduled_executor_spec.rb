@@ -12,7 +12,6 @@ RSpec.describe Unleash::ScheduledExecutor do
 
     expect(scheduled_executor.running?).to be true
     scheduled_executor.exit
-    scheduled_executor.thread.join
     expect(scheduled_executor.running?).to be false
   end
 end

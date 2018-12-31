@@ -1,5 +1,4 @@
 require 'unleash/configuration'
-require 'unleash/scheduled_executor'
 require 'net/http'
 require 'json'
 require 'thread'
@@ -24,9 +23,7 @@ module Unleash
         read!
       end
 
-      # once we have initialized, start the fetcher loop
-      scheduledExecutor = Unleash::ScheduledExecutor.new('ToggleFetcher', Unleash.configuration.refresh_interval)
-      scheduledExecutor.run { remote_toggles = fetch() }
+      # once initialized, somewhere else you will want to start a loop with fetch()
     end
 
     def toggles
@@ -38,7 +35,7 @@ module Unleash
     end
 
     # rename to refresh_from_server!  ??
-    # TODO: should simplify by moving uri / http initialization to class initialization
+    # TODO: should simplify by moving uri / http initialization elsewhere
     def fetch
       Unleash.logger.debug "fetch()"
       Unleash.logger.debug "ETag: #{self.etag}" unless self.etag.nil?
@@ -82,6 +79,27 @@ module Unleash
       save!
     end
 
+    def save!
+      begin
+        backup_file = Unleash.configuration.backup_file
+        backup_file_tmp = "#{backup_file}.tmp"
+
+        self.toggle_lock.synchronize do
+          file = File.open(backup_file_tmp, "w")
+          file.write(self.toggle_cache.to_json)
+          File.rename(backup_file_tmp, backup_file)
+        end
+
+      rescue Exception => e
+        # This is not really the end of the world. Swallowing the exception.
+        Unleash.logger.error "Unable to save backup file. Exception thrown #{e.class}:'#{e}'"
+        Unleash.logger.error "stacktrace: #{e.backtrace}"
+      ensure
+        file.close unless file.nil?
+        self.toggle_lock.unlock if self.toggle_lock.locked?
+      end
+    end
+
     private
 
     def synchronize_with_local_cache!(features)
@@ -102,29 +120,9 @@ module Unleash
       end
     end
 
-    def backup_file_exists?
-      File.exists?(backup_file)
-    end
-
-    def save!
-      begin
-        file = File.open(Unleash.configuration.backup_file, "w")
-
-        self.toggle_lock.synchronize do
-          file.write(self.toggle_cache.to_json)
-        end
-      rescue Exception => e
-        # This is not really the end of the world. Swallowing the exception.
-        Unleash.logger.error "Unable to save backup file. Exception thrown #{e.class}:'#{e}'"
-        Unleash.logger.error "stacktrace: #{e.backtrace}"
-      ensure
-        file.close unless file.nil?
-      end
-    end
-
     def read!
       Unleash.logger.debug "read!()"
-      return nil unless File.exists?(Unleash.configuration.backup_file)
+      return nil unless File.exist?(Unleash.configuration.backup_file)
 
       begin
         file = File.open(Unleash.configuration.backup_file, "r")

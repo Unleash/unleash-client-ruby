@@ -7,13 +7,10 @@ require 'time'
 module Unleash
 
   class MetricsReporter
-    attr_accessor :last_time, :client
+    attr_accessor :last_time
 
     def initialize
       self.last_time = Time.now
-    end
-
-    def build_hash
     end
 
     def generate_report

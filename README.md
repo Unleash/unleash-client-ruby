@@ -168,6 +168,16 @@ if UNLEASH.is_enabled? "AwesomeFeature", @unleash_context, true
 end
 ```
 
+#### Client methods
+
+Method Name | Description | Return Type |
+---------|-------------|-------------|
+`is_enabled?` | Check if feature toggle is to be enabled or not. | Boolean |
+`enabled?` | Alias to the `is_enabled?` method. But more ruby idiomatic. | Boolean |
+`shutdown` | Save metrics to disk, flush metrics to server, and then kill ToggleFetcher and MetricsReporter threads. A safe shutdown. Not really useful in long running applications, like web applications. | nil |
+`shutdown!` | Kill ToggleFetcher and MetricsReporter threads immediately. | nil |
+
+
 ## Local test client
 
 ```

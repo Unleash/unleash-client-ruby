@@ -1,6 +1,7 @@
 require 'unleash/configuration'
 require 'unleash/toggle_fetcher'
 require 'unleash/metrics_reporter'
+require 'unleash/scheduled_executor'
 require 'unleash/feature_toggle'
 require 'logger'
 require 'time'
@@ -8,6 +9,8 @@ require 'time'
 module Unleash
 
   class Client
+    attr_accessor :fetcher_scheduled_executor, :metrics_scheduled_executor
+
     def initialize(*opts)
       Unleash.configuration ||= Unleash::Configuration.new(*opts)
       Unleash.configuration.validate!
@@ -17,13 +20,19 @@ module Unleash
 
       unless Unleash.configuration.disable_client
         Unleash.toggle_fetcher = Unleash::ToggleFetcher.new
+
         register
+
+        self.fetcher_scheduled_executor = Unleash::ScheduledExecutor.new('ToggleFetcher', Unleash.configuration.refresh_interval)
+        self.fetcher_scheduled_executor.run do
+          Unleash.toggle_fetcher.fetch
+        end
 
         unless Unleash.configuration.disable_metrics
           Unleash.toggle_metrics = Unleash::Metrics.new
           Unleash.reporter = Unleash::MetricsReporter.new
-          scheduledExecutor = Unleash::ScheduledExecutor.new('MetricsReporter', Unleash.configuration.metrics_interval)
-          scheduledExecutor.run do
+          self.metrics_scheduled_executor = Unleash::ScheduledExecutor.new('MetricsReporter', Unleash.configuration.metrics_interval)
+          self.metrics_scheduled_executor.run do
             Unleash.reporter.send
           end
         end
@@ -51,6 +60,27 @@ module Unleash
         toggle_result = toggle.is_enabled?(context, default_value)
 
         return toggle_result
+    end
+
+    # enabled? is a more ruby idiomatic method name than is_enabled?
+    alias_method :enabled?, :is_enabled?
+
+
+    # safe shutdown: also flush metrics to server and toggles to disk
+    def shutdown
+      unless Unleash.configuration.disable_client
+        Unleash.toggle_fetcher.save!
+        Unleash.reporter.send unless Unleash.configuration.disable_metrics
+        shutdown!
+      end
+    end
+
+    # quick shutdown: just kill running threads
+    def shutdown!
+      unless Unleash.configuration.disable_client
+        self.fetcher_scheduled_executor.exit
+        self.metrics_scheduled_executor.exit unless Unleash.configuration.disable_metrics
+      end
     end
 
     private

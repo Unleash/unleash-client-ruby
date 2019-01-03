@@ -1,10 +1,6 @@
 require "spec_helper"
 
-RSpec.describe Unleash do
-  it "has a version number" do
-    expect(Unleash::VERSION).not_to be nil
-  end
-
+RSpec.describe Unleash::Client do
   it "Uses custom http headers when initializing client" do
     WebMock.stub_request(:post, "http://test-url//client/register")
       .with(
@@ -80,17 +76,6 @@ RSpec.describe Unleash do
         })
       .to_return(status: 200, body: "", headers: {})
 
-    WebMock.stub_request(:post, "http://test-url//client/features")
-      .with(
-        headers: {
-        'Accept'=>'*/*',
-        'Content-Type'=>'application/json',
-        'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-        'User-Agent'=>'Ruby',
-        'X-Api-Key'=>'123'
-        })
-      .to_return(status: 200, body: '{"version": 1, "features": []}', headers: {})
-
     Unleash.configure do |config|
       config.url      = 'http://test-url/'
       config.app_name = 'my-test-app'
@@ -109,9 +94,46 @@ RSpec.describe Unleash do
     expect(
       unleash_client.is_enabled?('any_feature', {}, true)
     ).to eq(true)
+
+    expect(WebMock).not_to have_requested(:get, 'http://test-url/')
+    expect(WebMock).to have_requested(:get, 'http://test-url//client/features')
+    expect(WebMock).to have_requested(:post, 'http://test-url//client/register')
+    expect(WebMock).not_to have_requested(:post, 'http://test-url//client/metrics')
   end
 
-  it "does something useful" do
-    expect(false).to eq(false)
+
+  it "should return default results if running with disable_client" do
+    Unleash.configure do |config|
+      config.disable_client = true
+    end
+    unleash_client = Unleash::Client.new
+
+    expect(
+      unleash_client.is_enabled?('any_feature', {}, true)
+    ).to eq(true)
+
+    expect(
+      unleash_client.is_enabled?('any_feature2', {}, false)
+    ).to eq(false)
+  end
+
+  it "should not connect anywhere if running with disable_client" do
+    Unleash.configure do |config|
+      config.disable_client = true
+      config.url      = 'http://test-url/'
+      config.custom_http_headers = 'invalid_string'
+    end
+
+    unleash_client = Unleash::Client.new
+
+    expect(
+      unleash_client.is_enabled?('any_feature', {}, true)
+    ).to eq(true)
+
+    expect(WebMock).not_to have_requested(:get, 'http://test-url/')
+    expect(WebMock).not_to have_requested(:get, 'http://test-url//client/features')
+    expect(WebMock).not_to have_requested(:post, 'http://test-url//client/features')
+    expect(WebMock).not_to have_requested(:post, 'http://test-url//client/register')
+    expect(WebMock).not_to have_requested(:post, 'http://test-url//client/metrics')
   end
 end

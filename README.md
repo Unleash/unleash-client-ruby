@@ -52,6 +52,7 @@ Argument | Description | Required? |  Type |  Default Value|
 `instance_id` | Identifier for the running instance of program. Important so you can trace back to where metrics are being collected from. **Highly recommended be be set.** | N | String | random UUID |
 `refresh_interval` | How often the unleash client should check with the server for configuration changes. | N | Integer |  15 |
 `metrics_interval` | How often the unleash client should send metrics to server. | N | Integer | 10 |
+`disable_client` | Disables all communication with the Unleash server. Defeats the entire purpose of using unleash, but can be useful in when running tests. | N | Boolean | F |
 `disable_metrics` | Disables sending metrics to Unleash server. | N | Boolean | F |
 `custom_http_headers` | Custom headers to send to Unleash. | N | Hash | {} |
 `timeout` | How long to wait for the connection to be established or wait in reading state (open_timeout/read_timeout) | N | Integer | 30 |

@@ -25,16 +25,15 @@ Or install it yourself as:
 
 ## Configure
 
-It is **required** to configure the `url` of the unleash server. Please substitute the sample `'http://unleash.herokuapp.com/api'` for the url of your own instance.
+It is **required** to configure the `url` of the unleash server and `app_name` with the name of the runninng application. Please substitute the sample `'http://unleash.herokuapp.com/api'` for the url of your own instance.
 
-It is **highly recommended** to configure `app_name` and the `instance_id`.
+It is **highly recommended** to configure the `instance_id` parameter as well.
 
-For other options please see `lib/unleash/configuration.rb`.
 
 ```ruby
 Unleash.configure do |config|
-  config.url      = 'http://unleash.herokuapp.com/api'
-  config.app_name = 'my_ruby_app'
+  config.url         = 'http://unleash.herokuapp.com/api'
+  config.app_name    = 'my_ruby_app'
 end
 ```
 
@@ -43,6 +42,26 @@ or instantiate the client with the valid configuration:
 ```ruby
 UNLEASH = Unleash::Client.new(url: 'http://unleash.herokuapp.com/api', app_name: 'my_ruby_app')
 ```
+
+#### List of Arguments
+
+Argument | Description | Required? |  Type |  Default Value|
+---------|-------------|-----------|-------|---------------|
+`url`      | Unleash server URL. | Y | String | N/A |
+`app_name` | Name of your program. | Y | String | N/A |
+`instance_id` | Identifier for the running instance of program. Important so you can trace back to where metrics are being collected from. **Highly recommended be be set.** | N | String | random UUID |
+`refresh_interval` | How often the unleash client should check with the server for configuration changes. | N | Integer |  15 |
+`metrics_interval` | How often the unleash client should send metrics to server. | N | Integer | 10 |
+`disable_metrics` | Disables sending metrics to Unleash server. | N | Boolean | F |
+`custom_http_headers` | Custom headers to send to Unleash. | N | Hash | {} |
+`timeout` | How long to wait for the connection to be established or wait in reading state (open_timeout/read_timeout) | N | Integer | 30 |
+`retry_limit` | How many consecutive failures in connecting to the Unleash server are allowed before giving up. | N | Integer | 1 |
+`backup_file` | Filename to store the last known state from the Unleash server. Best to not change this from the default. | N | `Dir.tmpdir + "/unleash-#{app_name}-repo.json` |
+`logger` | Specify a custom `Logger` class to handle logs from the client. | N | `Logger.new(STDOUT)` |
+`log_level` | Change the log level for the `Logger` class. | N | `Logger::ERROR` |
+
+For in a more in depth look, please see `lib/unleash/configuration.rb`.
+
 
 ## Usage in a plain Ruby Application
 
@@ -155,7 +174,7 @@ This client comes with the all the required strategies out of the box:
  * GradualRolloutSessionIdStrategy
  * GradualRolloutUserIdStrategy
  * RemoteAddressStrategy
- * UnknowndStrategy
+ * UnknownStrategy
  * UserWithIdStrategy
 
 
@@ -165,7 +184,7 @@ After checking out the repo, run `bin/setup` to install dependencies. Then, run 
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
-See (TODO.md) for known limitations, and feature roadmap.
+See [TODO.md](TODO.md) for known limitations, and feature roadmap.
 
 
 ## Contributing

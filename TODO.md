@@ -6,13 +6,10 @@ The Ruby client should be pretty stable now. But no warranty is given, and some 
 
 Implement:
 ----------
- * Possibility for custom HTTP headers when interacting with unleash server.
+ * Document writing of custom strategies.
 
 To test: (and write tests for)
 --------
- * Implement spec test for ruby client specs using https://github.com/Unleash/client-specification/blob/master/05-gradual-rollout-random-strategy.json (similar to the examples below) to ensure consistent client behaviour.
-   * java: https://github.com/Unleash/unleash-client-java/compare/master...integration-spec
-   * node: https://github.com/Unleash/unleash-client-node/compare/client-specification?expand=1
  * MetricsReporter
  * everything else :)
 
@@ -34,4 +31,7 @@ DONE:
  * Switch hashing function to use murmurhash3 as per https://github.com/Unleash/unleash/issues/247
  * Document usage with Rails
  * Support for allowing custom strategies.
-
+ * Possibility for custom HTTP headers when interacting with unleash server.
+ * Implement spec test for ruby client specs using https://github.com/Unleash/client-specification/blob/master/05-gradual-rollout-random-strategy.json (similar to the examples below) to ensure consistent client behaviour.
+   * java: https://github.com/Unleash/unleash-client-java/compare/master...integration-spec
+   * node: https://github.com/Unleash/unleash-client-node/compare/client-specification?expand=1

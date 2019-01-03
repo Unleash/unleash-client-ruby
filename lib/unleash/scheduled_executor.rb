@@ -28,8 +28,12 @@ module Unleash
             Unleash.logger.error "stacktrace: #{e.backtrace}"
           end
 
-          break if self.retry_count > self.max_exceptions
+          if self.retry_count > self.max_exceptions
+            Unleash.logger.info "thread #{name} retry_count (#{self.retry_count}) exceeded max_exceptions (#{self.max_exceptions}). Stopping with retries."
+            break
+          end
         end
+        Unleash.logger.info "thread #{name} ended"
       end
     end
   end

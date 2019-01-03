@@ -15,21 +15,25 @@ module Unleash
       Unleash.logger = Unleash.configuration.logger
       Unleash.logger.level = Unleash.configuration.log_level
 
-      Unleash.toggle_fetcher = Unleash::ToggleFetcher.new
-      register
+      unless Unleash.configuration.disable_client
+        Unleash.toggle_fetcher = Unleash::ToggleFetcher.new
+        register
 
-      unless Unleash.configuration.disable_metrics
-        Unleash.toggle_metrics = Unleash::Metrics.new
-        Unleash.reporter = Unleash::MetricsReporter.new
-        scheduledExecutor = Unleash::ScheduledExecutor.new('MetricsReporter', Unleash.configuration.metrics_interval)
-        scheduledExecutor.run do
-          Unleash.reporter.send
+        unless Unleash.configuration.disable_metrics
+          Unleash.toggle_metrics = Unleash::Metrics.new
+          Unleash.reporter = Unleash::MetricsReporter.new
+          scheduledExecutor = Unleash::ScheduledExecutor.new('MetricsReporter', Unleash.configuration.metrics_interval)
+          scheduledExecutor.run do
+            Unleash.reporter.send
+          end
         end
       end
     end
 
     def is_enabled?(feature, context = nil, default_value = false)
         Unleash.logger.debug "Unleash::Client.is_enabled? feature: #{feature} with context #{context}"
+
+        return default_value if Unleash.configuration.disable_client
 
         toggle_as_hash = Unleash.toggles.select{ |toggle| toggle['name'] == feature }.first if Unleash.toggles
 

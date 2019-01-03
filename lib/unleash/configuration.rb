@@ -5,6 +5,7 @@ module Unleash
   class Configuration
     attr_accessor :url, :app_name, :instance_id,
       :custom_http_headers,
+      :disable_client,
       :disable_metrics, :timeout, :retry_limit,
       :refresh_interval, :metrics_interval,
       :backup_file, :logger, :log_level
@@ -19,6 +20,7 @@ module Unleash
       else
         raise ArgumentError, "custom_http_headers must be a hash."
       end
+      self.disable_client   = opts[:disable_client]  || false
       self.disable_metrics  = opts[:disable_metrics]  || false
       self.refresh_interval = opts[:refresh_interval] || 15
       self.metrics_interval = opts[:metrics_interval] || 10
@@ -47,6 +49,8 @@ module Unleash
     end
 
     def validate!
+      return if self.disable_client
+
       if self.app_name.nil? or self.url.nil?
         raise ArgumentError, "URL and app_name are required parameters."
       end

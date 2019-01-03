@@ -37,6 +37,11 @@ RSpec.describe Unleash do
       expect{ config.validate! }.not_to raise_error
     end
 
+    it "should be lenient if disable_client is true" do
+      config = Unleash::Configuration.new(disable_client: true)
+      expect{ config.validate! }.not_to raise_error
+    end
+
     it "support yield for setting the configuration" do
       Unleash.configure do |config|
         config.url      = 'http://test-url/'

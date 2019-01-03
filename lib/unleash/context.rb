@@ -26,12 +26,14 @@ module Unleash
     # key names as in the other clients.
     def fetch(params, camelcase_key, default_ret = '')
       return default_ret unless params.is_a?(Hash)
-      return params.fetch(camelcase_key, nil) || params.fetch(snakesym(camelcase_key), nil) || default_ret
+      return default_ret unless camelcase_key.is_a?(String) or camelcase_key.is_a?(Symbol)
+
+      params.fetch(camelcase_key, nil) || params.fetch(snake_sym(camelcase_key), nil) || default_ret
     end
 
-    # transform CamelCase to snake_case and make it a sym
-    def snakesym(key)
-      key.dup.gsub(/(.)([A-Z])/,'\1_\2').downcase.to_sym
+    # transform CamelCase to snake_case and make it a sym, if it is a string
+    def snake_sym(key)
+      key.is_a?(String) ? key.gsub(/(.)([A-Z])/,'\1_\2').downcase.to_sym  : key
     end
   end
 end

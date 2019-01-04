@@ -20,7 +20,7 @@ module Unleash
       else
         raise ArgumentError, "custom_http_headers must be a hash."
       end
-      self.disable_client   = opts[:disable_client]  || false
+      self.disable_client   = opts[:disable_client]   || false
       self.disable_metrics  = opts[:disable_metrics]  || false
       self.refresh_interval = opts[:refresh_interval] || 15
       self.metrics_interval = opts[:metrics_interval] || 10
@@ -30,7 +30,7 @@ module Unleash
       self.backup_file   = opts[:backup_file] || nil
 
       self.logger    = opts[:logger] || Logger.new(STDOUT)
-      self.log_level = opts[:log_level] || Logger::ERROR
+      self.log_level = opts[:log_level] || Logger::WARN
 
 
       if opts[:logger].nil?

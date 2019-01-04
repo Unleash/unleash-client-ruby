@@ -52,7 +52,7 @@ Argument | Description | Required? |  Type |  Default Value|
 `instance_id` | Identifier for the running instance of program. Important so you can trace back to where metrics are being collected from. **Highly recommended be be set.** | N | String | random UUID |
 `refresh_interval` | How often the unleash client should check with the server for configuration changes. | N | Integer |  15 |
 `metrics_interval` | How often the unleash client should send metrics to server. | N | Integer | 10 |
-`disable_client` | Disables all communication with the Unleash server. Defeats the entire purpose of using unleash, but can be useful in when running tests. | N | Boolean | F |
+`disable_client` | Disables all communication with the Unleash server. If set, `is_enabled?` will always answer with the `default_value` and configuration validation is skipped. Defeats the entire purpose of using unleash, but can be useful in when running tests. | N | Boolean | F |
 `disable_metrics` | Disables sending metrics to Unleash server. | N | Boolean | F |
 `custom_http_headers` | Custom headers to send to Unleash. | N | Hash | {} |
 `timeout` | How long to wait for the connection to be established or wait in reading state (open_timeout/read_timeout) | N | Integer | 30 |
@@ -94,6 +94,7 @@ Unleash.configure do |config|
   config.url      = 'http://unleash.herokuapp.com/api'
   config.app_name = Rails.application.class.parent.to_s
   # config.instance_id = "#{Socket.gethostname}"
+  config.logger   = Rails.logger
 end
 
 UNLEASH = Unleash::Client.new
@@ -156,6 +157,14 @@ or if client is set in `Rails.configuration.unleash`:
 ```ruby
 if Rails.configuration.unleash.is_enabled? "AwesomeFeature", @unleash_context
   puts "AwesomeFeature is enabled"
+end
+```
+
+If the feature is not found in the server, it will by default return false. However you can override that by setting the default return value to `true`:
+
+```ruby
+if UNLEASH.is_enabled? "AwesomeFeature", @unleash_context, true
+  puts "AwesomeFeature is enabled by default"
 end
 ```
 

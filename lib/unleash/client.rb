@@ -27,13 +27,18 @@ module Unleash
             Unleash.reporter.send
           end
         end
+      else
+        Unleash.logger.warn "Unleash::Client is disabled! Will only return default results!"
       end
     end
 
     def is_enabled?(feature, context = nil, default_value = false)
         Unleash.logger.debug "Unleash::Client.is_enabled? feature: #{feature} with context #{context}"
 
-        return default_value if Unleash.configuration.disable_client
+        if Unleash.configuration.disable_client
+          Unleash.logger.warn "unleash_client is disabled! Always returning #{default_value} for feature #{feature}!"
+          return default_value
+        end
 
         toggle_as_hash = Unleash.toggles.select{ |toggle| toggle['name'] == feature }.first if Unleash.toggles
 

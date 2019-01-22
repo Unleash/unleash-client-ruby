@@ -181,6 +181,10 @@ Method Name | Description | Return Type |
 ## Local test client
 
 ```
+# cli unleash client:
+bundle exec bin/unleash-client --help
+
+# or a simple sample implementation (with values hardcoded):
 bundle exec examples/simple.rb
 ```
 

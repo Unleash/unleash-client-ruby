@@ -1,0 +1,80 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require 'unleash'
+require 'unleash/client'
+require 'unleash/context'
+
+options = {
+  verbose: false,
+  url: 'http://localhost:4242',
+  demo: false,
+  sleep: 0.1,
+}
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: #{__FILE__} [options] feature [key1=val1] [key2=val2]"
+
+  opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
+    options[:verbose] = v
+  end
+
+  opts.on("-uURL", "--url=URL", "URL base for the Unleash feature toggle service") do |u|
+    options[:url] = u
+  end
+
+  opts.on("-d", "--demo", "Demo load by looping, instead of a simple lookup") do |d|
+    options[:demo] = d
+  end
+
+  opts.on("-sSLEEP", "--sleep=SLEEP", Float, "Sleep interval between checks (seconds) in demo") do |s|
+    options[:sleep] = s
+  end
+
+  opts.on("-h", "--help", "Prints this help") do
+    puts opts
+    exit
+  end
+end.parse!
+
+feature_name = ARGV.shift
+raise 'feature_name is required. see --help for usage.' unless feature_name
+
+
+@unleash = Unleash::Client.new(
+  url: options[:url],
+  app_name: 'unleash-client-ruby-cli',
+  log_level: options[:verbose] ? Logger::DEBUG : Logger::WARN,
+)
+
+context_params = ARGV.map{ |e| e.split("=")}.map{|k,v| [k.to_sym, v]}.to_h
+context_properties = context_params.reject{ |k,v| [:user_id, :session_id, :remote_address].include? k }
+context_params.select!{ |k,v| [:user_id, :session_id, :remote_address].include? k }
+context_params.merge!({properties: context_properties}) unless context_properties.nil?
+unleash_context = Unleash::Context.new(context_params)
+
+if options[:verbose]
+  puts "Running configuration:"
+  p options
+  puts "feature: #{feature_name}"
+  puts "context_args: #{ARGV}"
+  puts "context_params: #{context_params}"
+  puts "context: #{unleash_context}"
+  puts ""
+end
+
+if options[:demo]
+  loop do
+    enabled = @unleash.is_enabled?(feature_name, unleash_context)
+    print enabled ? '.' : '|'
+    sleep options[:sleep]
+  end
+else
+  if @unleash.is_enabled?(feature_name, unleash_context)
+    puts " \'#{feature_name}\' is enabled according to unleash"
+  else
+    puts " \'#{feature_name}\' is disabled according to unleash"
+  end
+end
+
+@unleash.shutdown

@@ -12,7 +12,7 @@ module Unleash
 
       self.strategies = params.fetch('strategies', [])
         .select{|s| ( s.key?('name') && Unleash::STRATEGIES.key?(s['name'].to_sym) ) }
-        .map{|s| ActivationStrategy.new(s['name'], s['parameters'])} || []
+        .map{|s| ActivationStrategy.new(s['name'], s.fetch('parameters', {}))} || []
 
       # Unleash.logger.debug "FeatureToggle params: #{params}"
       # Unleash.logger.debug "strategies: #{self.strategies}"

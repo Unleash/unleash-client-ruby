@@ -65,6 +65,39 @@ module Unleash
     # enabled? is a more ruby idiomatic method name than is_enabled?
     alias_method :enabled?, :is_enabled?
 
+    # execute a code block (passed as a parameter), if is_enabled? is true.
+    def if_enabled(feature, context = nil, default_value = false, &blk)
+      yield if is_enabled?(feature, context, default_value)
+    end
+
+
+    def get_variant(feature, context = nil, fallback_variant = false)
+      Unleash.logger.debug "Unleash::Client.get_variant for feature: #{feature} with context #{context}"
+
+      if Unleash.configuration.disable_client
+        Unleash.logger.warn "unleash_client is disabled! Always returning #{default_variant} for feature #{feature}!"
+        return fallback_variant || Unleash::FeatureToggle.disabled_variant
+      end
+
+      toggle_as_hash = Unleash.toggles.select{ |toggle| toggle['name'] == feature }.first if Unleash.toggles
+
+      if toggle_as_hash.nil?
+        Unleash.logger.debug "Unleash::Client.is_enabled? feature: #{feature} not found"
+        return fallback_variant || Unleash::FeatureToggle.disabled_variant
+      end
+
+      toggle = Unleash::FeatureToggle.new(toggle_as_hash)
+      variant = toggle.get_variant(context, fallback_variant)
+
+      if variant.nil?
+        Unleash.logger.debug "Unleash::Client.get_variant variants for feature: #{feature} not found"
+        return fallback_variant || Unleash::FeatureToggle.disabled_variant
+      end
+
+      # TODO: Add to README: name, payload, enabled (bool)
+
+      return variant
+    end
 
     # safe shutdown: also flush metrics to server and toggles to disk
     def shutdown

@@ -2,10 +2,19 @@
 
 [![Build Status](https://travis-ci.org/Unleash/unleash-client-ruby.svg?branch=master)](https://travis-ci.org/Unleash/unleash-client-ruby)
 [![Coverage Status](https://coveralls.io/repos/github/Unleash/unleash-client-ruby/badge.svg?branch=master)](https://coveralls.io/github/Unleash/unleash-client-ruby?branch=master)
+[![Gem Version](https://badge.fury.io/rb/unleash.svg)](https://badge.fury.io/rb/unleash)
 
 Unleash client so you can roll out your features with confidence.
 
 Leverage the [Unleash Server](https://github.com/Unleash/unleash) for powerful feature toggling in your ruby/rails applications.
+
+## Supported Ruby Interpreters
+
+  * MRI 2.3
+  * MRI 2.4
+  * MRI 2.5
+  * MRI 2.6
+  * jruby
 
 ## Installation
 
@@ -52,7 +61,7 @@ Argument | Description | Required? |  Type |  Default Value|
 `instance_id` | Identifier for the running instance of program. Important so you can trace back to where metrics are being collected from. **Highly recommended be be set.** | N | String | random UUID |
 `refresh_interval` | How often the unleash client should check with the server for configuration changes. | N | Integer |  15 |
 `metrics_interval` | How often the unleash client should send metrics to server. | N | Integer | 10 |
-`disable_client` | Disables all communication with the Unleash server. If set, `is_enabled?` will always answer with the `default_value` and configuration validation is skipped. Defeats the entire purpose of using unleash, but can be useful in when running tests. | N | Boolean | `false` |
+`disable_client` | Disables all communication with the Unleash server, effectively taking it *offline*. If set, `is_enabled?` will always answer with the `default_value` and configuration validation is skipped. Defeats the entire purpose of using unleash, but can be useful in when running tests. | N | Boolean | `false` |
 `disable_metrics` | Disables sending metrics to Unleash server. | N | Boolean | `false` |
 `custom_http_headers` | Custom headers to send to Unleash. | N | Hash | {} |
 `timeout` | How long to wait for the connection to be established or wait in reading state (open_timeout/read_timeout) | N | Integer | 30 |
@@ -168,12 +177,34 @@ if UNLEASH.is_enabled? "AwesomeFeature", @unleash_context, true
 end
 ```
 
+Alternatively by using `if_enabled` you can send a code block to be executed as a parameter:
+
+```ruby
+UNLEASH.if_enabled "AwesomeFeature", @unleash_context, true do
+  puts "AwesomeFeature is enabled by default"
+end
+```
+
+##### Variations
+
+If no variant is found in the server, use the fallback variant.
+
+```ruby
+fallback_variant = Unleash::Variant.new(name: 'default', enabled: true, payload: {"color" => "blue"})
+variant = UNLEASH.get_variant "ColorVariants", @unleash_context, fallback_variant
+
+puts "variant color is: #{variant.payload.fetch('color')}"
+```
+
+
 #### Client methods
 
 Method Name | Description | Return Type |
 ---------|-------------|-------------|
 `is_enabled?` | Check if feature toggle is to be enabled or not. | Boolean |
 `enabled?` | Alias to the `is_enabled?` method. But more ruby idiomatic. | Boolean |
+`if_enabled` | Run a code block, if a feature is enabled. | `yield` |
+`get_variant` | Get variant for a given feature | `Unleash::Variant` |
 `shutdown` | Save metrics to disk, flush metrics to server, and then kill ToggleFetcher and MetricsReporter threads. A safe shutdown. Not really useful in long running applications, like web applications. | nil |
 `shutdown!` | Kill ToggleFetcher and MetricsReporter threads immediately. | nil |
 

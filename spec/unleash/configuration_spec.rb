@@ -94,15 +94,15 @@ RSpec.describe Unleash do
     end
 
     it "should not accept invalid custom_http_headers via new client" do
-      WebMock.stub_request(:post, "http://test-url//client/register").
-        with(
+      WebMock.stub_request(:post, "http://test-url//client/register")
+        .with(
           headers: {
           'Accept'=>'*/*',
           'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
           'Content-Type'=>'application/json',
           'User-Agent'=>'Ruby'
-          }).
-        to_return(status: 200, body: "", headers: {})
+          })
+        .to_return(status: 200, body: "", headers: {})
 
       expect{ Unleash::Client.new(
         url: 'https://testurl/api',

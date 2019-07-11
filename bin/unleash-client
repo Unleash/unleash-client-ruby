@@ -6,17 +6,28 @@ require 'unleash/client'
 require 'unleash/context'
 
 options = {
+  variant: false,
   verbose: false,
+  quiet: false,
   url: 'http://localhost:4242',
   demo: false,
+  disable_metrics: true,
   sleep: 0.1,
 }
 
 OptionParser.new do |opts|
   opts.banner = "Usage: #{__FILE__} [options] feature [key1=val1] [key2=val2]"
 
+  opts.on("-V", "--variant", "Fetch variant for feature") do |v|
+    options[:variant] = v
+  end
+
   opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
     options[:verbose] = v
+  end
+
+  opts.on("-q", "--quiet", "Quiet mode, minimum output only") do |v|
+    options[:quiet] = v
   end
 
   opts.on("-uURL", "--url=URL", "URL base for the Unleash feature toggle service") do |u|
@@ -25,6 +36,10 @@ OptionParser.new do |opts|
 
   opts.on("-d", "--demo", "Demo load by looping, instead of a simple lookup") do |d|
     options[:demo] = d
+  end
+
+  opts.on("-m", "--[no-]metrics", "Enable metrics reporting") do |m|
+    options[:disable_metrics] = !m
   end
 
   opts.on("-sSLEEP", "--sleep=SLEEP", Float, "Sleep interval between checks (seconds) in demo") do |s|
@@ -40,17 +55,19 @@ end.parse!
 feature_name = ARGV.shift
 raise 'feature_name is required. see --help for usage.' unless feature_name
 
+options[:verbose] = false if options[:quiet]
 
 @unleash = Unleash::Client.new(
   url: options[:url],
   app_name: 'unleash-client-ruby-cli',
-  log_level: options[:verbose] ? Logger::DEBUG : Logger::WARN,
+  disable_metrics: options[:metrics],
+  log_level: log_level = options[:quiet] ? Logger::ERROR : (options[:verbose] ? Logger::DEBUG : Logger::WARN),
 )
 
-context_params = ARGV.map{ |e| e.split("=")}.map{|k,v| [k.to_sym, v]}.to_h
+context_params = ARGV.map{ |e| e.split("=") }.map{ |k,v| [k.to_sym, v] }.to_h
 context_properties = context_params.reject{ |k,v| [:user_id, :session_id, :remote_address].include? k }
 context_params.select!{ |k,v| [:user_id, :session_id, :remote_address].include? k }
-context_params.merge!({properties: context_properties}) unless context_properties.nil?
+context_params.merge!( properties: context_properties ) unless context_properties.nil?
 unleash_context = Unleash::Context.new(context_params)
 
 if options[:verbose]
@@ -63,6 +80,8 @@ if options[:verbose]
   puts ""
 end
 
+
+
 if options[:demo]
   loop do
     enabled = @unleash.is_enabled?(feature_name, unleash_context)
@@ -70,11 +89,17 @@ if options[:demo]
     sleep options[:sleep]
   end
 else
-  if @unleash.is_enabled?(feature_name, unleash_context)
-    puts " \'#{feature_name}\' is enabled according to unleash"
+  if options[:variant]
+    variant = @unleash.get_variant(feature_name, unleash_context)
+    puts " For feature \'#{feature_name}\' got variant \'#{variant}\'"
   else
-    puts " \'#{feature_name}\' is disabled according to unleash"
+    if @unleash.is_enabled?(feature_name, unleash_context)
+      puts " \'#{feature_name}\' is enabled according to unleash"
+    else
+      puts " \'#{feature_name}\' is disabled according to unleash"
+    end
   end
 end
+
 
 @unleash.shutdown

@@ -51,13 +51,8 @@ module Unleash
     def validate!
       return if self.disable_client
 
-      if self.app_name.nil? or self.url.nil?
-        raise ArgumentError, "URL and app_name are required parameters."
-      end
-
-      if ! self.custom_http_headers.is_a?(Hash)
-        raise ArgumentError, "custom_http_headers must be a hash."
-      end
+      raise ArgumentError, "URL and app_name are required parameters." if self.app_name.nil? or self.url.nil?
+      raise ArgumentError, "custom_http_headers must be a hash." unless self.custom_http_headers.is_a?(Hash)
     end
 
     def refresh_backup_file!

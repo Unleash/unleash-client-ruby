@@ -1,13 +1,15 @@
 require 'spec_helper'
-require 'unleash/configuration'
-require 'unleash/client'
 require 'unleash'
+require 'unleash/client'
+require 'unleash/configuration'
+require 'unleash/variant'
 
 RSpec.describe Unleash::Client do
   # load client spec
   SPECIFICATION_PATH = 'client-specification/specifications'.freeze
 
   DEFAULT_RESULT = false
+  DEFAULT_VARIANT = Unleash::Variant.new(name: 'unknown', enabled: false).freeze
 
   before do
     Unleash.configuration = Unleash::Configuration.new
@@ -30,6 +32,7 @@ RSpec.describe Unleash::Client do
           state = current_test_set.fetch('state', {})
           state_features = state.fetch('features', [])
 
+
           let(:unleash_toggles) { state_features }
 
           tests.each do |test|
@@ -44,6 +47,22 @@ RSpec.describe Unleash::Client do
               expect(toggle_result).to eq(test['expectedResult'])
             end
           end
+
+
+          variant_tests = current_test_set.fetch('variantTests', [])
+          variant_tests.each do |test|
+            it "test that #{test['description']}" do
+              test_toggle = unleash_toggles.select{ |t| t.fetch('name', '') == test.fetch('toggleName') }.first
+
+              toggle = Unleash::FeatureToggle.new(test_toggle)
+              context = Unleash::Context.new(test['context'])
+
+              variant = toggle.get_variant(context, DEFAULT_VARIANT)
+
+              expect(variant).to eq(Unleash::Variant.new(test['expectedResult']))
+            end
+          end
+
         end
       end
     end

@@ -2,6 +2,7 @@ require 'spec_helper'
 
 RSpec.describe Unleash::Context do
   context 'parameters correctly assigned in initialization'
+
   it "when using snake_case" do
     params = {
       user_id: '123',
@@ -17,6 +18,7 @@ RSpec.describe Unleash::Context do
     expect(context.remote_address).to eq('127.0.0.2')
     expect(context.properties).to eq({fancy: 'polarbear'})
   end
+
   it "when using camelCase" do
     params = {
       'userId' => '123',
@@ -32,6 +34,7 @@ RSpec.describe Unleash::Context do
     expect(context.remote_address).to eq('127.0.0.2')
     expect(context.properties).to eq({fancy: 'polarbear'})
   end
+
   it "fails with non hash properties" do
     params = {
       'properties' => [1,2,3]

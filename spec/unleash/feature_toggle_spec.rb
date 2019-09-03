@@ -26,8 +26,116 @@ RSpec.describe Unleash::FeatureToggle do
       variants: nil
       ) }
 
-    it 'should return true' do
+    it 'should return true if default is true' do
       context = Unleash::Context.new(user_id: 1)
+      expect(feature_toggle.is_enabled?(context, true)).to be_truthy
+    end
+
+    it 'should return false if default is false' do
+      context = Unleash::Context.new(user_id: 1)
+      expect(feature_toggle.is_enabled?(context, false)).to be_falsey
+    end
+  end
+
+  describe 'FeatureToggle with empty strategies and disabled toggle' do
+    let(:feature_toggle) { Unleash::FeatureToggle.new(
+      JSON.parse('{
+          "name": "Test.userid",
+          "description": null,
+          "enabled": false,
+          "strategies": [],
+          "variants": [],
+          "createdAt": "2019-01-24T10:41:45.236Z"
+        }')
+      ) }
+
+    it 'should return false if disabled and default is false' do
+      context = Unleash::Context.new(user_id: 1)
+      expect(feature_toggle.is_enabled?(context, false)).to be_falsey
+    end
+
+    it 'should return true if disabled and default is true' do
+      context = Unleash::Context.new(user_id: 1)
+      expect(feature_toggle.is_enabled?(context, true)).to be_truthy
+    end
+  end
+
+  describe 'FeatureToggle with userId strategy and enabled toggle' do
+    let(:feature_toggle) { Unleash::FeatureToggle.new(
+      JSON.parse('{
+          "name": "Test.userid",
+          "description": null,
+          "enabled": true,
+          "strategies": [
+            {
+              "name": "userWithId",
+              "parameters": {
+                "userIds": "12345"
+              }
+            }
+          ],
+          "variants": [],
+          "createdAt": "2019-01-24T10:41:45.236Z"
+        }')
+      ) }
+
+    it 'should return true if enabled, user_id matched, and default is true' do
+      context = Unleash::Context.new(user_id: "12345")
+      expect(feature_toggle.is_enabled?(context, true)).to be_truthy
+    end
+
+    it 'should return true if enabled, user_id matched, and default is false' do
+      context = Unleash::Context.new(user_id: "12345")
+      expect(feature_toggle.is_enabled?(context, false)).to be_truthy
+    end
+
+    it 'should return false if enabled, user_id unmatched, and default is true' do
+      context = Unleash::Context.new(user_id: "54321")
+      expect(feature_toggle.is_enabled?(context, true)).to be_falsey
+    end
+
+    it 'should return false if enabled, user_id unmatched, and default is false' do
+      context = Unleash::Context.new(user_id: "54321")
+      expect(feature_toggle.is_enabled?(context, false)).to be_falsey
+    end
+  end
+
+  describe 'FeatureToggle with userId strategy and disabled toggle' do
+    let(:feature_toggle) { Unleash::FeatureToggle.new(
+      JSON.parse('{
+          "name": "Test.userid",
+          "description": null,
+          "enabled": false,
+          "strategies": [
+            {
+              "name": "userWithId",
+              "parameters": {
+                "userIds": "12345"
+              }
+            }
+          ],
+          "variants": [],
+          "createdAt": "2019-01-24T10:41:45.236Z"
+        }')
+      ) }
+
+    it 'should return false if disabled, user_id matched, and default is false' do
+      context = Unleash::Context.new(user_id: "12345")
+      expect(feature_toggle.is_enabled?(context, false)).to be_falsey
+    end
+
+    it 'should return false if disabled, user_id unmatched, and default is false' do
+      context = Unleash::Context.new(user_id: "54321")
+      expect(feature_toggle.is_enabled?(context, false)).to be_falsey
+    end
+
+    it 'should return true if disabled, user_id matched, and default is true' do
+      context = Unleash::Context.new(user_id: "12345")
+      expect(feature_toggle.is_enabled?(context, true)).to be_truthy
+    end
+
+    it 'should return true if disabled, user_id unmatched, and default is true' do
+      context = Unleash::Context.new(user_id: "54321")
       expect(feature_toggle.is_enabled?(context, true)).to be_truthy
     end
   end

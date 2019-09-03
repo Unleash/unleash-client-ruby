@@ -72,13 +72,13 @@ module Unleash
 
     # only check if it is enabled, do not do metrics
     def am_enabled?(context, default_result)
-      result = self.enabled && ( self.strategies.select{ |s|
+      strategy_result = ( self.strategies.select{ |s|
         strategy = Unleash::STRATEGIES.fetch(s.name.to_sym, :unknown)
         r = strategy.is_enabled?(s.params, context)
         Unleash.logger.debug "Strategy #{s.name} returned #{r} with context: #{context}" #"for params #{s.params} "
         r
       }.any? || self.strategies.empty? )
-      result ||= default_result
+      result = self.enabled ? strategy_result : default_result
 
       Unleash.logger.debug "FeatureToggle (enabled:#{self.enabled} default_result:#{default_result} and Strategies combined returned #{result})"
       return result

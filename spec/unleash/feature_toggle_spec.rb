@@ -20,20 +20,22 @@ RSpec.describe Unleash::FeatureToggle do
 
   describe 'FeatureToggle with empty strategies' do
     let(:feature_toggle) { Unleash::FeatureToggle.new(
-      name: 'test',
-      enabled: true,
-      strategies: [],
-      variants: nil
+      JSON.parse('{
+          "name": "test",
+          "enabled": true,
+          "strategies": [],
+          "variants": []
+        }')
       ) }
 
-    it 'should return true if default is true' do
+    it 'should return true if enabled, and default is true' do
       context = Unleash::Context.new(user_id: 1)
       expect(feature_toggle.is_enabled?(context, true)).to be_truthy
     end
 
-    it 'should return false if default is false' do
+    it 'should return true if enabled, and default is false' do
       context = Unleash::Context.new(user_id: 1)
-      expect(feature_toggle.is_enabled?(context, false)).to be_falsey
+      expect(feature_toggle.is_enabled?(context, false)).to be_truthy
     end
   end
 

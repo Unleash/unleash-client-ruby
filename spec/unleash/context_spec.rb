@@ -42,4 +42,23 @@ RSpec.describe Unleash::Context do
     context = Unleash::Context.new(params)
     expect(context.properties).to eq({})
   end
+
+  it "will correctly use default values when using empty hash and client is not configured" do
+    params = Hash.new
+    context = Unleash::Context.new(params)
+    expect(context.app_name).to be_nil
+    expect(context.environment).to eq('default')
+  end
+
+  it "will correctly use default values when using empty hash and client is configured" do
+    Unleash.configure do |config|
+      config.url         = 'http://testurl/api'
+      config.app_name    = 'my_ruby_app'
+    end
+
+    params = Hash.new
+    context = Unleash::Context.new(params)
+    expect(context.app_name).to eq('my_ruby_app')
+    expect(context.environment).to eq('default')
+  end
 end

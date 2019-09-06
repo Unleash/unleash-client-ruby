@@ -20,13 +20,11 @@ RSpec.describe Unleash::FeatureToggle do
 
   describe 'FeatureToggle with empty strategies' do
     let(:feature_toggle) { Unleash::FeatureToggle.new(
-      JSON.parse('{
-          "name": "test",
-          "enabled": true,
-          "strategies": [],
-          "variants": []
-        }')
-      ) }
+      "name" => "test",
+      "enabled" => true,
+      "strategies" => [],
+      "variants" => nil
+    ) }
 
     it 'should return true if enabled, and default is true' do
       context = Unleash::Context.new(user_id: 1)
@@ -41,15 +39,13 @@ RSpec.describe Unleash::FeatureToggle do
 
   describe 'FeatureToggle with empty strategies and disabled toggle' do
     let(:feature_toggle) { Unleash::FeatureToggle.new(
-      JSON.parse('{
-          "name": "Test.userid",
-          "description": null,
-          "enabled": false,
-          "strategies": [],
-          "variants": [],
-          "createdAt": "2019-01-24T10:41:45.236Z"
-        }')
-      ) }
+      "name" => "Test.userid",
+      "description" => nil,
+      "enabled" => false,
+      "strategies" => [],
+      "variants" => nil,
+      "createdAt" => "2019-01-24T10:41:45.236Z"
+    ) }
 
     it 'should return false if disabled and default is false' do
       context = Unleash::Context.new(user_id: 1)
@@ -64,22 +60,20 @@ RSpec.describe Unleash::FeatureToggle do
 
   describe 'FeatureToggle with userId strategy and enabled toggle' do
     let(:feature_toggle) { Unleash::FeatureToggle.new(
-      JSON.parse('{
-          "name": "Test.userid",
-          "description": null,
-          "enabled": true,
-          "strategies": [
-            {
-              "name": "userWithId",
-              "parameters": {
-                "userIds": "12345"
-              }
-            }
-          ],
-          "variants": [],
-          "createdAt": "2019-01-24T10:41:45.236Z"
-        }')
-      ) }
+      "name" => "Test.userid",
+      "description" => nil,
+      "enabled" => true,
+      "strategies" => [
+        {
+          "name" => "userWithId",
+          "parameters" => {
+            "userIds" => "12345"
+          }
+        }
+      ],
+      "variants" => nil,
+      "createdAt" => "2019-01-24T10:41:45.236Z"
+    ) }
 
     it 'should return true if enabled, user_id matched, and default is true' do
       context = Unleash::Context.new(user_id: "12345")
@@ -104,22 +98,20 @@ RSpec.describe Unleash::FeatureToggle do
 
   describe 'FeatureToggle with userId strategy and disabled toggle' do
     let(:feature_toggle) { Unleash::FeatureToggle.new(
-      JSON.parse('{
-          "name": "Test.userid",
-          "description": null,
-          "enabled": false,
-          "strategies": [
-            {
-              "name": "userWithId",
-              "parameters": {
-                "userIds": "12345"
-              }
-            }
-          ],
-          "variants": [],
-          "createdAt": "2019-01-24T10:41:45.236Z"
-        }')
-      ) }
+      "name" => "Test.userid",
+      "description" => nil,
+      "enabled" => false,
+      "strategies" => [
+        {
+          "name" => "userWithId",
+          "parameters" => {
+            "userIds" => "12345"
+          }
+        }
+      ],
+      "variants" => nil,
+      "createdAt" => "2019-01-24T10:41:45.236Z"
+    ) }
 
     it 'should return false if disabled, user_id matched, and default is false' do
       context = Unleash::Context.new(user_id: "12345")
@@ -143,27 +135,26 @@ RSpec.describe Unleash::FeatureToggle do
   end
 
   describe 'FeatureToggle with variants' do
-    let(:feature_toggle) { Unleash::FeatureToggle.new(JSON.parse('{
-        "name": "Test.variants",
-        "description": null,
-        "enabled": true,
-        "strategies": [
-          {
-            "name": "default"
-          }
-        ],
-        "variants": [
-          {
-            "name": "variant1",
-            "weight": 50
-          },
-          {
-            "name": "variant2",
-            "weight": 50
-          }
-        ],
-        "createdAt": "2019-01-24T10:41:45.236Z"
-      }')
+    let(:feature_toggle) { Unleash::FeatureToggle.new(
+      "name" => "Test.variants",
+      "description" => nil,
+      "enabled" => true,
+      "strategies" => [
+        {
+          "name" => "default"
+        }
+      ],
+      "variants" => [
+        {
+          "name" => "variant1",
+          "weight" => 50
+        },
+        {
+          "name" => "variant2",
+          "weight" => 50
+        }
+      ],
+      "createdAt" => "2019-01-24T10:41:45.236Z"
     ) }
 
     let(:default_variant) { Unleash::Variant.new(name: 'unknown', default: true) }
@@ -185,31 +176,30 @@ RSpec.describe Unleash::FeatureToggle do
   end
 
   describe 'FeatureToggle including weightless variants' do
-    let(:feature_toggle) { Unleash::FeatureToggle.new(JSON.parse('{
-        "name": "Test.variants",
-        "description": null,
-        "enabled": true,
-        "strategies": [
-          {
-            "name": "default"
-          }
-        ],
-        "variants": [
-          {
-            "name": "variantA",
-            "weight": 0
-          },
-          {
-            "name": "variantB",
-            "weight": 10
-          },
-          {
-            "name": "variantC",
-            "weight": 20
-          }
-        ],
-        "createdAt": "2019-01-24T10:41:45.236Z"
-      }')
+    let(:feature_toggle) { Unleash::FeatureToggle.new(
+      "name" => "Test.variants",
+      "description" => nil,
+      "enabled" => true,
+      "strategies" => [
+        {
+          "name" => "default"
+        }
+      ],
+      "variants" => [
+        {
+          "name" => "variantA",
+          "weight" => 0
+        },
+        {
+          "name" => "variantB",
+          "weight" => 10
+        },
+        {
+          "name" => "variantC",
+          "weight" => 20
+        }
+      ],
+      "createdAt" => "2019-01-24T10:41:45.236Z"
     ) }
     let(:default_variant) { Unleash::Variant.new(name: 'unknown', default: true) }
 
@@ -226,27 +216,26 @@ RSpec.describe Unleash::FeatureToggle do
   end
 
   describe 'FeatureToggle with variants which have all zero weight' do
-    let(:feature_toggle) { Unleash::FeatureToggle.new(JSON.parse('{
-        "name": "Test.variants",
-        "description": null,
-        "enabled": true,
-        "strategies": [
-          {
-            "name": "default"
-          }
-        ],
-        "variants": [
-          {
-            "name": "variantA",
-            "weight": 0
-          },
-          {
-            "name": "variantB",
-            "weight": 0
-          }
-        ],
-        "createdAt": "2019-01-24T10:41:45.236Z"
-      }')
+    let(:feature_toggle) { Unleash::FeatureToggle.new(
+      "name" => "Test.variants",
+      "description" => nil,
+      "enabled" => true,
+      "strategies" => [
+        {
+          "name" => "default"
+        }
+      ],
+      "variants" => [
+        {
+          "name" => "variantA",
+          "weight" => 0
+        },
+        {
+          "name" => "variantB",
+          "weight" => 0
+        }
+      ],
+      "createdAt" => "2019-01-24T10:41:45.236Z"
     ) }
     let(:default_variant) { Unleash::Variant.new(name: 'unknown', default: true) }
 
@@ -262,39 +251,38 @@ RSpec.describe Unleash::FeatureToggle do
   end
 
   describe 'FeatureToggle with variants that have a variant override' do
-    let(:feature_toggle) { Unleash::FeatureToggle.new(JSON.parse('{
-        "name": "Test.variants",
-        "description": null,
-        "enabled": true,
-        "strategies": [
-          {
-            "name": "default"
-          }
-        ],
-        "variants": [
-          {
-            "name": "variant1",
-            "weight": 50,
-            "payload": {
-              "type": "string",
-              "value": "val1"
-            },
-            "overrides": [{
-              "contextName": "userId",
-              "values": ["132", "61"]
-            }]
+    let(:feature_toggle) { Unleash::FeatureToggle.new(
+      "name" => "Test.variants",
+      "description" => nil,
+      "enabled" => true,
+      "strategies" => [
+        {
+          "name" => "default"
+        }
+      ],
+      "variants" => [
+        {
+          "name" => "variant1",
+          "weight" => 50,
+          "payload" => {
+            "type" => "string",
+            "value" => "val1"
           },
-          {
-              "name": "variant2",
-              "weight": 50,
-              "payload": {
-                "type": "string",
-                "value": "val2"
-              }
-          }
-        ],
-        "createdAt": "2019-01-24T10:41:45.236Z"
-      }')
+          "overrides" => [{
+            "contextName" => "userId",
+            "values" => ["132", "61"]
+          }]
+        },
+        {
+            "name" => "variant2",
+            "weight" => 50,
+            "payload" => {
+              "type" => "string",
+              "value" => "val2"
+            }
+        }
+      ],
+      "createdAt" => "2019-01-24T10:41:45.236Z"
     ) }
 
     it 'should return variant1 for user_id:61 from override' do
@@ -320,18 +308,17 @@ RSpec.describe Unleash::FeatureToggle do
   end
 
   describe 'FeatureToggle with no variants' do
-    let(:feature_toggle) { Unleash::FeatureToggle.new(JSON.parse('{
-        "name": "Test.variants",
-        "description": null,
-        "enabled": true,
-        "strategies": [
-          {
-            "name": "default"
-          }
-        ],
-        "variants": [],
-        "createdAt": "2019-01-24T10:41:45.236Z"
-      }')
+    let(:feature_toggle) { Unleash::FeatureToggle.new(
+      "name" => "Test.variants",
+      "description" => nil,
+      "enabled" => true,
+      "strategies" => [
+        {
+          "name" => "default"
+        }
+      ],
+      "variants" => [],
+      "createdAt" => "2019-01-24T10:41:45.236Z"
     ) }
     let(:default_variant) { Unleash::Variant.new(name: 'unknown', default: true) }
 

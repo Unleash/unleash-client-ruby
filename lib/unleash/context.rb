@@ -7,7 +7,7 @@ module Unleash
       raise ArgumentError, "Unleash::Context must be initialized with a hash." unless params.is_a?(Hash)
 
       self.app_name    = params.values_at('appName', :app_name).compact.first || ( !Unleash.configuration.nil? ? Unleash.configuration.app_name : nil )
-      self.environment = params.values_at('environment', :environment).compact.first || 'default'
+      self.environment = params.values_at('environment', :environment).compact.first || ( !Unleash.configuration.nil? ? Unleash.configuration.environment : 'default' )
       self.user_id    = params.values_at('userId', :user_id).compact.first || ''
       self.session_id = params.values_at('sessionId', :session_id).compact.first || ''
       self.remote_address = params.values_at('remoteAddress', :remote_address).compact.first || ''

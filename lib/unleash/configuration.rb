@@ -3,15 +3,24 @@ require 'tmpdir'
 
 module Unleash
   class Configuration
-    attr_accessor :url, :app_name, :instance_id,
+    attr_accessor :url,
+      :app_name,
+      :environment,
+      :instance_id,
       :custom_http_headers,
       :disable_client,
-      :disable_metrics, :timeout, :retry_limit,
-      :refresh_interval, :metrics_interval,
-      :backup_file, :logger, :log_level
+      :disable_metrics,
+      :timeout,
+      :retry_limit,
+      :refresh_interval,
+      :metrics_interval,
+      :backup_file,
+      :logger,
+      :log_level
 
     def initialize(opts = {})
       self.app_name      = opts[:app_name]    || nil
+      self.environment   = opts[:environment] || 'default'
       self.url           = opts[:url]         || nil
       self.instance_id   = opts[:instance_id] || SecureRandom.uuid
 

@@ -12,6 +12,7 @@ RSpec.describe Unleash do
       config = Unleash::Configuration.new
 
       expect(config.app_name).to be_nil
+      expect(config.environment).to eq('default')
       expect(config.url).to be_nil
       expect(config.instance_id).to be_truthy
       expect(config.custom_http_headers).to eq({})

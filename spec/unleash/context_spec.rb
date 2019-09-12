@@ -54,11 +54,27 @@ RSpec.describe Unleash::Context do
     Unleash.configure do |config|
       config.url         = 'http://testurl/api'
       config.app_name    = 'my_ruby_app'
+      config.environment = 'dev'
     end
 
     params = Hash.new
     context = Unleash::Context.new(params)
     expect(context.app_name).to eq('my_ruby_app')
-    expect(context.environment).to eq('default')
+    expect(context.environment).to eq('dev')
+  end
+
+  it "will correctly allow context config to overridde client configuration" do
+    Unleash.configure do |config|
+      config.url         = 'http://testurl/api'
+      config.app_name    = 'my_ruby_app'
+      config.environment = 'pre'
+    end
+
+    context = Unleash::Context.new(
+      app_name: 'my_super_app',
+      environment: 'test',
+    )
+    expect(context.app_name).to eq('my_super_app')
+    expect(context.environment).to eq('test')
   end
 end

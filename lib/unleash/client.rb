@@ -15,7 +15,7 @@ module Unleash
       Unleash.configuration ||= Unleash::Configuration.new(*opts)
       Unleash.configuration.validate!
 
-      Unleash.logger = Unleash.configuration.logger
+      Unleash.logger = Unleash.configuration.logger.clone
       Unleash.logger.level = Unleash.configuration.log_level
 
       unless Unleash.configuration.disable_client

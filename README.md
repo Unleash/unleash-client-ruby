@@ -67,7 +67,7 @@ Argument | Description | Required? |  Type |  Default Value|
 `timeout` | How long to wait for the connection to be established or wait in reading state (open_timeout/read_timeout) | N | Integer | 30 |
 `retry_limit` | How many consecutive failures in connecting to the Unleash server are allowed before giving up. | N | Integer | 1 |
 `backup_file` | Filename to store the last known state from the Unleash server. Best to not change this from the default. | N | String | `Dir.tmpdir + "/unleash-#{app_name}-repo.json` |
-`logger` | Specify a custom `Logger` class to handle logs from the client. | N | Class | `Logger.new(STDOUT)` |
+`logger` | Specify a custom `Logger` class to handle logs for the Unleash client. | N | Class | `Logger.new(STDOUT)` |
 `log_level` | Change the log level for the `Logger` class. Constant from `Logger::Severity`. | N | Constant | `Logger::ERROR` |
 
 For in a more in depth look, please see `lib/unleash/configuration.rb`.

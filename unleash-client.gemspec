@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
   spec.bindir        = "exe"
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
-  spec.required_ruby_version = "~> 2.2"
+  spec.required_ruby_version = "~> 2.3"
 
   spec.add_dependency "murmurhash3", "~> 0.1.6"
 
@@ -32,5 +32,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec-json_expectations", "~> 2.1"
   spec.add_development_dependency "webmock", "~> 3.0"
   spec.add_development_dependency "coveralls"
-
+  spec.add_development_dependency "rubocop"
 end

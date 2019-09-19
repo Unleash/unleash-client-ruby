@@ -1,16 +1,22 @@
+inherit_from: .rubocop_todo.yml
+
+Layout/SpaceBeforeBlockBraces:
+  Enabled: false
+
+# NOTE: Temporarily duplicated from `rubocop_todo.yml` because many files exceed
+#       120 characters
+# Metrics/LineLength:
+#   Max: 120
+
 Naming/PredicateName:
   NameWhitelist:
     - is_enabled?
 
-Metrics/LineLength:
-  Max: 120
+Style/PreferredHashMethods:
+  Enabled: false
 
 Style/RedundantSelf:
   Enabled: false
-Style/PreferredHashMethods:
-  Enabled: false
-Style/StringLiterals:
-  Enabled: false
 
-Layout/SpaceBeforeBlockBraces:
+Style/StringLiterals:
   Enabled: false

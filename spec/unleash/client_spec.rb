@@ -228,4 +228,11 @@ RSpec.describe Unleash::Client do
     expect(WebMock).not_to have_requested(:post, 'http://test-url//client/register')
     expect(WebMock).not_to have_requested(:post, 'http://test-url//client/metrics')
   end
+
+  it "should yield correctly to block when using if_enabled" do
+    unleash_client = Unleash::Client.new
+
+    expect{ |b| unleash_client.if_enabled('any_feature', {}, true, &b).to yield_with_no_args }
+    expect{ |b| unleash_client.if_enabled('any_feature', {}, false, &b).not_to yield_with_no_args }
+  end
 end

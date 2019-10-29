@@ -52,7 +52,7 @@ module Unleash
 
       yield(*blk)
       self.retry_count = 0
-    rescue Exception => e
+    rescue StandardError => e
       self.retry_count += 1
       Unleash.logger.error "thread #{name} threw exception #{e.class} " \
           " (#{self.retry_count}/#{self.max_exceptions}): '#{e}'"

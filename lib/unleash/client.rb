@@ -137,7 +137,7 @@ module Unleash
       # Send the request, if possible
       begin
         response = Unleash::Util::Http.post(Unleash.configuration.client_register_url, info.to_json)
-      rescue Exception => e
+      rescue StandardError => e
         Unleash.logger.error "unable to register client with unleash server due to exception #{e.class}:'#{e}'."
         Unleash.logger.error "stacktrace: #{e.backtrace}"
       end

@@ -1,6 +1,6 @@
 module Unleash
   module Strategy
-    class NotImplemented < Exception
+    class NotImplemented < RuntimeError
     end
 
     class Base

@@ -16,7 +16,7 @@ module Unleash
       # start by fetching synchronously, and failing back to reading the backup file.
       begin
         fetch
-      rescue Exception => e
+      rescue StandardError => e
         Unleash.logger.warn "ToggleFetcher was unable to fetch from the network, attempting to read from backup file."
         Unleash.logger.debug "Exception Caught: #{e}"
         read!
@@ -73,7 +73,7 @@ module Unleash
           file.write(self.toggle_cache.to_json)
           File.rename(backup_file_tmp, backup_file)
         end
-      rescue Exception => e
+      rescue StandardError => e
         # This is not really the end of the world. Swallowing the exception.
         Unleash.logger.error "Unable to save backup file. Exception thrown #{e.class}:'#{e}'"
         Unleash.logger.error "stacktrace: #{e.backtrace}"
@@ -118,7 +118,7 @@ module Unleash
         Unleash.logger.error "Unable to read the backup_file: #{e}"
       rescue JSON::ParserError => e
         Unleash.logger.error "Unable to parse JSON from existing backup_file: #{e}"
-      rescue Exception => e
+      rescue StandardError => e
         Unleash.logger.error "Unable to extract valid data from backup_file. Exception thrown: #{e}"
       ensure
         file&.close

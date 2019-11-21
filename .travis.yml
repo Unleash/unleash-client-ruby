@@ -1,12 +1,16 @@
 sudo: false
 language: ruby
 rvm:
-  - 2.3
-  - 2.4
-  - 2.5
-  - 2.6
-  - jruby
+- 2.3
+- 2.4
+- 2.5
+- 2.6
+- jruby
 before_install:
-  - gem install bundler -v 2.0.2
-  # install client spec from official repository:
-  - git clone --depth 5 --branch v3.2.0 https://github.com/Unleash/client-specification.git client-specification
+- gem install bundler -v 2.0.2
+- git clone --depth 5 --branch v3.2.0 https://github.com/Unleash/client-specification.git
+  client-specification
+
+notifications:
+  slack:
+    secure: x593zOjdl2yVB8uP54v8CmuCOat8GFHnK99NPvPHKvif5U7PGe0YOgYh4DC1+Jc9vfjn1ke+0++m+Gif4quowpeOaA/t45xpB494lyziXsBulYml245jRp9yzoUmIIt7KxHhv4rlo3Q1ztMJgh6a5yDCornKHW2bKTkLsvqVTwxBRatLOrt6K9O8FivO/NaqgcoXl7Rw0fOx/bsZtx2IAFueTCH19NoqW1mk9KFEZ96YqJSvuqmfDC0AO7siq03WKlB++nPlKe1QcrlPalCrcsSzrYNhYJ3akBTt/ZbE1v6YJv2L+zUqRnAPTY2H+qp8WejFQtdhIjfeJ/SWox0iWv/Wy/mTFfj+EhFO9Aq+xhMjJ1OOLtNAPoYJyatEVgJkILb6M26igTFcuI60xBbGNmh5ZYeyRdn5/xFb7G2zyJ2Swc3PvN1uLzMHfTF0R7WzGq4CRNGIOjrHTGncyB3IGAONOdJdM3iT9XKY6cdlRK0VkQjEsEMe0eNv2fxxLVSGna4sdJoTND6LhJ6qCfuS9DEDXwoRdLxAXxefycCh9VNp7gloMJx8IbHYxOW0BFZqc3hxNU9X2SwOj6j72DZMrdYDg2aPAW69HG0iMontQ37Di87JEW2F2Cpgb49+4twByrQNIx+st+DGNce1vpc0DN+KuJVdIcmha654lT7Ffe8=

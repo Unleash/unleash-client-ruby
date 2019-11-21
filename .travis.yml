@@ -9,4 +9,4 @@ rvm:
 before_install:
   - gem install bundler -v 2.0.2
   # install client spec from official repository:
-  - git clone --depth 5 https://github.com/Unleash/client-specification.git client-specification
+  - git clone --depth 5 --branch v3.2.0 https://github.com/Unleash/client-specification.git client-specification

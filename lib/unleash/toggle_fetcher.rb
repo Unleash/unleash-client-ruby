@@ -1,10 +1,8 @@
 require 'unleash/configuration'
 require 'net/http'
 require 'json'
-require 'thread'
 
 module Unleash
-
   class ToggleFetcher
     attr_accessor :toggle_cache, :toggle_lock, :toggle_resource, :etag, :retry_count
 
@@ -36,29 +34,16 @@ module Unleash
     end
 
     # rename to refresh_from_server!  ??
-    # TODO: should simplify by moving uri / http initialization elsewhere
     def fetch
       Unleash.logger.debug "fetch()"
-      Unleash.logger.debug "ETag: #{self.etag}" unless self.etag.nil?
+      response = http_fetch_request
 
-      uri = URI(Unleash.configuration.fetch_toggles_url)
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true if uri.scheme == 'https'
-      http.open_timeout = Unleash.configuration.timeout # in seconds
-      http.read_timeout = Unleash.configuration.timeout # in seconds
-
-      headers = (Unleash.configuration.get_http_headers || {}).dup
-      headers['Content-Type'] = 'application/json'
-      headers['If-None-Match'] = self.etag unless self.etag.nil?
-
-      request = Net::HTTP::Get.new(uri.request_uri, headers)
-
-      response = http.request(request)
-
-      Unleash.logger.debug "No changes according to the unleash server, nothing to do." if response.code == '304'
-      return if response.code == '304'
-
-      raise IOError, "Unleash server returned a non 200/304 HTTP result." if response.code != '200'
+      if response.code == '304'
+        Unleash.logger.debug "No changes according to the unleash server, nothing to do."
+        return
+      elsif response.code != '200'
+        raise IOError, "Unleash server returned a non 200/304 HTTP result."
+      end
 
       self.etag = response['ETag']
       response_hash = JSON.parse(response.body)
@@ -73,14 +58,12 @@ module Unleash
       # always synchronize with the local cache when fetching:
       synchronize_with_local_cache!(features)
 
-      Unleash.logger.info "Flush changes to running client variable"
-      update_client!
-
-      Unleash.logger.info "Saved to toggle cache, will save to disk now"
+      update_running_client!
       save!
     end
 
     def save!
+      Unleash.logger.debug "Will save toggles to disk now"
       begin
         backup_file = Unleash.configuration.backup_file
         backup_file_tmp = "#{backup_file}.tmp"
@@ -95,12 +78,33 @@ module Unleash
         Unleash.logger.error "Unable to save backup file. Exception thrown #{e.class}:'#{e}'"
         Unleash.logger.error "stacktrace: #{e.backtrace}"
       ensure
-        file.close if defined?(file) && ! file.nil?
+        file&.close if defined?(file)
         self.toggle_lock.unlock if self.toggle_lock.locked?
       end
     end
 
     private
+
+    def http_fetch_request
+      Unleash.logger.debug "ETag: #{self.etag}" unless self.etag.nil?
+
+      uri = URI(Unleash.configuration.fetch_toggles_url)
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true if uri.scheme == 'https'
+      http.open_timeout = Unleash.configuration.timeout # in seconds
+      http.read_timeout = Unleash.configuration.timeout # in seconds
+
+      request = Net::HTTP::Get.new(uri.request_uri, http_headers)
+      http.request(request)
+    end
+
+    def http_headers
+      headers = (Unleash.configuration.http_headers || {}).dup
+      headers['Content-Type'] = 'application/json'
+      headers['If-None-Match'] = self.etag unless self.etag.nil?
+
+      headers
+    end
 
     def synchronize_with_local_cache!(features)
       if self.toggle_cache != features
@@ -113,7 +117,7 @@ module Unleash
       end
     end
 
-    def update_client!
+    def update_running_client!
       if Unleash.toggles != self.toggles
         Unleash.logger.info "Updating toggles to main client, there has been a change in the server."
         Unleash.toggles = self.toggles
@@ -130,15 +134,15 @@ module Unleash
 
         backup_as_hash = JSON.parse(file_content)
         synchronize_with_local_cache!(backup_as_hash)
-        update_client!
+        update_running_client!
       rescue IOError => e
-        Unleash.logger.error "Unable to read the backup_file."
+        Unleash.logger.error "Unable to read the backup_file: #{e}"
       rescue JSON::ParserError => e
-        Unleash.logger.error "Unable to parse JSON from existing backup_file."
+        Unleash.logger.error "Unable to parse JSON from existing backup_file: #{e}"
       rescue Exception => e
-        Unleash.logger.error "Unable to extract valid data from backup_file. Exception thrown", e
+        Unleash.logger.error "Unable to extract valid data from backup_file. Exception thrown: #{e}"
       ensure
-        file.close unless file.nil?
+        file&.close
       end
     end
   end

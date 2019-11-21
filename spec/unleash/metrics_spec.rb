@@ -2,7 +2,6 @@ require "spec_helper"
 require "rspec/json_expectations"
 
 RSpec.describe Unleash::Metrics do
-
   let(:metrics) { Unleash::Metrics.new }
 
   it "counts up correctly" do
@@ -66,6 +65,4 @@ RSpec.describe Unleash::Metrics do
       expect(metrics.features['featureA']['variant']['variantB']).to eq(1)
     end
   end
-
-
 end

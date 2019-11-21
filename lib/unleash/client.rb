@@ -7,7 +7,6 @@ require 'logger'
 require 'time'
 
 module Unleash
-
   class Client
     attr_accessor :fetcher_scheduled_executor, :metrics_scheduled_executor
 
@@ -18,71 +17,56 @@ module Unleash
       Unleash.logger = Unleash.configuration.logger.clone
       Unleash.logger.level = Unleash.configuration.log_level
 
-      unless Unleash.configuration.disable_client
-        Unleash.toggle_fetcher = Unleash::ToggleFetcher.new
-
-        register
-
-        self.fetcher_scheduled_executor = Unleash::ScheduledExecutor.new('ToggleFetcher', Unleash.configuration.refresh_interval)
-        self.fetcher_scheduled_executor.run do
-          Unleash.toggle_fetcher.fetch
-        end
-
-        unless Unleash.configuration.disable_metrics
-          Unleash.toggle_metrics = Unleash::Metrics.new
-          Unleash.reporter = Unleash::MetricsReporter.new
-          self.metrics_scheduled_executor = Unleash::ScheduledExecutor.new('MetricsReporter', Unleash.configuration.metrics_interval)
-          self.metrics_scheduled_executor.run do
-            Unleash.reporter.send
-          end
-        end
-      else
+      if Unleash.configuration.disable_client
         Unleash.logger.warn "Unleash::Client is disabled! Will only return default results!"
+        return
       end
+
+      register
+      start_toggle_fetcher
+      start_metrics unless Unleash.configuration.disable_metrics
     end
 
     def is_enabled?(feature, context = nil, default_value = false)
-        Unleash.logger.debug "Unleash::Client.is_enabled? feature: #{feature} with context #{context}"
-
-        if Unleash.configuration.disable_client
-          Unleash.logger.warn "unleash_client is disabled! Always returning #{default_value} for feature #{feature}!"
-          return default_value
-        end
-
-        toggle_as_hash = Unleash.toggles.select{ |toggle| toggle['name'] == feature }.first if Unleash.toggles
-
-        if toggle_as_hash.nil?
-          Unleash.logger.debug "Unleash::Client.is_enabled? feature: #{feature} not found"
-          return default_value
-        end
-
-        toggle = Unleash::FeatureToggle.new(toggle_as_hash)
-        toggle_result = toggle.is_enabled?(context, default_value)
-
-        return toggle_result
-    end
-
-    # enabled? is a more ruby idiomatic method name than is_enabled?
-    alias_method :enabled?, :is_enabled?
-
-    # execute a code block (passed as a parameter), if is_enabled? is true.
-    def if_enabled(feature, context = nil, default_value = false, &blk)
-      yield if is_enabled?(feature, context, default_value)
-    end
-
-
-    def get_variant(feature, context = nil, fallback_variant = false)
-      Unleash.logger.debug "Unleash::Client.get_variant for feature: #{feature} with context #{context}"
+      Unleash.logger.debug "Unleash::Client.is_enabled? feature: #{feature} with context #{context}"
 
       if Unleash.configuration.disable_client
-        Unleash.logger.warn "unleash_client is disabled! Always returning #{default_variant} for feature #{feature}!"
-        return fallback_variant || Unleash::FeatureToggle.disabled_variant
+        Unleash.logger.warn "unleash_client is disabled! Always returning #{default_value} for feature #{feature}!"
+        return default_value
       end
 
-      toggle_as_hash = Unleash.toggles.select{ |toggle| toggle['name'] == feature }.first if Unleash.toggles
+      toggle_as_hash = Unleash&.toggles&.select{ |toggle| toggle['name'] == feature }&.first
 
       if toggle_as_hash.nil?
         Unleash.logger.debug "Unleash::Client.is_enabled? feature: #{feature} not found"
+        return default_value
+      end
+
+      toggle = Unleash::FeatureToggle.new(toggle_as_hash)
+
+      toggle.is_enabled?(context, default_value)
+    end
+
+    # enabled? is a more ruby idiomatic method name than is_enabled?
+    alias enabled? is_enabled?
+
+    # execute a code block (passed as a parameter), if is_enabled? is true.
+    def if_enabled(feature, context = nil, default_value = false, &blk)
+      yield(blk) if is_enabled?(feature, context, default_value)
+    end
+
+    def get_variant(feature, context = nil, fallback_variant = nil)
+      Unleash.logger.debug "Unleash::Client.get_variant for feature: #{feature} with context #{context}"
+
+      if Unleash.configuration.disable_client
+        Unleash.logger.debug "unleash_client is disabled! Always returning #{default_variant} for feature #{feature}!"
+        return fallback_variant || Unleash::FeatureToggle.disabled_variant
+      end
+
+      toggle_as_hash = Unleash&.toggles&.select{ |toggle| toggle['name'] == feature }&.first
+
+      if toggle_as_hash.nil?
+        Unleash.logger.debug "Unleash::Client.get_variant feature: #{feature} not found"
         return fallback_variant || Unleash::FeatureToggle.disabled_variant
       end
 
@@ -96,7 +80,7 @@ module Unleash
 
       # TODO: Add to README: name, payload, enabled (bool)
 
-      return variant
+      variant
     end
 
     # safe shutdown: also flush metrics to server and toggles to disk
@@ -117,9 +101,10 @@ module Unleash
     end
 
     private
+
     def info
-      return {
-        'appName':  Unleash.configuration.app_name,
+      {
+        'appName': Unleash.configuration.app_name,
         'instanceId': Unleash.configuration.instance_id,
         'sdkVersion': "unleash-client-ruby:" + Unleash::VERSION,
         'strategies': Unleash::STRATEGIES.keys,
@@ -128,28 +113,51 @@ module Unleash
       }
     end
 
+    def start_toggle_fetcher
+      Unleash.toggle_fetcher = Unleash::ToggleFetcher.new
+      self.fetcher_scheduled_executor = Unleash::ScheduledExecutor.new('ToggleFetcher', Unleash.configuration.refresh_interval)
+      self.fetcher_scheduled_executor.run do
+        Unleash.toggle_fetcher.fetch
+      end
+    end
+
+    def start_metrics
+      Unleash.toggle_metrics = Unleash::Metrics.new
+      Unleash.reporter = Unleash::MetricsReporter.new
+      self.metrics_scheduled_executor = Unleash::ScheduledExecutor.new('MetricsReporter', Unleash.configuration.metrics_interval)
+      self.metrics_scheduled_executor.run do
+        Unleash.reporter.send
+      end
+    end
+
     def register
       Unleash.logger.debug "register()"
 
-      uri = URI(Unleash.configuration.client_register_url)
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true if uri.scheme == 'https'
-      http.open_timeout = Unleash.configuration.timeout # in seconds
-      http.read_timeout = Unleash.configuration.timeout # in seconds
-
-      headers = (Unleash.configuration.get_http_headers || {}).dup
-      headers['Content-Type'] = 'application/json'
-
-      request = Net::HTTP::Post.new(uri.request_uri, headers)
-      request.body = info.to_json
-
       # Send the request, if possible
       begin
-        response = http.request(request)
+        response = http_send_request(info.to_json)
       rescue Exception => e
         Unleash.logger.error "unable to register client with unleash server due to exception #{e.class}:'#{e}'."
         Unleash.logger.error "stacktrace: #{e.backtrace}"
       end
+      Unleash.logger.debug "client registered: #{response}"
+    end
+
+    # TODO: FIXME: de-duplicate code
+    def http_send_request(body)
+      uri = URI(Unleash.configuration.client_register_url)
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true if uri.scheme == 'https'
+      http.open_timeout = Unleash.configuration.timeout
+      http.read_timeout = Unleash.configuration.timeout
+
+      headers = (Unleash.configuration.http_headers || {}).dup
+      headers['Content-Type'] = 'application/json'
+
+      request = Net::HTTP::Post.new(uri.request_uri, headers)
+      request.body = body
+
+      http.request(request)
     end
   end
 end

@@ -6,7 +6,7 @@ RSpec.describe Unleash::Strategy::Base do
     let(:strategy) { Unleash::Strategy::Base.new }
 
     it 'raise exception' do
-      expect{ strategy.is_enabled?() }.to raise_exception  Unleash::Strategy::NotImplemented
+      expect{ strategy.is_enabled? }.to raise_exception Unleash::Strategy::NotImplemented
     end
   end
 end

@@ -16,12 +16,14 @@ puts ">> START simple.rb"
 
 # or:
 
-@unleash = Unleash::Client.new( url: 'http://unleash.herokuapp.com/api', app_name: 'simple-test',
+@unleash = Unleash::Client.new(
+  url: 'http://unleash.herokuapp.com/api',
+  app_name: 'simple-test',
   instance_id: 'local-test-cli',
   refresh_interval: 2,
   metrics_interval: 2,
   retry_limit: 2,
-  log_level: Logger::DEBUG,
+  log_level: Logger::DEBUG
 )
 
 # feature_name = "AwesomeFeature"
@@ -55,5 +57,3 @@ puts "> shutting down client..."
 @unleash.shutdown
 
 puts ">> END simple.rb"
-
-

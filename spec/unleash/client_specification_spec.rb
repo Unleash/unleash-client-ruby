@@ -32,7 +32,6 @@ RSpec.describe Unleash::Client do
           state = current_test_set.fetch('state', {})
           state_features = state.fetch('features', [])
 
-
           let(:unleash_toggles) { state_features }
 
           tests.each do |test|
@@ -48,7 +47,6 @@ RSpec.describe Unleash::Client do
             end
           end
 
-
           variant_tests = current_test_set.fetch('variantTests', [])
           variant_tests.each do |test|
             it "test that #{test['description']}" do
@@ -62,7 +60,6 @@ RSpec.describe Unleash::Client do
               expect(variant).to eq(Unleash::Variant.new(test['expectedResult']))
             end
           end
-
         end
       end
     end

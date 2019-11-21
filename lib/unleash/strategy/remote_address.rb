@@ -1,7 +1,7 @@
 module Unleash
   module Strategy
     class RemoteAddress < Base
-      PARAM = 'IPs'
+      PARAM = 'IPs'.freeze
 
       def name
         'remoteAddress'

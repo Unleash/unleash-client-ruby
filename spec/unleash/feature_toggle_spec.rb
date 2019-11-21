@@ -406,4 +406,31 @@ RSpec.describe Unleash::FeatureToggle do
       )
     end
   end
+
+  describe 'FeatureToggle with invalid default_variant' do
+    let(:feature_toggle) do
+      Unleash::FeatureToggle.new(
+        "name" => "Test.variants",
+        "description" => nil,
+        "enabled" => true,
+        "strategies" => [
+          {
+            "name" => "default"
+          }
+        ],
+        "variants" => [],
+        "createdAt" => "2019-01-24T10:41:45.236Z"
+      )
+    end
+    let(:valid_default_variant) { Unleash::Variant.new(name: 'unknown', default: true) }
+    let(:invalid_default_variant) { Hash.new(name: 'unknown', default: true) }
+
+    it 'should raise an error for an invalid fallback variant' do
+      expect{ feature_toggle.get_variant(nil, invalid_default_variant) }.to raise_error(ArgumentError)
+    end
+
+    it 'should not raise an error for a valid fallback variant' do
+      expect{ feature_toggle.get_variant(nil, valid_default_variant) }.to_not raise_error(ArgumentError)
+    end
+  end
 end

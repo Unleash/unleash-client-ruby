@@ -13,7 +13,7 @@ module Unleash
 
         begin
           percentage = Integer(params['percentage'] || 0)
-        rescue ArgumentError => e
+        rescue ArgumentError
           return false
         end
 

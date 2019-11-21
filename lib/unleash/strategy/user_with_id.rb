@@ -1,7 +1,7 @@
 module Unleash
   module Strategy
     class UserWithId < Base
-      PARAM = 'userIds'
+      PARAM = 'userIds'.freeze
 
       def name
         'userWithId'

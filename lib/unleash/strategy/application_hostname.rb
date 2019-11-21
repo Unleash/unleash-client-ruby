@@ -4,7 +4,7 @@ module Unleash
   module Strategy
     class ApplicationHostname < Base
       attr_accessor :hostname
-      PARAM = 'hostnames'
+      PARAM = 'hostnames'.freeze
 
       def initialize
         self.hostname = Socket.gethostname || 'undefined'
@@ -18,7 +18,7 @@ module Unleash
       def is_enabled?(params = {}, _context = nil)
         return false unless params.is_a?(Hash) && params.has_key?(PARAM)
 
-        params[PARAM].split(",").map(&:strip).map{ |h| h.downcase }.include?(self.hostname)
+        params[PARAM].split(",").map(&:strip).map(&:downcase).include?(self.hostname)
       end
     end
   end

@@ -1,7 +1,7 @@
 TODO
 ====
 
-The Ruby client should be pretty stable now. But no warranty is given, and some work still remains.
+The Ruby client should be pretty stable now, but no warranty is given.
 
 
 Implement:

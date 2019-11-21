@@ -1,6 +1,5 @@
 require 'unleash/variant_override'
 
-
 module Unleash
   class VariantDefinition
     attr_accessor :name, :weight, :payload, :overrides
@@ -11,7 +10,7 @@ module Unleash
       self.payload = payload
       # self.overrides = overrides
       self.overrides = (overrides || [])
-        .select{ |v| v.is_a?(Hash) && v.key?('contextName') }
+        .select{ |v| v.is_a?(Hash) && v.has_key?('contextName') }
         .map{ |v| VariantOverride.new(v.fetch('contextName', ''), v.fetch('values', [])) } || []
     end
 

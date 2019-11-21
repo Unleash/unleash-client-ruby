@@ -2,7 +2,6 @@ require "spec_helper"
 require "unleash/configuration"
 
 RSpec.describe Unleash do
-
   describe 'Configuration' do
     before do
       Unleash.configuration = nil
@@ -66,22 +65,23 @@ RSpec.describe Unleash do
       Unleash.configure do |config|
         config.url      = 'http://test-url/'
         config.app_name = 'my-test-app'
-        config.custom_http_headers = {'X-API-KEY': '123'}
+        config.custom_http_headers = { 'X-API-KEY': '123' }
       end
       expect{ Unleash.configuration.validate! }.not_to raise_error
-      expect(Unleash.configuration.custom_http_headers).to eq({'X-API-KEY': '123'})
+      expect(Unleash.configuration.custom_http_headers).to eq({ 'X-API-KEY': '123' })
     end
 
     it "should allow hashes for custom_http_headers via new client" do
       config = Unleash::Configuration.new(
         url: 'https://testurl/api',
         app_name: 'test-app',
-        custom_http_headers: {'X-API-KEY': '123'})
+        custom_http_headers: { 'X-API-KEY': '123' }
+      )
 
       expect{ config.validate! }.not_to raise_error
-      expect(config.custom_http_headers).to include({'X-API-KEY': '123'})
-      expect(config.get_http_headers).to include({'UNLEASH-APPNAME' => 'test-app'})
-      expect(config.get_http_headers).to include('UNLEASH-INSTANCEID')
+      expect(config.custom_http_headers).to include({ 'X-API-KEY': '123' })
+      expect(config.http_headers).to include({ 'UNLEASH-APPNAME' => 'test-app' })
+      expect(config.http_headers).to include('UNLEASH-INSTANCEID')
     end
 
     it "should not accept invalid custom_http_headers via yield" do
@@ -95,22 +95,26 @@ RSpec.describe Unleash do
     end
 
     it "should not accept invalid custom_http_headers via new client" do
-      WebMock.stub_request(:post, "http://test-url//client/register")
+      WebMock \
+        .stub_request(:post, "http://test-url//client/register")
         .with(
           headers: {
-          'Accept'=>'*/*',
-          'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-          'Content-Type'=>'application/json',
-          'User-Agent'=>'Ruby'
-          })
+            'Accept' => '*/*',
+            'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+            'Content-Type' => 'application/json',
+            'User-Agent' => 'Ruby'
+          }
+        )
         .to_return(status: 200, body: "", headers: {})
 
-      expect{ Unleash::Client.new(
-        url: 'https://testurl/api',
-        app_name: 'test-app',
-        custom_http_headers: 123.0,
-        disable_metrics: true
-      ) }.to raise_error(ArgumentError)
+      expect do
+        Unleash::Client.new(
+          url: 'https://testurl/api',
+          app_name: 'test-app',
+          custom_http_headers: 123.0,
+          disable_metrics: true
+        )
+      end.to raise_error(ArgumentError)
     end
   end
 end

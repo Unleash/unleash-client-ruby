@@ -1,5 +1,3 @@
-
-
 module Unleash
   class Variant
     attr_accessor :name, :enabled, :payload
@@ -18,9 +16,8 @@ module Unleash
       "<Variant: name=#{self.name},enabled=#{self.enabled},payload=#{self.payload}>"
     end
 
-    def ==(v)
-      self.name == v.name && self.enabled == v.enabled && self.payload == v.payload
+    def ==(other)
+      self.name == other.name && self.enabled == other.enabled && self.payload == other.payload
     end
-
   end
 end

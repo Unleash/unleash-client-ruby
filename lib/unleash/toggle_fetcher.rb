@@ -36,7 +36,7 @@ module Unleash
     # rename to refresh_from_server!  ??
     def fetch
       Unleash.logger.debug "fetch()"
-      response = http_fetch_request
+      response = Unleash::Util::Http.get(Unleash.configuration.fetch_toggles_url, etag)
 
       if response.code == '304'
         Unleash.logger.debug "No changes according to the unleash server, nothing to do."
@@ -84,27 +84,6 @@ module Unleash
     end
 
     private
-
-    def http_fetch_request
-      Unleash.logger.debug "ETag: #{self.etag}" unless self.etag.nil?
-
-      uri = URI(Unleash.configuration.fetch_toggles_url)
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true if uri.scheme == 'https'
-      http.open_timeout = Unleash.configuration.timeout # in seconds
-      http.read_timeout = Unleash.configuration.timeout # in seconds
-
-      request = Net::HTTP::Get.new(uri.request_uri, http_headers)
-      http.request(request)
-    end
-
-    def http_headers
-      headers = (Unleash.configuration.http_headers || {}).dup
-      headers['Content-Type'] = 'application/json'
-      headers['If-None-Match'] = self.etag unless self.etag.nil?
-
-      headers
-    end
 
     def synchronize_with_local_cache!(features)
       if self.toggle_cache != features

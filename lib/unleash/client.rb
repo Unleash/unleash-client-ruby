@@ -3,6 +3,7 @@ require 'unleash/toggle_fetcher'
 require 'unleash/metrics_reporter'
 require 'unleash/scheduled_executor'
 require 'unleash/feature_toggle'
+require 'unleash/util/http'
 require 'logger'
 require 'time'
 
@@ -135,29 +136,12 @@ module Unleash
 
       # Send the request, if possible
       begin
-        response = http_send_request(info.to_json)
+        response = Unleash::Util::Http.post(Unleash.configuration.client_register_url, info.to_json)
       rescue Exception => e
         Unleash.logger.error "unable to register client with unleash server due to exception #{e.class}:'#{e}'."
         Unleash.logger.error "stacktrace: #{e.backtrace}"
       end
       Unleash.logger.debug "client registered: #{response}"
-    end
-
-    # TODO: FIXME: de-duplicate code
-    def http_send_request(body)
-      uri = URI(Unleash.configuration.client_register_url)
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true if uri.scheme == 'https'
-      http.open_timeout = Unleash.configuration.timeout
-      http.read_timeout = Unleash.configuration.timeout
-
-      headers = (Unleash.configuration.http_headers || {}).dup
-      headers['Content-Type'] = 'application/json'
-
-      request = Net::HTTP::Post.new(uri.request_uri, headers)
-      request.body = body
-
-      http.request(request)
     end
   end
 end

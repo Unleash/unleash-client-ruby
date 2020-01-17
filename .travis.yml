@@ -1,11 +1,11 @@
 sudo: false
 language: ruby
 rvm:
-- 2.3
-- 2.4
-- 2.5
-- 2.6
 - jruby
+- 2.7
+- 2.6
+- 2.5
+- 2.4
 before_install:
 - gem install bundler -v 2.0.2
 - git clone --depth 5 --branch v3.2.0 https://github.com/Unleash/client-specification.git

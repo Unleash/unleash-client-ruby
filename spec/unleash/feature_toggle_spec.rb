@@ -430,7 +430,7 @@ RSpec.describe Unleash::FeatureToggle do
     end
 
     it 'should not raise an error for a valid fallback variant' do
-      expect{ feature_toggle.get_variant(nil, valid_default_variant) }.to_not raise_error(ArgumentError)
+      expect{ feature_toggle.get_variant(nil, valid_default_variant) }.to_not raise_error
     end
   end
 end

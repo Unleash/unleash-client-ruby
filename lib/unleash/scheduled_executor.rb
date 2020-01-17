@@ -19,7 +19,7 @@ module Unleash
           Unleash.logger.debug "thread #{name} sleeping for #{interval} seconds"
           sleep interval
 
-          run_blk(blk)
+          run_blk{ blk.call }
 
           if exceeded_max_exceptions?
             Unleash.logger.error "thread #{name} retry_count (#{self.retry_count}) exceeded " \
@@ -47,10 +47,10 @@ module Unleash
 
     private
 
-    def run_blk(blk)
+    def run_blk(&blk)
       Unleash.logger.debug "thread #{name} starting execution"
 
-      yield(*blk)
+      yield(blk)
       self.retry_count = 0
     rescue StandardError => e
       self.retry_count += 1

@@ -23,8 +23,6 @@ module Unleash
         http.request(request)
       end
 
-      private
-
       def self.http_connection(uri)
         http = Net::HTTP.new(uri.host, uri.port)
         http.use_ssl = true if uri.scheme == 'https'
@@ -43,6 +41,8 @@ module Unleash
 
         headers
       end
+
+      private_class_method :http_connection, :http_headers
     end
   end
 end

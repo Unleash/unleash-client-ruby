@@ -1,7 +1,10 @@
 # inherit_from: .rubocop_todo.yml
 
+AllCops:
+  TargetRubyVersion: 2.4
+
 Naming/PredicateName:
-  NameWhitelist:
+  AllowedMethods:
     - is_enabled?
 
 Metrics/ClassLength:
@@ -42,9 +45,12 @@ Style/FrozenStringLiteralComment:
 Style/GuardClause:
   MinBodyLength: 8
 
-Style/BracesAroundHashParameters:
-  Exclude:
-    - 'spec/**/*.rb'
+Style/HashEachMethods:
+  Enabled: true
+Style/HashTransformKeys:
+  Enabled: true
+Style/HashTransformValues:
+  Enabled: true
 
 Style/IfInsideElse:
   Exclude:

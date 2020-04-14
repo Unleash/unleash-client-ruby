@@ -116,7 +116,11 @@ module Unleash
 
     def start_toggle_fetcher
       Unleash.toggle_fetcher = Unleash::ToggleFetcher.new
-      self.fetcher_scheduled_executor = Unleash::ScheduledExecutor.new('ToggleFetcher', Unleash.configuration.refresh_interval)
+      self.fetcher_scheduled_executor = Unleash::ScheduledExecutor.new(
+        'ToggleFetcher',
+        Unleash.configuration.refresh_interval,
+        Unleash.configuration.retry_limit
+      )
       self.fetcher_scheduled_executor.run do
         Unleash.toggle_fetcher.fetch
       end
@@ -125,7 +129,11 @@ module Unleash
     def start_metrics
       Unleash.toggle_metrics = Unleash::Metrics.new
       Unleash.reporter = Unleash::MetricsReporter.new
-      self.metrics_scheduled_executor = Unleash::ScheduledExecutor.new('MetricsReporter', Unleash.configuration.metrics_interval)
+      self.metrics_scheduled_executor = Unleash::ScheduledExecutor.new(
+        'MetricsReporter',
+        Unleash.configuration.metrics_interval,
+        Unleash.configuration.retry_limit
+      )
       self.metrics_scheduled_executor.run do
         Unleash.reporter.send
       end

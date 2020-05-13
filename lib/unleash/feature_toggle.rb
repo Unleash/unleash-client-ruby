@@ -14,6 +14,10 @@ module Unleash
 
       self.name       = params.fetch('name', nil)
       self.enabled    = params.fetch('enabled', false)
+      self.strategies = params.fetch('strategies', [])
+        .select{ |s| s.has_key?('name') && Unleash.configuration.strategies.has_key?(s['name'].to_sym) }
+        .map{ |s| ActivationStrategy.new(s['name'], s['parameters'] || {}) } || []
+        # .select{ |s| s.has_key?('name') && Unleash::STRATEGIES.has_key?(s['name'].to_sym) }
 
       self.strategies = initialize_strategies(params)
       self.variant_definitions = initialize_variant_definitions(params)
@@ -75,7 +79,8 @@ module Unleash
     end
 
     def strategy_enabled?(strategy, context)
-      r = Unleash::STRATEGIES.fetch(strategy.name.to_sym, :unknown).is_enabled?(strategy.params, context)
+      # r = Unleash::STRATEGIES.fetch(strategy.name.to_sym, :unknown).is_enabled?(strategy.params, context)
+      r = Unleash.configuration.strategies.fetch(strategy.name.to_sym, :unknown).is_enabled?(strategy.params, context)
       Unleash.logger.debug "Unleash::FeatureToggle.strategy_enabled? Strategy #{strategy.name} returned #{r} with context: #{context}"
       r
     end

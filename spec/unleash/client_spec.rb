@@ -100,6 +100,16 @@ RSpec.describe Unleash::Client do
       .with(headers: { 'X-API-KEY': '123', 'Content-Type': 'application/json' })
       .with(headers: { 'UNLEASH-APPNAME': 'my-test-app' })
       .with(headers: { 'UNLEASH-INSTANCEID': 'rspec/test' })
+      .with(body: {
+          'appName': 'my-test-app',
+          'instanceId': 'rspec/test',
+          'bucket': {
+            'start': /.*/, #start.iso8601(Unleash::TIME_RESOLUTION),
+            'stop': /.*/, #stop.iso8601(Unleash::TIME_RESOLUTION),
+            'toggles': {} #Unleash.toggle_metrics.features
+          }
+        }
+      )
     ).to have_been_made.once
   end
 
@@ -401,6 +411,9 @@ RSpec.describe Unleash::Client do
     expect(
       unleash_client.is_enabled?('any_feature', {}, true)
     ).to eq(true)
+
+    expect(WebMock).not_to have_requested(:get, /.*/)
+    expect(WebMock).not_to have_requested(:post, /.*/)
 
     expect(WebMock).not_to have_requested(:get, 'http://test-url/')
     expect(WebMock).not_to have_requested(:get, 'http://test-url/client/features')

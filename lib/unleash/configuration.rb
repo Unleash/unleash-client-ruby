@@ -20,7 +20,8 @@ module Unleash
       :backup_file,
       :logger,
       :log_level,
-      :bootstrap_config
+      :bootstrap_config,
+      :custom_strategies
 
     def initialize(opts = {})
       ensure_valid_opts(opts)
@@ -41,6 +42,7 @@ module Unleash
 
       raise ArgumentError, "URL and app_name are required parameters." if self.app_name.nil? || self.url.nil?
       raise ArgumentError, "custom_http_headers must be a hash." unless self.custom_http_headers.is_a?(Hash)
+      raise ArgumentError, "custom_strategies must be an array." unless self.custom_strategies.is_a?(Array)
     end
 
     def refresh_backup_file!
@@ -76,11 +78,53 @@ module Unleash
       self.bootstrap_config&.valid?
     end
 
+    # dynamically configured, should be cached!
+    def strategies
+      puts STRATEGIES
+      puts "Unleash.configuration.custom_strategies: #{Unleash.configuration.custom_strategies}"
+
+      cstats = Unleash.configuration.custom_strategies
+        .flatten
+        .compact
+        .map do |klass|
+          class_name_downcased = downcase_class_name(klass)
+          [class_name_downcased.to_sym, klass.new]
+        end
+        .to_h
+
+        # .map do |c|
+        #   puts "c: #{c}"
+        #   lowered_c = c.name.tap{ |c| c[0] = c[0].downcase }
+        #   lowered_c[0] = lowered_c[0].downcase
+        #   [lowered_c.to_sym, c.new]
+        # end
+        # .to_h
+
+        puts cstats
+        STRATEGIES.merge!(cstats)
+    end
+
     private
+
+    # attr_accessor :strategies
+
+    def downcase_class_name(klass)
+      klass.name.map do |c|
+        c
+        .each_with_index
+        .map{ |c, i| (i == 0) ? c.downcase : c }
+        .join("")
+      end
+    end
 
     def ensure_valid_opts(opts)
       unless opts[:custom_http_headers].is_a?(Hash) || opts[:custom_http_headers].nil?
         raise ArgumentError, "custom_http_headers must be a hash."
+      end
+
+      unless opts[:custom_strategies].is_a?(Array) && opts[:custom_strategies].each { |k| k&.method_defined? 'is_enabled?' } || opts[:custom_strategies].nil?
+        puts "a: #{opts[:custom_strategies]}"
+        raise ArgumentError, "custom_strategies must be an Arry of classes that respond to is_enabled? method."
       end
     end
 
@@ -101,6 +145,7 @@ module Unleash
       self.bootstrap_config = nil
 
       self.custom_http_headers = {}
+      self.custom_strategies   = []
     end
 
     def initialize_default_logger

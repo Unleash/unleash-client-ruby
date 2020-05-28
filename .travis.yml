@@ -7,8 +7,7 @@ rvm:
 - 2.5
 before_install:
 - gem install bundler -v 2.1.4
-- git clone --depth 5 --branch v3.2.0 https://github.com/Unleash/client-specification.git
-  client-specification
+- git clone --depth 5 --branch v3.3.0 https://github.com/Unleash/client-specification.git client-specification
 
 notifications:
   slack:

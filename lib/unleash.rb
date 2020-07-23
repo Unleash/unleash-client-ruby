@@ -5,7 +5,7 @@ require 'unleash/context'
 require 'unleash/client'
 require 'logger'
 
-Gem.find_files('unleash/strategy/**/*.rb').each{ |path| require path }
+Gem.find_files('unleash/strategy/**/*.rb').each{ |path| require path unless path.end_with? '_spec.rb' }
 
 module Unleash
   TIME_RESOLUTION = 3

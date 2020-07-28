@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'unleash/context'
 
 RSpec.describe Unleash::Context do
   context 'parameters correctly assigned in initialization'
@@ -25,7 +26,7 @@ RSpec.describe Unleash::Context do
       'sessionId' => 'verylongsesssionid',
       'remoteAddress' => '127.0.0.2',
       'properties' => {
-        fancy: 'polarbear'
+        'fancy' => 'polarbear'
       }
     }
     context = Unleash::Context.new(params)
@@ -36,9 +37,7 @@ RSpec.describe Unleash::Context do
   end
 
   it "will ignore non hash properties" do
-    params = {
-      'properties' => [1, 2, 3]
-    }
+    params = { 'properties' => [1, 2, 3] }
     context = Unleash::Context.new(params)
     expect(context.properties).to eq({})
   end
@@ -76,5 +75,49 @@ RSpec.describe Unleash::Context do
     )
     expect(context.app_name).to eq('my_super_app')
     expect(context.environment).to eq('test')
+  end
+
+  it "when using get_by_name with keys as symbols" do
+    params = {
+      userId: '123',
+      session_id: 'verylongsesssionid',
+      properties: {
+        fancy: 'polarbear'
+      }
+    }
+    context = Unleash::Context.new(params)
+    expect(context.get_by_name('user_id')).to eq('123')
+    expect(context.get_by_name(:user_id)).to eq('123')
+    expect(context.get_by_name('userId')).to eq('123')
+    expect(context.get_by_name('UserId')).to eq('123')
+    expect(context.get_by_name('session_id')).to eq('verylongsesssionid')
+    expect(context.get_by_name(:session_id)).to eq('verylongsesssionid')
+    expect(context.get_by_name('sessionId')).to eq('verylongsesssionid')
+    expect(context.get_by_name('SessionId')).to eq('verylongsesssionid')
+    expect(context.get_by_name(:fancy)).to eq('polarbear')
+    expect(context.get_by_name('fancy')).to eq('polarbear')
+    expect(context.get_by_name('Fancy')).to eq('polarbear')
+  end
+
+  it "when using get_by_name with keys as strings" do
+    params = {
+      'user_id' => '123',
+      'sessionId' => 'verylongsesssionid',
+      'properties' => {
+        'fancy' => 'polarbear'
+      }
+    }
+    context = Unleash::Context.new(params)
+    expect(context.get_by_name('user_id')).to eq('123')
+    expect(context.get_by_name(:user_id)).to eq('123')
+    expect(context.get_by_name('userId')).to eq('123')
+    expect(context.get_by_name('UserId')).to eq('123')
+    expect(context.get_by_name('session_id')).to eq('verylongsesssionid')
+    expect(context.get_by_name(:session_id)).to eq('verylongsesssionid')
+    expect(context.get_by_name('sessionId')).to eq('verylongsesssionid')
+    expect(context.get_by_name('SessionId')).to eq('verylongsesssionid')
+    expect(context.get_by_name(:fancy)).to eq('polarbear')
+    expect(context.get_by_name('fancy')).to eq('polarbear')
+    expect(context.get_by_name('Fancy')).to eq('polarbear')
   end
 end

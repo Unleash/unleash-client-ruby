@@ -1,6 +1,8 @@
 module Unleash
   class Context
-    attr_accessor :app_name, :environment, :user_id, :session_id, :remote_address, :properties
+    ATTRS = [:app_name, :environment, :user_id, :session_id, :remote_address].freeze
+
+    attr_accessor *[ATTRS, :properties].flatten
 
     def initialize(params = {})
       raise ArgumentError, "Unleash::Context must be initialized with a hash." unless params.is_a?(Hash)
@@ -12,18 +14,29 @@ module Unleash
       self.remote_address = value_for('remoteAddress', params)
 
       properties = value_for('properties', params)
-      self.properties = properties.is_a?(Hash) ? properties : {}
+      self.properties = properties.is_a?(Hash) ? properties.transform_keys(&:to_sym) : {}
     end
 
     def to_s
-      "<Context: user_id=#{self.user_id},session_id=#{self.session_id},remote_address=#{self.remote_address},properties=#{self.properties}>"
+      "<Context: user_id=#{@user_id},session_id=#{@session_id},remote_address=#{@remote_address},properties=#{@properties}" \
+        ",app_name=#{@app_name},environment=#{@environment}>"
+    end
+
+    def get_by_name(name)
+      normalized_name = underscore(name).to_sym
+
+      if ATTRS.include? normalized_name
+        self.send(normalized_name)
+      else
+        self.properties.fetch(normalized_name)
+      end
     end
 
     private
 
     # Method to fetch values from hash for two types of keys: string in camelCase and symbol in snake_case
-    def value_for(key, params, default_value = '')
-      params.values_at(key, underscore(key).to_sym).compact.first || default_value
+    def value_for(key, params, default_value = nil)
+      params.values_at(key, key.to_sym, underscore(key), underscore(key).to_sym).compact.first || default_value
     end
 
     # converts CamelCase to snake_case

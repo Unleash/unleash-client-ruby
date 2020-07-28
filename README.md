@@ -13,7 +13,6 @@ Leverage the [Unleash Server](https://github.com/Unleash/unleash) for powerful f
   * MRI 2.7
   * MRI 2.6
   * MRI 2.5
-  * MRI 2.4
   * jruby
 
 ## Installation

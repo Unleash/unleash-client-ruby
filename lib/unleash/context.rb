@@ -2,7 +2,7 @@ module Unleash
   class Context
     ATTRS = [:app_name, :environment, :user_id, :session_id, :remote_address].freeze
 
-    attr_accessor *[ATTRS, :properties].flatten
+    attr_accessor(*[ATTRS, :properties].flatten)
 
     def initialize(params = {})
       raise ArgumentError, "Unleash::Context must be initialized with a hash." unless params.is_a?(Hash)

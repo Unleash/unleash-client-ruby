@@ -1,4 +1,5 @@
 require 'unleash/activation_strategy'
+require 'unleash/constraint'
 require 'unleash/variant_definition'
 require 'unleash/variant'
 require 'unleash/strategy/util'
@@ -13,20 +14,9 @@ module Unleash
 
       self.name       = params.fetch('name', nil)
       self.enabled    = params.fetch('enabled', false)
-      self.strategies = params.fetch('strategies', [])
-        .select{ |s| s.has_key?('name') && Unleash::STRATEGIES.has_key?(s['name'].to_sym) }
-        .map{ |s| ActivationStrategy.new(s['name'], s['parameters'] || {}) } || []
 
-      self.variant_definitions = (params.fetch('variants', []) || [])
-        .select{ |v| v.is_a?(Hash) && v.has_key?('name') }
-        .map do |v|
-          VariantDefinition.new(
-            v.fetch('name', ''),
-            v.fetch('weight', 0),
-            v.fetch('payload', nil),
-            v.fetch('overrides', [])
-          )
-        end || []
+      self.strategies = initialize_strategies(params)
+      self.variant_definitions = initialize_variant_definitions(params)
     end
 
     def to_s
@@ -64,21 +54,27 @@ module Unleash
       result =
         if self.enabled
           self.strategies.empty? ||
-            self.strategies.any?{ |s| strategy_enabled?(s, context) }
+            self.strategies.any? do |s|
+              strategy_enabled?(s, context) && strategy_constraint_matches?(s, context)
+            end
         else
           default_result
         end
 
-      Unleash.logger.debug "FeatureToggle (enabled:#{self.enabled} default_result:#{default_result} " \
-        "and Strategies combined returned #{result})"
+      Unleash.logger.debug "Unleash::FeatureToggle (enabled:#{self.enabled} default_result:#{default_result} " \
+        "and Strategies combined with contraints returned #{result})"
 
       result
     end
 
     def strategy_enabled?(strategy, context)
       r = Unleash::STRATEGIES.fetch(strategy.name.to_sym, :unknown).is_enabled?(strategy.params, context)
-      Unleash.logger.debug "Strategy #{strategy.name} returned #{r} with context: #{context}" # "for params #{strategy.params} "
+      Unleash.logger.debug "Unleash::FeatureToggle.strategy_enabled? Strategy #{strategy.name} returned #{r} with context: #{context}"
       r
+    end
+
+    def strategy_constraint_matches?(strategy, context)
+      strategy.constraints.empty? || strategy.constraints.all?{ |c| c.matches_context?(context) }
     end
 
     def disabled_variant
@@ -126,6 +122,37 @@ module Unleash
         context = nil
       end
       context
+    end
+
+    def initialize_strategies(params)
+      params.fetch('strategies', [])
+        .select{ |s| s.has_key?('name') && Unleash::STRATEGIES.has_key?(s['name'].to_sym) }
+        .map do |s|
+          ActivationStrategy.new(
+            s['name'],
+            s['parameters'],
+            (s['constraints'] || []).map do |c|
+              Constraint.new(
+                c.fetch('contextName'),
+                c.fetch('operator'),
+                c.fetch('values')
+              )
+            end
+          )
+        end || []
+    end
+
+    def initialize_variant_definitions(params)
+      (params.fetch('variants', []) || [])
+        .select{ |v| v.is_a?(Hash) && v.has_key?('name') }
+        .map do |v|
+          VariantDefinition.new(
+            v.fetch('name', ''),
+            v.fetch('weight', 0),
+            v.fetch('payload', nil),
+            v.fetch('overrides', [])
+          )
+        end || []
     end
   end
 end

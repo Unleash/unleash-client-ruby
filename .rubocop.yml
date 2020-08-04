@@ -9,7 +9,7 @@ Naming/PredicateName:
 
 Metrics/ClassLength:
   Max: 120
-Metrics/LineLength:
+Layout/LineLength:
   Max: 140
 Metrics/MethodLength:
   Max: 20
@@ -22,9 +22,9 @@ Metrics/BlockLength:
 Metrics/AbcSize:
   Max: 25
 Metrics/CyclomaticComplexity:
-  Max: 8
+  Max: 9
 Metrics/PerceivedComplexity:
-  Max: 8
+  Max: 9
 
 Style/Documentation:
   Enabled: false

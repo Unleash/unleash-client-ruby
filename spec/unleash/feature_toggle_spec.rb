@@ -433,4 +433,91 @@ RSpec.describe Unleash::FeatureToggle do
       expect{ feature_toggle.get_variant(nil, valid_default_variant) }.to_not raise_error
     end
   end
+
+  describe 'FeatureToggle default Strategy with two constraints' do
+    let(:feature_toggle) do
+      Unleash::FeatureToggle.new(
+        "name" => "Test.userid",
+        "description" => "Play with strategy constraints",
+        "enabled" => true,
+        "strategies" => [
+          {
+            "constraints" => [
+              {
+                "contextName" => "environment",
+                "operator" => "IN",
+                "values" => [
+                  "dev"
+                ]
+              },
+              {
+                "contextName" => "userId",
+                "operator" => "IN",
+                "values" => ["123"]
+              }
+            ],
+            "name" => "default",
+            "parameters" => {
+            }
+          }
+        ]
+      )
+    end
+
+    it 'should return true if it matches all constraints' do
+      context = Unleash::Context.new(user_id: "123", environment: "dev")
+      expect(feature_toggle.is_enabled?(context, true)).to be_truthy
+    end
+
+    it 'should return false if it does not match all constraints (env)' do
+      context = Unleash::Context.new(user_id: "123", environment: "prod")
+      expect(feature_toggle.is_enabled?(context, true)).to be_falsey
+    end
+
+    it 'should return false if it does not match all constraints (user_id)' do
+      context = Unleash::Context.new(user_id: "11", environment: "dev")
+      expect(feature_toggle.is_enabled?(context, true)).to be_falsey
+    end
+
+    it 'should return false if it does not match any constraint (env and user_id)' do
+      context = Unleash::Context.new(user_id: "11", environment: "prod")
+      expect(feature_toggle.is_enabled?(context, true)).to be_falsey
+    end
+  end
+
+  describe 'FeatureToggle default Strategy with one constraint' do
+    let(:feature_toggle) do
+      Unleash::FeatureToggle.new(
+        "name" => "Demo",
+        "description" => "Play with strategy constraints",
+        "enabled" => true,
+        "strategies" => [
+          {
+            "constraints" => [
+              {
+                "contextName" => "environment",
+                "operator" => "IN",
+                "values" => [
+                  "dev"
+                ]
+              }
+            ],
+            "name" => "default",
+            "parameters" => {
+            }
+          }
+        ]
+      )
+    end
+
+    it 'should return true if it matches the constraint' do
+      context = Unleash::Context.new(user_id: "123", environment: "dev")
+      expect(feature_toggle.is_enabled?(context, true)).to be_truthy
+    end
+
+    it 'should return false if it does not match the constraint' do
+      context = Unleash::Context.new(user_id: "123", environment: "prod")
+      expect(feature_toggle.is_enabled?(context, true)).to be_falsey
+    end
+  end
 end

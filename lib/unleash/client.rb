@@ -59,24 +59,26 @@ module Unleash
     def get_variant(feature, context = nil, fallback_variant = nil)
       Unleash.logger.debug "Unleash::Client.get_variant for feature: #{feature} with context #{context}"
 
+      default_variant = fallback_variant || Unleash::FeatureToggle.new.disabled_variant
+
       if Unleash.configuration.disable_client
         Unleash.logger.debug "unleash_client is disabled! Always returning #{default_variant} for feature #{feature}!"
-        return fallback_variant || Unleash::FeatureToggle.disabled_variant
+        return default_variant
       end
 
       toggle_as_hash = Unleash&.toggles&.select{ |toggle| toggle['name'] == feature }&.first
 
       if toggle_as_hash.nil?
         Unleash.logger.debug "Unleash::Client.get_variant feature: #{feature} not found"
-        return fallback_variant || Unleash::FeatureToggle.disabled_variant
+        return default_variant
       end
 
       toggle = Unleash::FeatureToggle.new(toggle_as_hash)
-      variant = toggle.get_variant(context, fallback_variant)
+      variant = toggle.get_variant(context, default_variant)
 
       if variant.nil?
         Unleash.logger.debug "Unleash::Client.get_variant variants for feature: #{feature} not found"
-        return fallback_variant || Unleash::FeatureToggle.disabled_variant
+        return default_variant
       end
 
       # TODO: Add to README: name, payload, enabled (bool)

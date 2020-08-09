@@ -96,29 +96,31 @@ RSpec.describe Unleash::Client do
 
     features_response_body = '{
       "version": 1,
-      "features": {
-        "name": "toggleName",
-        "enabled": true,
-        "strategies": [{ "name": "default" }],
-        "variants": [
-          {
-            "name": "a",
-            "weight": 50,
-            "payload": {
-              "type": "string",
-              "value": ""
+      "features": [
+        {
+          "name": "toggleName",
+          "enabled": true,
+          "strategies": [{ "name": "default" }],
+          "variants": [
+            {
+              "name": "a",
+              "weight": 50,
+              "payload": {
+                "type": "string",
+                "value": ""
+              }
+            },
+            {
+              "name": "b",
+              "weight": 50,
+              "payload": {
+                "type": "string",
+                "value": ""
+              }
             }
-          },
-          {
-            "name": "b",
-            "weight": 50,
-            "payload": {
-              "type": "string",
-              "value": ""
-            }
-          }
-        ]
-      }
+          ]
+        }
+      ]
     }'
 
     WebMock.stub_request(:get, "http://test-url//client/features")
@@ -154,6 +156,13 @@ RSpec.describe Unleash::Client do
     expect(
       unleash_client.is_enabled?('toggleName', {}, true)
     ).to eq(true)
+
+    expect(
+      unleash_client.get_variant('toggleName', Unleash::Context.new(user_id: 42))
+    ).to eq(Unleash::Variant.new(name: 'a', enabled: true, payload: {
+      'type' => 'string',
+      'value' => ''
+    }))
 
     expect(WebMock).not_to have_requested(:get, 'http://test-url/')
     expect(WebMock).to have_requested(:post, 'http://test-url//client/register')

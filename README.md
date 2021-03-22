@@ -201,6 +201,40 @@ if UNLEASH.is_enabled? "AwesomeFeature", @unleash_context, true
 end
 ```
 
+Another possibility is to send a block, [Lambda](https://ruby-doc.org/core-3.0.1/Kernel.html#method-i-lambda) or [Proc](https://ruby-doc.org/core-3.0.1/Proc.html#method-i-yield)
+to evaluate the default value:
+
+```ruby
+net_check_proc = proc do |feature_name, context|
+  context.remote_address.starts_with?("10.0.0.")
+end
+
+if UNLEASH.is_enabled?("AwesomeFeature", @unleash_context, &net_check_proc)
+  puts "AwesomeFeature is enabled by default if you are in the 10.0.0.* network."
+end
+```
+
+or
+
+```ruby
+awesomeness = 10
+@unleash_context.properties[:coolness] = 10
+
+if UNLEASH.is_enabled?("AwesomeFeature", @unleash_context) { |feat, ctx| awesomeness >= 6 && ctx.properties[:coolness] >= 8 }
+  puts "AwesomeFeature is enabled by default if both the user has a high enought coolness and the application has a high enough awesomeness"
+end
+```
+
+Note:
+- The block/lambda/proc can use feature name and context as an arguments.
+- The client will evaluate the fallback function once per call of `is_enabled()`.
+  Please keep this in mind when creating your fallback function!
+- The returned value of the block should be a boolean.
+  However the client will coerce the result to boolean via `!!`.
+- If both a `default_value` and `fallback_function` are supplied,
+  the client will define the default value by `OR`ing the default value and the output of the fallback function.
+
+
 Alternatively by using `if_enabled` you can send a code block to be executed as a parameter:
 
 ```ruby
@@ -208,6 +242,8 @@ UNLEASH.if_enabled "AwesomeFeature", @unleash_context, true do
   puts "AwesomeFeature is enabled by default"
 end
 ```
+
+Note: `if_enabled` only supports `default_value`, but not `fallback_function`.
 
 ##### Variations
 
@@ -232,6 +268,7 @@ Method Name | Description | Return Type |
 `shutdown` | Save metrics to disk, flush metrics to server, and then kill ToggleFetcher and MetricsReporter threads. A safe shutdown. Not really useful in long running applications, like web applications. | nil |
 `shutdown!` | Kill ToggleFetcher and MetricsReporter threads immediately. | nil |
 
+For the full method signatures, please see [client.rb](lib/unleash/client.rb)
 
 ## Local test client
 

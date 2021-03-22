@@ -52,6 +52,9 @@ Style/HashTransformKeys:
 Style/HashTransformValues:
   Enabled: true
 
+Style/DoubleNegation:
+  Enabled: false
+
 Style/IfInsideElse:
   Exclude:
     - 'bin/unleash-client'

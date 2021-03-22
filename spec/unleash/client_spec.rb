@@ -212,19 +212,131 @@ RSpec.describe Unleash::Client do
     expect(WebMock).not_to have_requested(:post, 'http://test-url//client/metrics')
   end
 
-  it "should return default results if running with disable_client" do
+  it "should return default results via block or param if running with disable_client" do
     Unleash.configure do |config|
       config.disable_client = true
     end
     unleash_client = Unleash::Client.new
 
     expect(
+      unleash_client.is_enabled?('any_feature')
+    ).to be false
+
+    expect(
       unleash_client.is_enabled?('any_feature', {}, true)
-    ).to eq(true)
+    ).to be true
 
     expect(
       unleash_client.is_enabled?('any_feature2', {}, false)
-    ).to eq(false)
+    ).to be false
+
+    expect(
+      unleash_client.is_enabled?('any_feature3') { true }
+    ).to be true
+
+    expect(
+      unleash_client.is_enabled?('any_feature3') { false }
+    ).to be false
+
+    expect(
+      unleash_client.is_enabled?('any_feature3', {}) { true }
+    ).to be true
+
+    expect(
+      unleash_client.is_enabled?('any_feature3', {}) { false }
+    ).to be false
+
+    expect(
+      unleash_client.is_enabled?('any_feature5', {}) { nil }
+    ).to be false
+
+    # should never really send both the default value and a default block,
+    # but if it is done, we OR the two values
+    expect(
+      unleash_client.is_enabled?('any_feature3', {}, true) { true }
+    ).to be true
+
+    expect(
+      unleash_client.is_enabled?('any_feature3', {}, false) { true }
+    ).to be true
+
+    expect(
+      unleash_client.is_enabled?('any_feature3', {}, true) { false }
+    ).to be true
+
+    expect(
+      unleash_client.is_enabled?('any_feature3', {}, false) { false }
+    ).to be false
+
+    expect(
+      unleash_client.is_enabled?('any_feature5', {}) { 'random_string' }
+    ).to be true # expect "a string".to be_truthy
+
+    expect do |b|
+      unleash_client.is_enabled?('any_feature3', &b).to yield_with_no_args
+    end
+
+    expect do |b|
+      unleash_client.is_enabled?('any_feature3', {}, &b).to yield_with_no_args
+    end
+
+    expect do |b|
+      unleash_client.is_enabled?('any_feature3', {}, true, &b).to yield_with_no_args
+    end
+
+    number_eight = 8
+    expect(
+      unleash_client.is_enabled?('any_feature5', {}) do
+        number_eight >= 5
+      end
+    ).to be true
+
+    expect(
+      unleash_client.is_enabled?('any_feature5', {}) do
+        number_eight < 5
+      end
+    ).to be false
+
+    context_params = {
+      session_id: 'verylongsesssionid',
+      remote_address: '127.0.0.2',
+      properties: {
+        env: 'dev'
+      }
+    }
+    unleash_context = Unleash::Context.new(context_params)
+    expect(
+      unleash_client.is_enabled?('any_feature6', unleash_context) do |feature, context|
+        feature == 'any_feature6' && \
+        context.remote_address == '127.0.0.2' && context.session_id.length == 18 && context.properties[:env] == 'dev'
+      end
+    ).to be true
+
+    proc = proc do |_feat, ctx|
+      ctx.remote_address.starts_with?("127.0.0.")
+    end
+    expect(
+      unleash_client.is_enabled?('any_feature6', unleash_context) { proc }
+    ).to be true
+    expect(
+      unleash_client.is_enabled?('any_feature6', unleash_context, true) { proc }
+    ).to be true
+    expect(
+      unleash_client.is_enabled?('any_feature6', unleash_context, false) { proc }
+    ).to be true
+
+    proc_feat = proc do |feat, _ctx|
+      feat != 'feature6'
+    end
+    expect(
+      unleash_client.is_enabled?('feature6', unleash_context, &proc_feat)
+    ).to be false
+    expect(
+      unleash_client.is_enabled?('feature6', unleash_context, true, &proc_feat)
+    ).to be true
+    expect(
+      unleash_client.is_enabled?('feature6', unleash_context, false, &proc_feat)
+    ).to be false
   end
 
   it "should not connect anywhere if running with disable_client" do

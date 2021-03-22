@@ -28,8 +28,14 @@ module Unleash
       start_metrics unless Unleash.configuration.disable_metrics
     end
 
-    def is_enabled?(feature, context = nil, default_value = false)
+    def is_enabled?(feature, context = nil, default_value_param = false, &fallback_blk)
       Unleash.logger.debug "Unleash::Client.is_enabled? feature: #{feature} with context #{context}"
+
+      if block_given?
+        default_value = default_value_param || !!fallback_blk.call(feature, context)
+      else
+        default_value = default_value_param
+      end
 
       if Unleash.configuration.disable_client
         Unleash.logger.warn "unleash_client is disabled! Always returning #{default_value} for feature #{feature}!"

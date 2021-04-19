@@ -132,6 +132,27 @@ end
 
 Instead of the configuration in `config/initializers/unleash.rb`.
 
+#### Add Initializer if using [Phusion Passenger](https://github.com/phusion/passenger)
+
+The unleash client needs to be configured and instantiated inside the `PhusionPassenger.on_event(:starting_worker_process)` code block due to [smart spawning](https://www.phusionpassenger.com/library/indepth/ruby/spawn_methods/#smart-spawning-caveats):
+
+The initializer in `config/initializers/unleash.rb` should look like:
+
+```ruby
+PhusionPassenger.on_event(:starting_worker_process) do |forked|
+  if forked
+    Unleash.configure do |config|
+      config.url      = 'http://unleash.herokuapp.com/api'
+      config.app_name = Rails.application.class.parent.to_s
+      # config.instance_id = "#{Socket.gethostname}"
+      config.logger   = Rails.logger
+      config.environment = Rails.env
+    end
+
+    UNLEASH = Unleash::Client.new
+  end
+end
+```
 
 #### Set Unleash::Context
 

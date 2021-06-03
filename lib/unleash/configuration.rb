@@ -8,6 +8,7 @@ module Unleash
       :app_name,
       :environment,
       :instance_id,
+      :project_name,
       :custom_http_headers,
       :disable_client,
       :disable_metrics,
@@ -52,15 +53,17 @@ module Unleash
     end
 
     def fetch_toggles_url
-      self.url + '/client/features'
+      project_param = (self.project_name.nil? ? "" : "?project=#{self.project_name}")
+
+      "#{self.url}/client/features#{project_param}"
     end
 
     def client_metrics_url
-      self.url + '/client/metrics'
+      "#{self.url}/client/metrics"
     end
 
     def client_register_url
-      self.url + '/client/register'
+      "#{self.url}/client/register"
     end
 
     private
@@ -76,6 +79,7 @@ module Unleash
       self.environment      = 'default'
       self.url              = nil
       self.instance_id      = SecureRandom.uuid
+      self.project_name     = nil
       self.disable_client   = false
       self.disable_metrics  = false
       self.refresh_interval = 15

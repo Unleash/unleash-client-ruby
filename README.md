@@ -60,6 +60,7 @@ Argument | Description | Required? |  Type |  Default Value|
 `app_name` | Name of your program. | Y | String | N/A |
 `instance_id` | Identifier for the running instance of program. Important so you can trace back to where metrics are being collected from. **Highly recommended be be set.** | N | String | random UUID |
 `environment` | Environment the program is running on. Could be for example `prod` or `dev`. Not yet in use. | N | String | `default` |
+`project_name` | Name of the project to retrieve features from. If not set, all feature flags will be retrieved. | N | String | nil |
 `refresh_interval` | How often the unleash client should check with the server for configuration changes. | N | Integer |  15 |
 `metrics_interval` | How often the unleash client should send metrics to server. | N | Integer | 10 |
 `disable_client` | Disables all communication with the Unleash server, effectively taking it *offline*. If set, `is_enabled?` will always answer with the `default_value` and configuration validation is skipped. Defeats the entire purpose of using unleash, but can be useful in when running tests. | N | Boolean | `false` |

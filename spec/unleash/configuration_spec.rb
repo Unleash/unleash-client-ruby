@@ -23,6 +23,7 @@ RSpec.describe Unleash do
       expect(config.retry_limit).to eq(1)
 
       expect(config.backup_file).to_not be_nil
+      expect(config.project_name).to be_nil
 
       expect{ config.validate! }.to raise_error(ArgumentError)
     end
@@ -59,6 +60,11 @@ RSpec.describe Unleash do
       expect(config.fetch_toggles_url).to eq('https://testurl/api/client/features')
       expect(config.client_metrics_url).to eq('https://testurl/api/client/metrics')
       expect(config.client_register_url).to eq('https://testurl/api/client/register')
+    end
+
+    it "should build the correct unleash features endpoint when project_name is used" do
+      config = Unleash::Configuration.new(url: 'https://testurl/api', app_name: 'test-app', project_name: 'test-project')
+      expect(config.fetch_toggles_url).to eq('https://testurl/api/client/features?project=test-project')
     end
 
     it "should allow hashes for custom_http_headers via yield" do

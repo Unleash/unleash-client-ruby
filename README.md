@@ -41,8 +41,9 @@ It is **highly recommended** to configure the `instance_id` parameter as well.
 
 ```ruby
 Unleash.configure do |config|
-  config.url         = 'http://unleash.herokuapp.com/api'
-  config.app_name    = 'my_ruby_app'
+  config.url          = 'http://unleash.herokuapp.com/api'
+  config.app_name     = 'my_ruby_app'
+  custom_http_headers = {'Authorization': '<API token>'},
 end
 ```
 

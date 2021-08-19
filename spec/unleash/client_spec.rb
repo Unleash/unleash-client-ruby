@@ -365,4 +365,123 @@ RSpec.describe Unleash::Client do
     expect{ |b| unleash_client.if_enabled('any_feature', {}, true, &b).to yield_with_no_args }
     expect{ |b| unleash_client.if_enabled('any_feature', {}, false, &b).not_to yield_with_no_args }
   end
+
+  describe 'get_variant' do
+    let(:disable_client) { false }
+    let(:client) { Unleash::Client.new }
+    let(:feature) { 'awesome-feature' }
+    let(:fallback_variant) { Unleash::Variant.new(name: 'default', enabled: true) }
+    let(:variants) {
+      [
+        {
+          name: "a",
+          weight: 50,
+          payload: {
+            type: "string",
+            value: ""
+          }
+        },
+      ]
+    }
+    let(:body) {
+      {
+        version: 1,
+        features: [
+          {
+            name: feature,
+            enabled: true,
+            strategies: [
+              { name: "default" }
+            ],
+            variants: variants
+          }
+        ]
+      }.to_json
+    }
+
+    before do
+      WebMock.stub_request(:post, "http://test-url//client/register")
+             .with(
+               headers: {
+                 'Accept' => '*/*',
+                 'Content-Type' => 'application/json',
+                 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+                 'User-Agent' => 'Ruby',
+                 'X-Api-Key' => '123'
+               }
+             )
+             .to_return(status: 200, body: '', headers: {})
+
+      WebMock.stub_request(:get, "http://test-url//client/features")
+             .with(
+               headers: {
+                 'Accept' => '*/*',
+                 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+                 'Content-Type' => 'application/json',
+                 'Unleash-Appname' => 'my-test-app',
+                 'Unleash-Instanceid' => 'rspec/test',
+                 'User-Agent' => 'Ruby',
+                 'X-Api-Key' => '123'
+               }
+             )
+             .to_return(status: 200, body: body, headers: {})
+
+      Unleash.toggles = []
+      Unleash.configure do |config|
+        config.url      = 'http://test-url/'
+        config.app_name = 'my-test-app'
+        config.disable_client = disable_client
+        config.custom_http_headers = { 'X-API-KEY' => '123' }
+      end
+    end
+
+    it 'returns variant' do
+      ret = client.get_variant(feature)
+      expect(ret.name).to eq 'a'
+    end
+
+    context 'when disable_client is false' do
+      let(:disable_client) { true }
+
+      context 'when fallback variant is specified' do
+        it 'returns given fallback variant' do
+          expect(client.get_variant(feature, nil, fallback_variant)).to be fallback_variant
+        end
+      end
+
+      context 'when fallback variant is not specified' do
+        it 'returns a disabled variant' do
+          ret = client.get_variant(feature)
+          expect(ret.enabled).to be false
+          expect(ret.name).to eq 'disabled'
+        end
+      end
+    end
+
+    context 'when feature is not found' do
+      context 'when fallback variant is specified' do
+        it 'returns given fallback variant' do
+          expect(client.get_variant('something', nil, fallback_variant)).to be fallback_variant
+        end
+      end
+
+      context 'when fallback variant is not specified' do
+        it 'returns a disabled variant' do
+          ret = client.get_variant('something')
+          expect(ret.enabled).to be false
+          expect(ret.name).to eq 'disabled'
+        end
+      end
+    end
+
+    context 'when feature does not have variants' do
+      let(:variants) { [] }
+
+      it 'returns a disabled variant' do
+        ret = client.get_variant(feature)
+        expect(ret.enabled).to be false
+        expect(ret.name).to eq 'disabled'
+      end
+    end
+  end
 end

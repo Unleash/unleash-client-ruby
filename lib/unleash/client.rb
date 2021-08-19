@@ -62,19 +62,19 @@ module Unleash
       yield(blk) if is_enabled?(feature, context, default_value)
     end
 
-    def get_variant(feature, context = nil, fallback_variant = nil)
+    def get_variant(feature, context = Unleash::Context.new, fallback_variant = disabled_variant)
       Unleash.logger.debug "Unleash::Client.get_variant for feature: #{feature} with context #{context}"
 
       if Unleash.configuration.disable_client
-        Unleash.logger.debug "unleash_client is disabled! Always returning #{default_variant} for feature #{feature}!"
-        return fallback_variant || Unleash::FeatureToggle.disabled_variant
+        Unleash.logger.debug "unleash_client is disabled! Always returning #{fallback_variant} for feature #{feature}!"
+        return fallback_variant
       end
 
       toggle_as_hash = Unleash&.toggles&.select{ |toggle| toggle['name'] == feature }&.first
 
       if toggle_as_hash.nil?
         Unleash.logger.debug "Unleash::Client.get_variant feature: #{feature} not found"
-        return fallback_variant || Unleash::FeatureToggle.disabled_variant
+        return fallback_variant
       end
 
       toggle = Unleash::FeatureToggle.new(toggle_as_hash)
@@ -82,7 +82,7 @@ module Unleash
 
       if variant.nil?
         Unleash.logger.debug "Unleash::Client.get_variant variants for feature: #{feature} not found"
-        return fallback_variant || Unleash::FeatureToggle.disabled_variant
+        return fallback_variant
       end
 
       # TODO: Add to README: name, payload, enabled (bool)
@@ -156,6 +156,10 @@ module Unleash
         Unleash.logger.error "stacktrace: #{e.backtrace}"
       end
       Unleash.logger.debug "client registered: #{response}"
+    end
+
+    def disabled_variant
+      @disabled_variant ||= Unleash::FeatureToggle.new.disabled_variant
     end
   end
 end

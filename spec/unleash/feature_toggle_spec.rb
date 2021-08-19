@@ -520,4 +520,12 @@ RSpec.describe Unleash::FeatureToggle do
       expect(feature_toggle.is_enabled?(context, true)).to be_falsey
     end
   end
+
+  describe 'disabled_variant' do
+    it 'returns disabled variant' do
+      ret = described_class.new.disabled_variant
+      expect(ret.enabled).to be false
+      expect(ret.name).to eq 'disabled'
+    end
+  end
 end

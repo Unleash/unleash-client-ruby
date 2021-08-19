@@ -47,6 +47,10 @@ module Unleash
       variant
     end
 
+    def disabled_variant
+      Unleash::Variant.new(name: 'disabled', enabled: false)
+    end
+
     private
 
     # only check if it is enabled, do not do metrics
@@ -75,10 +79,6 @@ module Unleash
 
     def strategy_constraint_matches?(strategy, context)
       strategy.constraints.empty? || strategy.constraints.all?{ |c| c.matches_context?(context) }
-    end
-
-    def disabled_variant
-      Unleash::Variant.new(name: 'disabled', enabled: false)
     end
 
     def sum_variant_defs_weights

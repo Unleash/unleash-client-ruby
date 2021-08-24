@@ -96,7 +96,7 @@ RSpec.describe Unleash::Client do
 
     features_response_body = '{
       "version": 1,
-      "features": {
+      "features": [
         "name": "toggleName",
         "enabled": true,
         "strategies": [{ "name": "default" }],
@@ -118,7 +118,7 @@ RSpec.describe Unleash::Client do
             }
           }
         ]
-      }
+      ]
     }'
 
     WebMock.stub_request(:get, "http://test-url//client/features")

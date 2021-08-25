@@ -6,10 +6,12 @@ SimpleCov::Formatter::LcovFormatter.config do |config|
   config.single_report_path = 'coverage/lcov.info'
 end
 
-SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
-  SimpleCov::Formatter::HTMLFormatter,
-  SimpleCov::Formatter::LcovFormatter
-])
+SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new(
+  [
+    SimpleCov::Formatter::HTMLFormatter,
+    SimpleCov::Formatter::LcovFormatter
+  ]
+)
 
 SimpleCov.start
 
@@ -18,7 +20,6 @@ require "unleash"
 require "unleash/client"
 
 require 'webmock/rspec'
-
 
 WebMock.disable_net_connect!(allow_localhost: false)
 

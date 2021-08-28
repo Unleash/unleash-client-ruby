@@ -10,7 +10,7 @@ RSpec.describe Unleash::FeatureToggle do
     Unleash.configuration = Unleash::Configuration.new
     Unleash.logger = Unleash.configuration.logger
     Unleash.logger.level = Unleash.configuration.log_level
-    # Unleash.logger.level = Logger::DEBUG
+    Unleash.logger.level = Logger::ERROR
     Unleash.toggles = []
     Unleash.toggle_metrics = {}
 

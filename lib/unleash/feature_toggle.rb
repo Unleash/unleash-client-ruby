@@ -32,13 +32,13 @@ module Unleash
       result
     end
 
-    def get_variant(context, fallback_variant = disabled_variant)
+    def get_variant(context, fallback_variant = Unleash::FeatureToggle.disabled_variant)
       raise ArgumentError, "Provided fallback_variant is not of type Unleash::Variant" if fallback_variant.class.name != 'Unleash::Variant'
 
       context = ensure_valid_context(context)
 
-      return disabled_variant unless self.enabled && am_enabled?(context, true)
-      return disabled_variant if sum_variant_defs_weights <= 0
+      return Unleash::FeatureToggle.disabled_variant unless self.enabled && am_enabled?(context, true)
+      return Unleash::FeatureToggle.disabled_variant if sum_variant_defs_weights <= 0
 
       variant = variant_from_override_match(context)
       variant = variant_from_weights(context) if variant.nil?
@@ -47,7 +47,7 @@ module Unleash
       variant
     end
 
-    def disabled_variant
+    def self.disabled_variant
       Unleash::Variant.new(name: 'disabled', enabled: false)
     end
 
@@ -110,7 +110,7 @@ module Unleash
           prev_weights += v.weight
           res
         end
-      return disabled_variant if variant_definition.nil?
+      return self.disabled_variant if variant_definition.nil?
 
       Unleash::Variant.new(name: variant_definition.name, enabled: true, payload: variant_definition.payload)
     end

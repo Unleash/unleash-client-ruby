@@ -17,13 +17,13 @@ puts ">> START simple.rb"
 # or:
 
 @unleash = Unleash::Client.new(
-  url: 'http://unleash.herokuapp.com/api',
+  url: 'https://app.unleash-hosted.com/demo/api',
   app_name: 'simple-test',
   instance_id: 'local-test-cli',
   refresh_interval: 2,
   metrics_interval: 2,
   retry_limit: 2,
-  log_level: Logger::DEBUG
+  custom_http_headers: {'Authorization': '943ca9171e2c884c545c5d82417a655fb77cec970cc3b78a8ff87f4406b495d0'},
 )
 
 # feature_name = "AwesomeFeature"

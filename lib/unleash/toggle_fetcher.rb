@@ -48,7 +48,7 @@ module Unleash
       self.etag = response['ETag']
       response_hash = JSON.parse(response.body)
 
-      if response_hash['version'] == 1
+      if response_hash['version'] >= 1
         features = response_hash['features']
       else
         raise NotImplemented, "Version of features provided by unleash server" \

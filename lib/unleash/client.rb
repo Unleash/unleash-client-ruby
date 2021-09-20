@@ -60,7 +60,7 @@ module Unleash
       Unleash.logger.debug "Unleash::Client.get_variant for feature: #{feature} with context #{context}"
 
       if Unleash.configuration.disable_client
-        Unleash.logger.debug "unleash_client is disabled! Always returning #{default_variant} for feature #{feature}!"
+        Unleash.logger.debug "unleash_client is disabled! Always returning #{fallback_variant} for feature #{feature}!"
         return fallback_variant || Unleash::FeatureToggle.disabled_variant
       end
 

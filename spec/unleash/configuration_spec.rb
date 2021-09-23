@@ -51,6 +51,7 @@ RSpec.describe Unleash do
       expect(Unleash.configuration.url).to eq('http://test-url/')
       expect(Unleash.configuration.app_name).to eq('my-test-app')
       expect(Unleash.configuration.fetch_toggles_url).to eq('http://test-url//client/features')
+      expect(Unleash.configuration.backup_file).to eq("#{Dir.tmpdir}/unleash-my-test-app-repo.json")
     end
 
     it "should build the correct unleash endpoints from the base url" do

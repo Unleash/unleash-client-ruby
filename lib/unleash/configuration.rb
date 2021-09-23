@@ -26,7 +26,7 @@ module Unleash
       initialize_default_logger if opts[:logger].nil?
 
       merge(opts)
-      refresh_backup_file!
+      refresh_backup_file! if app_name.present?
     end
 
     def metrics_interval_in_millis

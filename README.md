@@ -34,23 +34,29 @@ Or install it yourself as:
 
 ## Configure
 
-It is **required** to configure the `url` of the unleash server and `app_name` with the name of the runninng application. Please substitute the sample `'http://unleash.herokuapp.com/api'` for the url of your own instance.
+It is **required** to configure:
+- `url` of the unleash server
+- `app_name` with the name of the runninng application.
+- `custom_http_headers` with `{'Authorization': '<API token>'}` when using Unleash v4.0.0 and later.
 
-It is **highly recommended** to configure the `instance_id` parameter as well.
+Please substitute the example `'http://unleash.herokuapp.com/api'` for the url of your own instance.
+
+It is **highly recommended** to configure:
+- `instance_id` parameter with a unique identifier for the running instance.
 
 
 ```ruby
 Unleash.configure do |config|
-  config.url          = 'http://unleash.herokuapp.com/api'
-  config.app_name     = 'my_ruby_app'
-  custom_http_headers = {'Authorization': '<API token>'},
+  config.app_name            = 'my_ruby_app'
+  config.url                 = 'http://unleash.herokuapp.com/api'
+  config.custom_http_headers = {'Authorization': '<API token>'}
 end
 ```
 
 or instantiate the client with the valid configuration:
 
 ```ruby
-UNLEASH = Unleash::Client.new(url: 'http://unleash.herokuapp.com/api', app_name: 'my_ruby_app')
+UNLEASH = Unleash::Client.new(url: 'http://unleash.herokuapp.com/api', app_name: 'my_ruby_app', custom_http_headers: {'Authorization': '<API token>'})
 ```
 
 #### List of Arguments
@@ -66,7 +72,7 @@ Argument | Description | Required? |  Type |  Default Value|
 `metrics_interval` | How often the unleash client should send metrics to server. | N | Integer | 10 |
 `disable_client` | Disables all communication with the Unleash server, effectively taking it *offline*. If set, `is_enabled?` will always answer with the `default_value` and configuration validation is skipped. Defeats the entire purpose of using unleash, but can be useful in when running tests. | N | Boolean | `false` |
 `disable_metrics` | Disables sending metrics to Unleash server. | N | Boolean | `false` |
-`custom_http_headers` | Custom headers to send to Unleash. | N | Hash | {} |
+`custom_http_headers` | Custom headers to send to Unleash. As of Unleash v4.0.0, the `Authorization` header is required. For example: `{'Authorization': '<API token>'}` | N | Hash | {} |
 `timeout` | How long to wait for the connection to be established or wait in reading state (open_timeout/read_timeout) | N | Integer | 30 |
 `retry_limit` | How many consecutive failures in connecting to the Unleash server are allowed before giving up. Use `Float::INFINITY` if you would like it to never give up. | N | Numeric | 5 |
 `backup_file` | Filename to store the last known state from the Unleash server. Best to not change this from the default. | N | String | `Dir.tmpdir + "/unleash-#{app_name}-repo.json` |
@@ -82,7 +88,7 @@ For in a more in depth look, please see `lib/unleash/configuration.rb`.
 require 'unleash'
 require 'unleash/context'
 
-@unleash = Unleash::Client.new(url: 'http://unleash.herokuapp.com/api', app_name: 'my_ruby_app')
+@unleash = Unleash::Client.new(app_name: 'my_ruby_app', url: 'http://unleash.herokuapp.com/api', custom_http_headers: {'Authorization': '<API token>'})
 
 feature_name = "AwesomeFeature"
 unleash_context = Unleash::Context.new
@@ -103,8 +109,8 @@ Put in `config/initializers/unleash.rb`:
 
 ```ruby
 Unleash.configure do |config|
-  config.url      = 'http://unleash.herokuapp.com/api'
   config.app_name = Rails.application.class.parent.to_s
+  config.url      = 'http://unleash.herokuapp.com/api'
   # config.instance_id = "#{Socket.gethostname}"
   config.logger   = Rails.logger
   config.environment = Rails.env
@@ -124,9 +130,10 @@ on_worker_boot do
   # ...
 
   Unleash.configure do |config|
-    config.url      = 'http://unleash.herokuapp.com/api'
-    config.app_name = Rails.application.class.parent.to_s
+    config.app_name    = Rails.application.class.parent.to_s
     config.environment = Rails.env
+    config.url                 = 'http://unleash.herokuapp.com/api'
+    config.custom_http_headers = {'Authorization': '<API token>'}
   end
   Rails.configuration.unleash = Unleash::Client.new
 end
@@ -144,11 +151,12 @@ The initializer in `config/initializers/unleash.rb` should look like:
 PhusionPassenger.on_event(:starting_worker_process) do |forked|
   if forked
     Unleash.configure do |config|
-      config.url      = 'http://unleash.herokuapp.com/api'
-      config.app_name = Rails.application.class.parent.to_s
+      config.app_name    = Rails.application.class.parent.to_s
       # config.instance_id = "#{Socket.gethostname}"
-      config.logger   = Rails.logger
+      config.logger      = Rails.logger
       config.environment = Rails.env
+      config.url                 = 'http://unleash.herokuapp.com/api'
+      config.custom_http_headers = {'Authorization': '<API token>'}
     end
 
     UNLEASH = Unleash::Client.new

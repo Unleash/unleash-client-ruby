@@ -78,8 +78,8 @@ module Unleash
       self.instance_id      = SecureRandom.uuid
       self.disable_client   = false
       self.disable_metrics  = false
-      self.refresh_interval = 15
-      self.metrics_interval = 10
+      self.refresh_interval = 10
+      self.metrics_interval = 30
       self.timeout          = 30
       self.retry_limit      = 1
       self.backup_file      = nil

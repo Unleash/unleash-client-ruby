@@ -36,7 +36,7 @@ module Unleash
     # rename to refresh_from_server!  ??
     def fetch
       Unleash.logger.debug "fetch()"
-      response = Unleash::Util::Http.get(Unleash.configuration.fetch_toggles_url, etag)
+      response = Unleash::Util::Http.get(Unleash.configuration.fetch_toggles_uri, etag)
 
       if response.code == '304'
         Unleash.logger.debug "No changes according to the unleash server, nothing to do."

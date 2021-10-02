@@ -52,18 +52,22 @@ module Unleash
       }.merge(custom_http_headers.dup)
     end
 
-    def fetch_toggles_url
-      project_param = (self.project_name.nil? ? "" : "?project=#{self.project_name}")
-
-      "#{self.url}/client/features#{project_param}"
+    def fetch_toggles_uri
+      uri = URI("#{self.url_stripped_of_slash}/client/features")
+      uri.query = "project=#{self.project_name}" unless self.project_name.nil?
+      uri
     end
 
-    def client_metrics_url
-      "#{self.url}/client/metrics"
+    def client_metrics_uri
+      URI("#{self.url_stripped_of_slash}/client/metrics")
     end
 
-    def client_register_url
-      "#{self.url}/client/register"
+    def client_register_uri
+      URI("#{self.url_stripped_of_slash}/client/register")
+    end
+
+    def url_stripped_of_slash
+      self.url.delete_suffix '/'
     end
 
     private

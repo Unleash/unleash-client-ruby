@@ -2,7 +2,7 @@ require "spec_helper"
 
 RSpec.describe Unleash::Client do
   it "Uses custom http headers when initializing client" do
-    WebMock.stub_request(:post, "http://test-url//client/register")
+    WebMock.stub_request(:post, "http://test-url/client/register")
       .with(
         headers: {
           'Accept' => '*/*',
@@ -13,7 +13,7 @@ RSpec.describe Unleash::Client do
         }
       )
       .to_return(status: 200, body: "", headers: {})
-    WebMock.stub_request(:post, "http://test-url//client/metrics")
+    WebMock.stub_request(:post, "http://test-url/client/metrics")
       .with(
         headers: {
           'Accept' => '*/*',
@@ -23,7 +23,7 @@ RSpec.describe Unleash::Client do
         }
       )
       .to_return(status: 200, body: "", headers: {})
-    WebMock.stub_request(:get, "http://test-url//client/features")
+    WebMock.stub_request(:get, "http://test-url/client/features")
       .with(
         headers: {
           'Accept' => '*/*',
@@ -54,7 +54,7 @@ RSpec.describe Unleash::Client do
     expect(unleash_client).to be_a(Unleash::Client)
 
     expect(
-      a_request(:post, "http://test-url//client/register")
+      a_request(:post, "http://test-url/client/register")
       .with(headers: { 'Content-Type': 'application/json' })
       .with(headers: { 'X-API-KEY': '123', 'Content-Type': 'application/json' })
       .with(headers: { 'UNLEASH-APPNAME': 'my-test-app' })
@@ -62,7 +62,7 @@ RSpec.describe Unleash::Client do
     ).to have_been_made.once
 
     expect(
-      a_request(:get, "http://test-url//client/features")
+      a_request(:get, "http://test-url/client/features")
       .with(headers: { 'X-API-KEY': '123' })
       .with(headers: { 'UNLEASH-APPNAME': 'my-test-app' })
       .with(headers: { 'UNLEASH-INSTANCEID': 'rspec/test' })
@@ -71,7 +71,7 @@ RSpec.describe Unleash::Client do
     # Test now sending of metrics
     Unleash.reporter.send
     expect(
-      a_request(:post, "http://test-url//client/metrics")
+      a_request(:post, "http://test-url/client/metrics")
       .with(headers: { 'Content-Type': 'application/json' })
       .with(headers: { 'X-API-KEY': '123', 'Content-Type': 'application/json' })
       .with(headers: { 'UNLEASH-APPNAME': 'my-test-app' })
@@ -80,7 +80,7 @@ RSpec.describe Unleash::Client do
   end
 
   it "should load/use correct variants from the unleash server" do
-    WebMock.stub_request(:post, "http://test-url//client/register")
+    WebMock.stub_request(:post, "http://test-url/client/register")
       .with(
         headers: {
           'Accept' => '*/*',
@@ -121,7 +121,7 @@ RSpec.describe Unleash::Client do
       ]
     }'
 
-    WebMock.stub_request(:get, "http://test-url//client/features")
+    WebMock.stub_request(:get, "http://test-url/client/features")
       .with(
         headers: {
           'Accept' => '*/*',
@@ -156,12 +156,12 @@ RSpec.describe Unleash::Client do
     ).to eq(true)
 
     expect(WebMock).not_to have_requested(:get, 'http://test-url/')
-    expect(WebMock).to have_requested(:post, 'http://test-url//client/register')
-    expect(WebMock).to have_requested(:get, 'http://test-url//client/features')
+    expect(WebMock).to have_requested(:post, 'http://test-url/client/register')
+    expect(WebMock).to have_requested(:get, 'http://test-url/client/features')
   end
 
   it "should not fail if we are provided no toggles from the unleash server" do
-    WebMock.stub_request(:post, "http://test-url//client/register")
+    WebMock.stub_request(:post, "http://test-url/client/register")
       .with(
         headers: {
           'Accept' => '*/*',
@@ -173,7 +173,7 @@ RSpec.describe Unleash::Client do
       )
       .to_return(status: 200, body: "", headers: {})
 
-    WebMock.stub_request(:get, "http://test-url//client/features")
+    WebMock.stub_request(:get, "http://test-url/client/features")
       .with(
         headers: {
           'Accept' => '*/*',
@@ -207,9 +207,9 @@ RSpec.describe Unleash::Client do
     ).to eq(true)
 
     expect(WebMock).not_to have_requested(:get, 'http://test-url/')
-    expect(WebMock).to have_requested(:get, 'http://test-url//client/features')
-    expect(WebMock).to have_requested(:post, 'http://test-url//client/register')
-    expect(WebMock).not_to have_requested(:post, 'http://test-url//client/metrics')
+    expect(WebMock).to have_requested(:get, 'http://test-url/client/features')
+    expect(WebMock).to have_requested(:post, 'http://test-url/client/register')
+    expect(WebMock).not_to have_requested(:post, 'http://test-url/client/metrics')
   end
 
   it "should return default results via block or param if running with disable_client" do
@@ -353,10 +353,10 @@ RSpec.describe Unleash::Client do
     ).to eq(true)
 
     expect(WebMock).not_to have_requested(:get, 'http://test-url/')
-    expect(WebMock).not_to have_requested(:get, 'http://test-url//client/features')
-    expect(WebMock).not_to have_requested(:post, 'http://test-url//client/features')
-    expect(WebMock).not_to have_requested(:post, 'http://test-url//client/register')
-    expect(WebMock).not_to have_requested(:post, 'http://test-url//client/metrics')
+    expect(WebMock).not_to have_requested(:get, 'http://test-url/client/features')
+    expect(WebMock).not_to have_requested(:post, 'http://test-url/client/features')
+    expect(WebMock).not_to have_requested(:post, 'http://test-url/client/register')
+    expect(WebMock).not_to have_requested(:post, 'http://test-url/client/metrics')
   end
 
   it "should yield correctly to block when using if_enabled" do
@@ -400,7 +400,7 @@ RSpec.describe Unleash::Client do
     }
 
     before do
-      WebMock.stub_request(:post, "http://test-url//client/register")
+      WebMock.stub_request(:post, "http://test-url/client/register")
              .with(
                headers: {
                  'Accept' => '*/*',
@@ -412,7 +412,7 @@ RSpec.describe Unleash::Client do
              )
              .to_return(status: 200, body: '', headers: {})
 
-      WebMock.stub_request(:get, "http://test-url//client/features")
+      WebMock.stub_request(:get, "http://test-url/client/features")
              .with(
                headers: {
                  'Accept' => '*/*',

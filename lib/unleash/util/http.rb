@@ -4,8 +4,7 @@ require 'uri'
 module Unleash
   module Util
     module Http
-      def self.get(url, etag = nil)
-        uri = URI(url)
+      def self.get(uri, etag = nil)
         http = http_connection(uri)
 
         request = Net::HTTP::Get.new(uri.request_uri, http_headers(etag))
@@ -13,8 +12,7 @@ module Unleash
         http.request(request)
       end
 
-      def self.post(url, body)
-        uri = URI(url)
+      def self.post(uri, body)
         http = http_connection(uri)
 
         request = Net::HTTP::Post.new(uri.request_uri, http_headers)

@@ -36,7 +36,7 @@ module Unleash
     def send
       Unleash.logger.debug "send() Report"
 
-      response = Unleash::Util::Http.post(Unleash.configuration.client_metrics_url, self.generate_report.to_json)
+      response = Unleash::Util::Http.post(Unleash.configuration.client_metrics_uri, self.generate_report.to_json)
 
       if ['200', '202'].include? response.code
         Unleash.logger.debug "Report sent to unleash server sucessfully. Server responded with http code #{response.code}"

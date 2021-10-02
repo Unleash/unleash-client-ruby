@@ -51,20 +51,38 @@ RSpec.describe Unleash do
       expect{ Unleash.configuration.validate! }.not_to raise_error
       expect(Unleash.configuration.url).to eq('http://test-url/')
       expect(Unleash.configuration.app_name).to eq('my-test-app')
-      expect(Unleash.configuration.fetch_toggles_url).to eq('http://test-url//client/features')
+      expect(Unleash.configuration.fetch_toggles_uri.to_s).to eq('http://test-url/client/features')
+      expect(Unleash.configuration.client_metrics_uri.to_s).to eq('http://test-url/client/metrics')
+      expect(Unleash.configuration.client_register_uri.to_s).to eq('http://test-url/client/register')
     end
 
     it "should build the correct unleash endpoints from the base url" do
       config = Unleash::Configuration.new(url: 'https://testurl/api', app_name: 'test-app')
       expect(config.url).to eq('https://testurl/api')
-      expect(config.fetch_toggles_url).to eq('https://testurl/api/client/features')
-      expect(config.client_metrics_url).to eq('https://testurl/api/client/metrics')
-      expect(config.client_register_url).to eq('https://testurl/api/client/register')
+      expect(config.fetch_toggles_uri.to_s).to eq('https://testurl/api/client/features')
+      expect(config.client_metrics_uri.to_s).to eq('https://testurl/api/client/metrics')
+      expect(config.client_register_uri.to_s).to eq('https://testurl/api/client/register')
+    end
+
+    it "should build the correct unleash endpoints from a base url ending with slash" do
+      config = Unleash::Configuration.new(url: 'https://testurl/api/', app_name: 'test-app')
+      expect(config.url).to eq('https://testurl/api/')
+      expect(config.fetch_toggles_uri.to_s).to eq('https://testurl/api/client/features')
+      expect(config.client_metrics_uri.to_s).to eq('https://testurl/api/client/metrics')
+      expect(config.client_register_uri.to_s).to eq('https://testurl/api/client/register')
+    end
+
+    it "should build the correct unleash endpoints from a base url ending with double slashes" do
+      config = Unleash::Configuration.new(url: 'https://testurl/api//', app_name: 'test-app')
+      expect(config.url).to eq('https://testurl/api//')
+      expect(config.fetch_toggles_uri.to_s).to eq('https://testurl/api//client/features')
+      expect(config.client_metrics_uri.to_s).to eq('https://testurl/api//client/metrics')
+      expect(config.client_register_uri.to_s).to eq('https://testurl/api//client/register')
     end
 
     it "should build the correct unleash features endpoint when project_name is used" do
       config = Unleash::Configuration.new(url: 'https://testurl/api', app_name: 'test-app', project_name: 'test-project')
-      expect(config.fetch_toggles_url).to eq('https://testurl/api/client/features?project=test-project')
+      expect(config.fetch_toggles_uri.to_s).to eq('https://testurl/api/client/features?project=test-project')
     end
 
     it "should allow hashes for custom_http_headers via yield" do

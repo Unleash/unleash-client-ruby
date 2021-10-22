@@ -17,6 +17,7 @@ Metrics/BlockLength:
   Max: 100
   Exclude:
     - 'spec/unleash/client_spec.rb'
+    - 'spec/unleash/context_spec.rb'
     - 'spec/unleash/feature_toggle_spec.rb'
 
 Metrics/AbcSize:

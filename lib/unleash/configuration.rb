@@ -42,7 +42,7 @@ module Unleash
     end
 
     def refresh_backup_file!
-      self.backup_file = Dir.tmpdir + "/unleash-#{app_name}-repo.json" if self.backup_file.nil?
+      self.backup_file = File.join(Dir.tmpdir, "unleash-#{app_name}-repo.json")
     end
 
     def http_headers

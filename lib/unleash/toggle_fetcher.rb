@@ -106,10 +106,11 @@ module Unleash
 
     def read!
       Unleash.logger.debug "read!()"
-      return nil unless File.exist?(Unleash.configuration.backup_file)
+      backup_file = Unleash.configuration.backup_file
+      return nil unless File.exist?(backup_file)
 
       begin
-        file = File.new(Unleash.configuration.backup_file, "r")
+        file = File.new(backup_file, "r")
         file_content = file.read
 
         backup_as_hash = JSON.parse(file_content)

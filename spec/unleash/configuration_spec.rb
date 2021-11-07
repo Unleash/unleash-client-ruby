@@ -23,6 +23,7 @@ RSpec.describe Unleash do
       expect(config.retry_limit).to eq(1)
 
       expect(config.backup_file).to_not be_nil
+      expect(config.backup_file).to eq(Dir.tmpdir + '/unleash--repo.json')
       expect(config.project_name).to be_nil
 
       expect{ config.validate! }.to raise_error(ArgumentError)
@@ -43,6 +44,22 @@ RSpec.describe Unleash do
       expect{ config.validate! }.not_to raise_error
     end
 
+    it "support setting the configuration via new" do
+      config = Unleash::Configuration.new(app_name: 'rspec_test', url: 'http://testurl/')
+
+      expect(config.app_name).to eq('rspec_test')
+      expect(config.environment).to eq('default')
+      expect(config.url).to eq('http://testurl/')
+      expect(config.instance_id).to be_truthy
+      expect(config.custom_http_headers).to eq({})
+      expect(config.disable_metrics).to be_falsey
+
+      expect(config.backup_file).to eq(Dir.tmpdir + '/unleash-rspec_test-repo.json')
+      expect(config.project_name).to be_nil
+
+      expect{ config.validate! }.not_to raise_error
+    end
+
     it "support yield for setting the configuration" do
       Unleash.configure do |config|
         config.url      = 'http://test-url/'
@@ -51,6 +68,7 @@ RSpec.describe Unleash do
       expect{ Unleash.configuration.validate! }.not_to raise_error
       expect(Unleash.configuration.url).to eq('http://test-url/')
       expect(Unleash.configuration.app_name).to eq('my-test-app')
+      expect(Unleash.configuration.backup_file).to eq(Dir.tmpdir + '/unleash-my-test-app-repo.json')
       expect(Unleash.configuration.fetch_toggles_uri.to_s).to eq('http://test-url/client/features')
       expect(Unleash.configuration.client_metrics_uri.to_s).to eq('http://test-url/client/metrics')
       expect(Unleash.configuration.client_register_uri.to_s).to eq('http://test-url/client/register')

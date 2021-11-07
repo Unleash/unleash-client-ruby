@@ -113,6 +113,9 @@ Style/SoleNestedConditional:
   Enabled: true
 Style/StringConcatenation:
   Enabled: false
+Style/TrailingCommaInHashLiteral:
+  Enabled: true
+#  EnforcedStyleForMultiline: consistent_comma
 
 Layout/BeginEndAlignment:
   Enabled: true

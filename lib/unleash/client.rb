@@ -94,7 +94,7 @@ module Unleash
     def shutdown
       unless Unleash.configuration.disable_client
         Unleash.toggle_fetcher.save!
-        Unleash.reporter.send unless Unleash.configuration.disable_metrics
+        Unleash.reporter.post unless Unleash.configuration.disable_metrics
         shutdown!
       end
     end
@@ -141,7 +141,7 @@ module Unleash
         Unleash.configuration.retry_limit
       )
       self.metrics_scheduled_executor.run do
-        Unleash.reporter.send
+        Unleash.reporter.post
       end
     end
 

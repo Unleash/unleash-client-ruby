@@ -23,6 +23,18 @@ RSpec.describe Unleash::Client do
         }
       )
       .to_return(status: 200, body: "", headers: {})
+
+    simple_features = {
+      "version": 1,
+      "features": [
+        {
+          "name": "Feature.A",
+          "description": "Enabled toggle",
+          "enabled": true,
+          "strategies": [{ "name": "default" }]
+        }
+      ]
+    }
     WebMock.stub_request(:get, "http://test-url/client/features")
       .with(
         headers: {
@@ -35,7 +47,7 @@ RSpec.describe Unleash::Client do
           'X-Api-Key' => '123'
         }
       )
-      .to_return(status: 200, body: "", headers: {})
+      .to_return(status: 200, body: simple_features.to_json, headers: {})
 
     Unleash.configure do |config|
       config.url      = 'http://test-url/'
@@ -69,7 +81,19 @@ RSpec.describe Unleash::Client do
     ).to have_been_made.once
 
     # Test now sending of metrics
-    Unleash.reporter.send
+    # Not sending metrics, if no feature flags were evaluated:
+    Unleash.reporter.post
+    expect(
+      a_request(:post, "http://test-url/client/metrics")
+        .with(headers: { 'Content-Type': 'application/json' })
+        .with(headers: { 'X-API-KEY': '123', 'Content-Type': 'application/json' })
+        .with(headers: { 'UNLEASH-APPNAME': 'my-test-app' })
+        .with(headers: { 'UNLEASH-INSTANCEID': 'rspec/test' })
+    ).not_to have_been_made
+
+    # Sending metrics, if they have been evaluated:
+    unleash_client.is_enabled?("Feature.A")
+    Unleash.reporter.post
     expect(
       a_request(:post, "http://test-url/client/metrics")
       .with(headers: { 'Content-Type': 'application/json' })

@@ -128,8 +128,19 @@ UNLEASH = Unleash::Client.new
 # Or if preferred:
 # Rails.configuration.unleash = Unleash::Client.new
 ```
-For `config.instance_id` use a string with a unique identification for the running instance. For example: it could be the hostname, if you only run one App per host. Or the docker container id, if you are running in docker. If it is not set the client will generate an unique UUID for each execution.
+For `config.instance_id` use a string with a unique identification for the running instance.
+For example: it could be the hostname, if you only run one App per host.
+Or the docker container id, if you are running in docker.
+If it is not set the client will generate an unique UUID for each execution.
 
+To have it available in the `rails console` command as well, also add to the file above:
+```ruby
+Rails.application.console do
+  UNLEASH = Unleash::Client.new
+  # or
+  # Rails.configuration.unleash = Unleash::Client.new
+end
+```
 
 #### Add Initializer if using [Puma in clustered mode](https://github.com/puma/puma#clustered-mode)
 
@@ -154,10 +165,18 @@ But you must ensure that the unleash client is instantiated only after the proce
 This is done by creating the client inside the `on_worker_boot` code block in `puma.rb` as below:
 
 ```ruby
+#...
+preload_app!
+#...
+
 on_worker_boot do
   # ...
 
   ::UNLEASH = Unleash::Client.new
+end
+
+on_worker_shutdown do
+  ::UNLEASH.shutdown
 end
 ```
 
@@ -177,6 +196,7 @@ Example for `puma.rb`:
 require 'unleash'
 
 #...
+# no preload_app!
 
 on_worker_boot do
   # ...
@@ -188,7 +208,13 @@ on_worker_boot do
     custom_http_headers: {'Authorization': '<API token>'},
   )
 end
+
+on_worker_shutdown do
+  ::UNLEASH.shutdown
+end
 ```
+
+Note that we also added shutdown hooks in `on_worker_shutdown`, to ensure a clean shutdown.
 
 #### Add Initializer if using [Phusion Passenger](https://github.com/phusion/passenger)
 
@@ -209,6 +235,23 @@ PhusionPassenger.on_event(:starting_worker_process) do |forked|
     end
 
     UNLEASH = Unleash::Client.new
+  end
+end
+```
+
+#### Add Initializer hooks when using within [Sidekiq](https://github.com/mperham/sidekiq)
+
+Note that in this case we require that the code block for `Unleash.configure` is set beforehand.
+For example in `config/initializers/unleash.rb`.
+
+```ruby
+Sidekiq.configure_server do |config|
+  config.on(:startup) do
+    UNLEASH = Unleash::Client.new
+  end
+
+  config.on(:shutdown) do
+    UNLEASH.shutdown
   end
 end
 ```
@@ -252,7 +295,8 @@ if Rails.configuration.unleash.is_enabled? "AwesomeFeature", @unleash_context
 end
 ```
 
-If the feature is not found in the server, it will by default return false. However you can override that by setting the default return value to `true`:
+If the feature is not found in the server, it will by default return false.
+However you can override that by setting the default return value to `true`:
 
 ```ruby
 if UNLEASH.is_enabled? "AwesomeFeature", @unleash_context, true
@@ -317,7 +361,8 @@ puts "variant color is: #{variant.payload.fetch('color')}"
 
 ## Bootstrapping
 
-Bootstrap configuration allows the client to be initialized with a predefined set of toggle states. Bootstrapping can be configured by providing a bootstrap configuration when initializing the client.
+Bootstrap configuration allows the client to be initialized with a predefined set of toggle states.
+Bootstrapping can be configured by providing a bootstrap configuration when initializing the client.
 ```ruby
 @unleash = Unleash::Client.new(
     url: 'http://unleash.herokuapp.com/api',
@@ -337,7 +382,8 @@ The `Bootstrap::Configuration` initializer takes a hash with one of the followin
 * `data` - A raw JSON string as returned by the Unleash server.
 * `block` - A lambda containing custom logic if you need it, an example is provided below.
 
-You should only specify one type of bootstrapping since only one will be invoked and the others will be ignored. The order of preference is as follows:
+You should only specify one type of bootstrapping since only one will be invoked and the others will be ignored.
+The order of preference is as follows:
 
 - Select a data bootstrapper if it exists.
 - If no data bootstrapper exists, select the block bootstrapper.
@@ -366,11 +412,12 @@ custom_boostrapper = lambda {
     custom_http_headers: { 'Authorization': '<API token>' },
     bootstrap_config: Unleash::Bootstrap::Configuration.new({
         block: custom_boostrapper
-    }
+    })
 )
 ```
 
-This example could be easily achieved with a file bootstrapper, this is just to illustrate the usage of custom bootstrapping. Be aware that the client initializer will block until bootstrapping is complete.
+This example could be easily achieved with a file bootstrapper, this is just to illustrate the usage of custom bootstrapping.
+Be aware that the client initializer will block until bootstrapping is complete.
 
 #### Client methods
 

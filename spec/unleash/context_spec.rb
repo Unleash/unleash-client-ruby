@@ -134,4 +134,17 @@ RSpec.describe Unleash::Context do
     expect(context.get_by_name('CountryCode')).to eq('UK')
     expect(context.get_by_name(:CountryCode)).to eq('UK')
   end
+
+  it "when resolving a non existent property" do
+    params = {
+      'user_id' => '123',
+      'sessionId' => 'verylongsesssionid',
+      'properties' => {
+        'fancy' => 'polarbear'
+      }
+    }
+    context = Unleash::Context.new(params)
+    expect(context.get_by_name('doesnt_exist')).to eq(nil)
+    expect(context.get_by_name('doesntExist')).to eq(nil)
+  end
 end

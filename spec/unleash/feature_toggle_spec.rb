@@ -156,11 +156,13 @@ RSpec.describe Unleash::FeatureToggle do
         "variants" => [
           {
             "name" => "variant1",
-            "weight" => 50
+            "weight" => 50,
+            "stickiness" => "default"
           },
           {
             "name" => "variant2",
-            "weight" => 50
+            "weight" => 50,
+            "stickiness" => "default"
           }
         ],
         "createdAt" => "2019-01-24T10:41:45.236Z"
@@ -207,15 +209,18 @@ RSpec.describe Unleash::FeatureToggle do
         "variants" => [
           {
             "name" => "variantA",
-            "weight" => 0
+            "weight" => 0,
+            "stickiness" => "default"
           },
           {
             "name" => "variantB",
-            "weight" => 10
+            "weight" => 10,
+            "stickiness" => "default"
           },
           {
             "name" => "variantC",
-            "weight" => 20
+            "weight" => 20,
+            "stickiness" => "default"
           }
         ],
         "createdAt" => "2019-01-24T10:41:45.236Z"
@@ -303,6 +308,7 @@ RSpec.describe Unleash::FeatureToggle do
           {
             "name" => "variant1",
             "weight" => 50,
+            "stickiness" => "default",
             "payload" => {
               "type" => "string",
               "value" => "val1"
@@ -315,6 +321,7 @@ RSpec.describe Unleash::FeatureToggle do
           {
             "name" => "variant2",
             "weight" => 50,
+            "stickiness" => "default",
             "payload" => {
               "type" => "string",
               "value" => "val2"
@@ -526,6 +533,88 @@ RSpec.describe Unleash::FeatureToggle do
       ret = described_class.new.disabled_variant
       expect(ret.enabled).to be false
       expect(ret.name).to eq 'disabled'
+    end
+  end
+
+  describe 'FeatureToggle with custom stickiness' do
+    let(:feature_toggle) do
+      Unleash::FeatureToggle.new(
+        "name" => "toggleName",
+        "description" => nil,
+        "enabled" => true,
+        "variants" => [
+          {
+            "name" => "variant1",
+            "weight" => 25,
+            "stickiness" => "organization"
+          },
+          {
+            "name" => "variant2",
+            "weight" => 25,
+            "stickiness" => "organization"
+          },
+          {
+            "name" => "variant3",
+            "weight" => 25,
+            "stickiness" => "organization"
+          },
+          {
+            "name" => "variant4",
+            "weight" => 25,
+            "stickiness" => "organization"
+          }
+
+        ],
+        "createdAt" => "2019-01-24T10:41:45.236Z"
+      )
+    end
+
+    it 'should return variant1 organization 726' do
+      context = Unleash::Context.new(
+        properties: {
+        organization: '726'
+      })
+
+      expect(feature_toggle.get_variant(context)).to have_attributes(
+        name: "variant1",
+        enabled: true
+      )
+    end
+
+    it 'should return variant2 organization 48' do
+      context = Unleash::Context.new(
+        properties: {
+        organization: '48'
+      })
+
+      expect(feature_toggle.get_variant(context)).to have_attributes(
+        name: "variant2",
+        enabled: true
+      )
+    end
+
+    it 'should return variant3 organization 381' do
+      context = Unleash::Context.new(
+        properties: {
+        organization: '381'
+      })
+
+      expect(feature_toggle.get_variant(context)).to have_attributes(
+        name: "variant3",
+        enabled: true
+      )
+    end
+
+    it 'should return variant4 organization 222' do
+      context = Unleash::Context.new(
+        properties: {
+          organization: '222'
+      })
+
+      expect(feature_toggle.get_variant(context)).to have_attributes(
+        name: "variant4",
+        enabled: true
+      )
     end
   end
 end

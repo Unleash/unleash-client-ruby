@@ -400,12 +400,14 @@ RSpec.describe Unleash::Client do
     end
 
     before do
-      WebMock.stub_request(:post, "http://test-urlclient/register")
+      WebMock.stub_request(:post, "http://test-url/client/register")
         .with(
           headers: {
             'Accept' => '*/*',
-            'Content-Type' => 'application/json',
             'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+            'Content-Type' => 'application/json',
+            'Unleash-Appname' => 'my-test-app',
+            'Unleash-Instanceid' => 'rspec/test',
             'User-Agent' => 'Ruby',
             'X-Api-Key' => '123'
           }

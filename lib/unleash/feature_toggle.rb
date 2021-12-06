@@ -48,7 +48,7 @@ module Unleash
       return disabled_variant unless self.enabled && am_enabled?(context, true)
       return disabled_variant if sum_variant_defs_weights <= 0
 
-      stickiness = resolve_variant_stickiness(self.variant_definitions) || "default"
+      stickiness = self.variant_definitions&.map(:stickiness)&.compact&.first || "default"
 
       variant = variant_from_override_match(context)
       variant = variant_from_weights(context, stickiness) if variant.nil?

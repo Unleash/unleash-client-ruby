@@ -32,14 +32,6 @@ module Unleash
       result
     end
 
-    def resolve_variant_stickiness(variant_definitions)
-      return nil if variant_definitions.nil?
-      sticky_variant = variant_definitions.find { |variant|
-        !variant.nil?
-      }
-      sticky_variant && sticky_variant.stickiness
-    end
-
     def get_variant(context, fallback_variant = disabled_variant)
       raise ArgumentError, "Provided fallback_variant is not of type Unleash::Variant" if fallback_variant.class.name != 'Unleash::Variant'
 

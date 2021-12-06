@@ -98,10 +98,10 @@ RSpec.describe Unleash::Context do
     expect(context.get_by_name(:fancy)).to eq('polarbear')
     expect(context.get_by_name('fancy')).to eq('polarbear')
     expect(context.get_by_name('Fancy')).to eq('polarbear')
+    expect(context.get_by_name('countryCode')).to eq('DK')
+    expect(context.get_by_name(:countryCode)).to eq('DK')
     expect{ context.get_by_name(:country_code) }.to raise_error(KeyError)
     expect{ context.get_by_name('country_code') }.to raise_error(KeyError)
-    expect{ context.get_by_name('countryCode') }.to raise_error(KeyError)
-    expect{ context.get_by_name(:countryCode) }.to raise_error(KeyError)
     expect{ context.get_by_name('CountryCode') }.to raise_error(KeyError)
     expect{ context.get_by_name(:CountryCode) }.to raise_error(KeyError)
   end

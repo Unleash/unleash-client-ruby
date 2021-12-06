@@ -572,8 +572,9 @@ RSpec.describe Unleash::FeatureToggle do
     it 'should return variant1 organization 726' do
       context = Unleash::Context.new(
         properties: {
-        organization: '726'
-      })
+          organization: '726'
+        }
+      )
 
       expect(feature_toggle.get_variant(context)).to have_attributes(
         name: "variant1",
@@ -584,8 +585,9 @@ RSpec.describe Unleash::FeatureToggle do
     it 'should return variant2 organization 48' do
       context = Unleash::Context.new(
         properties: {
-        organization: '48'
-      })
+          organization: '48'
+        }
+      )
 
       expect(feature_toggle.get_variant(context)).to have_attributes(
         name: "variant2",
@@ -596,8 +598,9 @@ RSpec.describe Unleash::FeatureToggle do
     it 'should return variant3 organization 381' do
       context = Unleash::Context.new(
         properties: {
-        organization: '381'
-      })
+          organization: '381'
+        }
+      )
 
       expect(feature_toggle.get_variant(context)).to have_attributes(
         name: "variant3",
@@ -609,7 +612,8 @@ RSpec.describe Unleash::FeatureToggle do
       context = Unleash::Context.new(
         properties: {
           organization: '222'
-      })
+        }
+      )
 
       expect(feature_toggle.get_variant(context)).to have_attributes(
         name: "variant4",

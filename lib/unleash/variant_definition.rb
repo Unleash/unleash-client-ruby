@@ -19,7 +19,8 @@ module Unleash
     end
 
     def to_s
-      "<VariantDefinition: name=#{self.name},weight=#{self.weight},payload=#{self.payload},stickiness=#{self.stickiness},overrides=#{self.overrides}>"
+      "<VariantDefinition: name=#{self.name},weight=#{self.weight},payload=#{self.payload},stickiness=#{self.stickiness}" \
+          ",overrides=#{self.overrides}>"
     end
   end
 end

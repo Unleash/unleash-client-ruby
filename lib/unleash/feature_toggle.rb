@@ -32,6 +32,10 @@ module Unleash
       result
     end
 
+    def resolve_stickiness
+      self.variant_definitions&.map(&:stickiness)&.compact&.first || "default"
+    end
+
     def get_variant(context, fallback_variant = disabled_variant)
       raise ArgumentError, "Provided fallback_variant is not of type Unleash::Variant" if fallback_variant.class.name != 'Unleash::Variant'
 
@@ -40,10 +44,7 @@ module Unleash
       return disabled_variant unless self.enabled && am_enabled?(context, true)
       return disabled_variant if sum_variant_defs_weights <= 0
 
-      stickiness = self.variant_definitions&.map(&:stickiness)&.compact&.first || "default"
-
-      variant = variant_from_override_match(context)
-      variant = variant_from_weights(context, stickiness) if variant.nil?
+      variant = variant_from_override_match(context) || variant_from_weights(context, resolve_stickiness)
 
       Unleash.toggle_metrics.increment_variant(self.name, variant.name) unless Unleash.configuration.disable_metrics
       variant
@@ -104,9 +105,7 @@ module Unleash
     end
 
     def variant_from_weights(context, stickiness)
-      seed = variant_salt(context, stickiness)
-
-      variant_weight = Unleash::Strategy::Util.get_normalized_number(seed, self.name, sum_variant_defs_weights)
+      variant_weight = Unleash::Strategy::Util.get_normalized_number(variant_salt(context, stickiness), self.name, sum_variant_defs_weights)
       prev_weights = 0
 
       variant_definition = self.variant_definitions

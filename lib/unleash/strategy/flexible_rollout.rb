@@ -43,7 +43,11 @@ module Unleash
         when 'default'
           context.user_id || context.session_id || random
         else
-          context.get_by_name(stickiness)
+          begin
+            context.get_by_name(stickiness)
+          rescue KeyError
+            nil
+          end
         end
       end
     end

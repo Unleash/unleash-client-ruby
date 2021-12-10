@@ -32,10 +32,6 @@ module Unleash
       result
     end
 
-    def resolve_stickiness
-      self.variant_definitions&.map(&:stickiness)&.compact&.first || "default"
-    end
-
     def get_variant(context, fallback_variant = disabled_variant)
       raise ArgumentError, "Provided fallback_variant is not of type Unleash::Variant" if fallback_variant.class.name != 'Unleash::Variant'
 
@@ -55,6 +51,10 @@ module Unleash
     end
 
     private
+
+    def resolve_stickiness
+      self.variant_definitions&.map(&:stickiness)&.compact&.first || "default"
+    end
 
     # only check if it is enabled, do not do metrics
     def am_enabled?(context, default_result)

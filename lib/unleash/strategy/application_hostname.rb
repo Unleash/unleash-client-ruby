@@ -4,6 +4,7 @@ module Unleash
   module Strategy
     class ApplicationHostname < Base
       attr_accessor :hostname
+
       PARAM = 'hostnames'.freeze
 
       def initialize

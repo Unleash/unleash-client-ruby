@@ -73,7 +73,7 @@ log_level = \
   log_level: log_level
 )
 
-context_params = ARGV.map{ |e| e.split("=") }.map{ |k, v| [k.to_sym, v] }.to_h
+context_params = ARGV.map{ |e| e.split("=") }.transform_keys(&:to_sym)
 context_properties = context_params.reject{ |k, _v| [:user_id, :session_id, :remote_address].include? k }
 context_params.select!{ |k, _v| [:user_id, :session_id, :remote_address].include? k }
 context_params.merge!(properties: context_properties) unless context_properties.nil?

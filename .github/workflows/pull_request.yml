@@ -32,6 +32,13 @@ jobs:
         run: bundle install
       - name: Download test cases
         run: git clone --depth 5 --branch v3.3.0 https://github.com/Unleash/client-specification.git client-specification
+      - name: rubocop
+        uses: reviewdog/action-rubocop@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          rubocop_version: gemfile
+          rubocop_extensions: rubocop-rspec:gemfile
+          reporter: github-pr-review # Default is github-pr-check
       - name: Run tests
         run: bundle exec rake
         env:

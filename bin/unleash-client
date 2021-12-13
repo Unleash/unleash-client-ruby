@@ -12,11 +12,13 @@ options = {
   url: 'http://localhost:4242',
   demo: false,
   disable_metrics: true,
+  custom_http_headers: {},
   sleep: 0.1
 }
 
 OptionParser.new do |opts|
-  opts.banner = "Usage: #{__FILE__} [options] feature [key1=val1] [key2=val2]"
+  opts.banner = "Usage: #{__FILE__} [options] feature [contextKey1=val1] [contextKey2=val2] \n\n" \
+  "Where contextKey1 could be user_id, session_id, remote_address or any field in the Context class (or any property within it).\n"
 
   opts.on("-V", "--variant", "Fetch variant for feature") do |v|
     options[:variant] = v
@@ -46,6 +48,13 @@ OptionParser.new do |opts|
     options[:sleep] = s
   end
 
+  opts.on("-H", "--http-headers='Authorization: *:developement.secretstring'",
+          "Adds http headers to all requests on the unleash server. Use multiple times for multiple headers.") do |h|
+    http_header_as_hash = [h].to_h{ |l| l.split(": ") }.transform_keys(&:to_sym)
+
+    options[:custom_http_headers].merge!(http_header_as_hash)
+  end
+
   opts.on("-h", "--help", "Prints this help") do
     puts opts
     exit
@@ -70,10 +79,11 @@ log_level = \
   url: options[:url],
   app_name: 'unleash-client-ruby-cli',
   disable_metrics: options[:metrics],
+  custom_http_headers: options[:custom_http_headers],
   log_level: log_level
 )
 
-context_params = ARGV.map{ |e| e.split("=") }.transform_keys(&:to_sym)
+context_params = ARGV.to_h{ |l| l.split("=") }.transform_keys(&:to_sym)
 context_properties = context_params.reject{ |k, _v| [:user_id, :session_id, :remote_address].include? k }
 context_params.select!{ |k, _v| [:user_id, :session_id, :remote_address].include? k }
 context_params.merge!(properties: context_properties) unless context_properties.nil?
@@ -97,12 +107,12 @@ if options[:demo]
   end
 elsif options[:variant]
   variant = @unleash.get_variant(feature_name, unleash_context)
-  puts " For feature \'#{feature_name}\' got variant \'#{variant}\'"
+  puts " For feature '#{feature_name}' got variant '#{variant}'"
 else
   if @unleash.is_enabled?(feature_name, unleash_context)
-    puts " \'#{feature_name}\' is enabled according to unleash"
+    puts " '#{feature_name}' is enabled according to unleash"
   else
-    puts " \'#{feature_name}\' is disabled according to unleash"
+    puts " '#{feature_name}' is disabled according to unleash"
   end
 end
 

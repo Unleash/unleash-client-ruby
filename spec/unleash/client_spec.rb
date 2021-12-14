@@ -376,6 +376,7 @@ RSpec.describe Unleash::Client do
         {
           name: "a",
           weight: 50,
+          stickiness: "default",
           payload: {
             type: "string",
             value: ""

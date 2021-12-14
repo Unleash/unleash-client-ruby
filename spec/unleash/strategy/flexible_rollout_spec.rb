@@ -29,5 +29,37 @@ RSpec.describe Unleash::Strategy::FlexibleRollout do
       expect(strategy.is_enabled?(params.merge({ 'rollout' => 15 }), unleash_context)).to be_truthy
       expect(strategy.is_enabled?(params.merge({ 'rollout' => 16 }), unleash_context)).to be_truthy
     end
+
+    it 'should be enabled when stickiness=customerId and customerId=61 and rollout=10' do
+      params = {
+        'groupId' => 'Demo',
+        'rollout' => 10,
+        'stickiness' => 'customerId'
+      }
+
+      custom_context = Unleash::Context.new(
+        properties: {
+          customer_id: '61'
+        }
+      )
+
+      expect(strategy.is_enabled?(params, custom_context)).to be_truthy
+    end
+
+    it 'should be disabled when stickiness=customerId and customerId=63 and rollout=10' do
+      params = {
+        'groupId' => 'Demo',
+        'rollout' => 10,
+        'stickiness' => 'customerId'
+      }
+
+      custom_context = Unleash::Context.new(
+        properties: {
+          customer_id: '63'
+        }
+      )
+
+      expect(strategy.is_enabled?(params, custom_context)).to be_falsey
+    end
   end
 end

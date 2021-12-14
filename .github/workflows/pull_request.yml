@@ -31,7 +31,7 @@ jobs:
       - name: Install dependencies
         run: bundle install
       - name: Download test cases
-        run: git clone --depth 5 --branch v3.3.0 https://github.com/Unleash/client-specification.git client-specification
+        run: git clone --depth 5 --branch v4.0.0 https://github.com/Unleash/client-specification.git client-specification
       - name: rubocop
         uses: reviewdog/action-rubocop@v2
         with:

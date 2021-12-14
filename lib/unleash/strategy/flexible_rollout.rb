@@ -38,16 +38,16 @@ module Unleash
 
       def resolve_stickiness(stickiness, context)
         case stickiness
-        when 'userId'
-          context.user_id
-        when 'sessionId'
-          context.session_id
         when 'random'
           random
         when 'default'
           context.user_id || context.session_id || random
         else
-          nil
+          begin
+            context.get_by_name(stickiness)
+          rescue KeyError
+            nil
+          end
         end
       end
     end

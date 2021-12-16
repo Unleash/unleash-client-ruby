@@ -13,7 +13,15 @@ module Unleash
         return false unless params.fetch(PARAM, nil).is_a? String
         return false unless context.class.name == 'Unleash::Context'
 
-        params[PARAM].split(',').map(&:strip).include?(context.remote_address)
+        remote_address = IPAddr.new(context.remote_address) rescue nil
+
+        params[PARAM]
+          .split(',')
+          .map(&:strip)
+          .map{ |ipblock| IPAddr.new(ipblock) rescue nil }
+          .compact
+          .map{ |ipb| ipb.include? remote_address }
+          .any?
       end
     end
   end

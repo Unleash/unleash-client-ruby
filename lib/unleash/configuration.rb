@@ -87,9 +87,9 @@ module Unleash
       self.disable_client   = false
       self.disable_metrics  = false
       self.refresh_interval = 10
-      self.metrics_interval = 30
+      self.metrics_interval = 60
       self.timeout          = 30
-      self.retry_limit      = 1
+      self.retry_limit      = 5
       self.backup_file      = nil
       self.log_level        = Logger::WARN
 

@@ -296,6 +296,7 @@ This client comes with the all the required strategies out of the box:
 
  * ApplicationHostnameStrategy
  * DefaultStrategy
+ * FlexibleRolloutStrategy
  * GradualRolloutRandomStrategy
  * GradualRolloutSessionIdStrategy
  * GradualRolloutUserIdStrategy

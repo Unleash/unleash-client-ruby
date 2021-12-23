@@ -1,7 +1,7 @@
 # Unleash::Client
 
-[![Build Status](https://travis-ci.org/Unleash/unleash-client-ruby.svg?branch=master)](https://travis-ci.org/Unleash/unleash-client-ruby)
-[![Coverage Status](https://coveralls.io/repos/github/Unleash/unleash-client-ruby/badge.svg?branch=master)](https://coveralls.io/github/Unleash/unleash-client-ruby?branch=master)
+[![Build Status](https://travis-ci.org/Unleash/unleash-client-ruby.svg?branch=main)](https://travis-ci.org/Unleash/unleash-client-ruby)
+[![Coverage Status](https://coveralls.io/repos/github/Unleash/unleash-client-ruby/badge.svg?branch=main)](https://coveralls.io/github/Unleash/unleash-client-ruby?branch=main)
 [![Gem Version](https://badge.fury.io/rb/unleash.svg)](https://badge.fury.io/rb/unleash)
 
 Unleash client so you can roll out your features with confidence.

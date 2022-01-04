@@ -10,6 +10,7 @@ Leverage the [Unleash Server](https://github.com/Unleash/unleash) for powerful f
 
 ## Supported Ruby Interpreters
 
+  * MRI 3.1
   * MRI 3.0
   * MRI 2.7
   * MRI 2.6

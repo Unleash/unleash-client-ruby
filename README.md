@@ -1,6 +1,6 @@
 # Unleash::Client
 
-[![Build Status](https://travis-ci.org/Unleash/unleash-client-ruby.svg?branch=main)](https://travis-ci.org/Unleash/unleash-client-ruby)
+![Build Status](https://github.com/Unleash/unleash-client-ruby/actions/workflows/pull_request.yml/badge.svg?branch=main)
 [![Coverage Status](https://coveralls.io/repos/github/Unleash/unleash-client-ruby/badge.svg?branch=main)](https://coveralls.io/github/Unleash/unleash-client-ruby?branch=main)
 [![Gem Version](https://badge.fury.io/rb/unleash.svg)](https://badge.fury.io/rb/unleash)
 

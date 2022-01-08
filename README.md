@@ -10,6 +10,7 @@ Leverage the [Unleash Server](https://github.com/Unleash/unleash) for powerful f
 
 ## Supported Ruby Interpreters
 
+  * MRI 3.1
   * MRI 3.0
   * MRI 2.7
   * MRI 2.6
@@ -69,7 +70,7 @@ Argument | Description | Required? |  Type |  Default Value|
 `environment` | Environment the program is running on. Could be for example `prod` or `dev`. Not yet in use. | N | String | `default` |
 `project_name` | Name of the project to retrieve features from. If not set, all feature flags will be retrieved. | N | String | nil |
 `refresh_interval` | How often the unleash client should check with the server for configuration changes. | N | Integer |  15 |
-`metrics_interval` | How often the unleash client should send metrics to server. | N | Integer | 30 |
+`metrics_interval` | How often the unleash client should send metrics to server. | N | Integer | 60 |
 `disable_client` | Disables all communication with the Unleash server, effectively taking it *offline*. If set, `is_enabled?` will always answer with the `default_value` and configuration validation is skipped. Defeats the entire purpose of using unleash, but can be useful in when running tests. | N | Boolean | `false` |
 `disable_metrics` | Disables sending metrics to Unleash server. | N | Boolean | `false` |
 `custom_http_headers` | Custom headers to send to Unleash. As of Unleash v4.0.0, the `Authorization` header is required. For example: `{'Authorization': '<API token>'}` | N | Hash | {} |

@@ -28,7 +28,7 @@ module Unleash
 
       def ipaddr_or_nil_from_str(ip)
         IPAddr.new(ip)
-      rescue IPAddr::Error, StandardError
+      rescue StandardError
         nil
       end
     end

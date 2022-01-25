@@ -4,7 +4,7 @@ require 'json'
 
 module Unleash
   class ToggleFetcher
-    attr_accessor :toggle_cache, :toggle_lock, :toggle_resource, :etag, :retry_count
+    attr_accessor :toggle_cache, :toggle_lock, :toggle_resource, :etag, :retry_count, :bootstrapper
 
     def initialize
       self.etag = nil
@@ -12,12 +12,18 @@ module Unleash
       self.toggle_lock = Mutex.new
       self.toggle_resource = ConditionVariable.new
       self.retry_count = 0
+      self.bootstrapper = Unleash.configuration.bootstrapper
 
       # start by fetching synchronously, and failing back to reading the backup file.
       begin
-        fetch
+        if !self.bootstrapper.nil? # if the consumer provides a bootstrapper, we're going to assume they want to use it
+          synchronize_with_local_cache! self.bootstrapper.read
+          update_running_client!
+        else
+          fetch
+        end
       rescue StandardError => e
-        Unleash.logger.warn "ToggleFetcher was unable to fetch from the network, attempting to read from backup file."
+        Unleash.logger.warn "ToggleFetcher was unable to fetch from the network or bootstrap, attempting to read from backup file."
         Unleash.logger.debug "Exception Caught: #{e}"
         read!
       end

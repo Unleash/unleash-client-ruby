@@ -79,6 +79,7 @@ Argument | Description | Required? |  Type |  Default Value|
 `backup_file` | Filename to store the last known state from the Unleash server. Best to not change this from the default. | N | String | `Dir.tmpdir + "/unleash-#{app_name}-repo.json` |
 `logger` | Specify a custom `Logger` class to handle logs for the Unleash client. | N | Class | `Logger.new(STDOUT)` |
 `log_level` | Change the log level for the `Logger` class. Constant from `Logger::Severity`. | N | Constant | `Logger::WARN` |
+`bootstrapper` | Defines a bootstrapper object that unleash will use to get a list of toggles on load before it reads them from the unleash server. This is useful for loading large states on startup without hitting the network. Bootstrapping classes are provided for URL and file reading but you can implement your own for other sources of toggles. | N | Class | `nil` |
 
 For in a more in depth look, please see `lib/unleash/configuration.rb`.
 
@@ -88,8 +89,14 @@ For in a more in depth look, please see `lib/unleash/configuration.rb`.
 ```ruby
 require 'unleash'
 require 'unleash/context'
+require 'unleash/bootstrap'
 
-@unleash = Unleash::Client.new(app_name: 'my_ruby_app', url: 'http://unleash.herokuapp.com/api', custom_http_headers: {'Authorization': '<API token>'})
+@unleash = Unleash::Client.new(
+            app_name: 'my_ruby_app',
+            url: 'http://unleash.herokuapp.com/api',
+            custom_http_headers: { 'Authorization': '<API token>' },
+            bootstrapper: Unleash::FileBootStrapper.new('./default-toggles.json')
+          )
 
 feature_name = "AwesomeFeature"
 unleash_context = Unleash::Context.new
@@ -109,12 +116,15 @@ end
 Put in `config/initializers/unleash.rb`:
 
 ```ruby
+require 'unleash/bootstrap'
+
 Unleash.configure do |config|
   config.app_name = Rails.application.class.parent.to_s
   config.url      = 'http://unleash.herokuapp.com/api'
   # config.instance_id = "#{Socket.gethostname}"
   config.logger   = Rails.logger
   config.environment = Rails.env
+  config.bootstrapper = Unleash::FileBootStrapper.new('./default-toggles.json')
 end
 
 UNLEASH = Unleash::Client.new

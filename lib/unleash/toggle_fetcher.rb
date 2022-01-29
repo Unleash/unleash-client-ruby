@@ -16,11 +16,12 @@ module Unleash
 
       # start by fetching synchronously, and failing back to reading the backup file.
       begin
-        if !self.bootstrapper.nil? # if the consumer provides a bootstrapper, we're going to assume they want to use it
+        if self.bootstrapper.nil?
+          fetch
+        else
+          # if the consumer provides a bootstrapper, use it!
           synchronize_with_local_cache! self.bootstrapper.read
           update_running_client!
-        else
-          fetch
         end
       rescue StandardError => e
         Unleash.logger.warn "ToggleFetcher was unable to fetch from the network or bootstrap, attempting to read from backup file."

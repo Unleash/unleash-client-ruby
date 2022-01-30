@@ -19,7 +19,7 @@ module Unleash
       :backup_file,
       :logger,
       :log_level,
-      :bootstrapper
+      :bootstrap_data
 
     def initialize(opts = {})
       ensure_valid_opts(opts)
@@ -93,7 +93,7 @@ module Unleash
       self.retry_limit      = 5
       self.backup_file      = nil
       self.log_level        = Logger::WARN
-      self.bootstrapper     = nil
+      self.bootstrap_data   = nil
 
       self.custom_http_headers = {}
     end

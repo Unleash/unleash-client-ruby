@@ -14,7 +14,7 @@ puts ">> START bootstrap.rb"
   refresh_interval: 2,
   metrics_interval: 2,
   retry_limit: 2,
-  bootstrapper: Unleash::Bootstrap::FromFile.new('./examples/default-toggles.json')
+  bootstrap_data: Unleash::Bootstrap::FromFile.new('./examples/default-toggles.json').read
 )
 
 feature_name = "featureX"

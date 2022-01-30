@@ -1,19 +1,14 @@
 module Unleash
   module Bootstrap
     class FromUri < Base
-      attr_accessor :uri, :headers
-
-      # @param uri [String]
+      # @param url [String]
       # @param headers [Hash, nil] HTTP headers to use. If not set, the unleash client SDK ones will be used.
-      def initialize(uri, headers = nil)
-        self.uri = URI(uri)
-        self.headers = headers
-      end
+      def self.read(url, headers = nil)
+        response = Unleash::Util::Http.get(URI.parse(url), nil, headers)
 
-      def read
-        response = Unleash::Util::Http.get(self.uri, nil, self.headers)
-        bootstrap_hash = JSON.parse(response.body)
-        extract_features(bootstrap_hash)
+        return nil if response.code != '200'
+
+        response.body
       end
     end
   end

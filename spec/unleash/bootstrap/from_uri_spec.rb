@@ -19,8 +19,9 @@ RSpec.describe Unleash::Bootstrap::FromUri do
       )
       .to_return(status: 200, body: file_contents, headers: {})
 
-    bootstrapper = Unleash::Bootstrap::FromUri.new('http://test-url/bootstrap-goodness', {})
+    bootstrap_contents = Unleash::Bootstrap::FromUri.read('http://test-url/bootstrap-goodness', {})
+    bootstrap_features = JSON.parse(bootstrap_contents)['features']
 
-    expect(bootstrapper.read).to include_json(file_features)
+    expect(bootstrap_features).to include_json(file_features)
   end
 end

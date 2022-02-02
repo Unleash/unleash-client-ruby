@@ -4,7 +4,7 @@ require 'json'
 
 module Unleash
   class ToggleFetcher
-    attr_accessor :toggle_cache, :toggle_lock, :toggle_resource, :etag, :retry_count, :bootstrapper
+    attr_accessor :toggle_cache, :toggle_lock, :toggle_resource, :etag, :retry_count
 
     def initialize
       self.etag = nil
@@ -12,18 +12,16 @@ module Unleash
       self.toggle_lock = Mutex.new
       self.toggle_resource = ConditionVariable.new
       self.retry_count = 0
-      self.bootstrapper = Unleash.configuration.bootstrapper
 
-      # start by fetching synchronously, and failing back to reading the backup file.
       begin
-        if !self.bootstrapper.nil? # if the consumer provides a bootstrapper, we're going to assume they want to use it
-          synchronize_with_local_cache! self.bootstrapper.read
-          update_running_client!
-        else
-          fetch
-        end
+        # if bootstrap configuration is available, initialize
+        bootstrap unless Unleash.configuration.bootstrap_data.nil?
+
+        # if the client is enabled, fetch synchronously
+        fetch unless Unleash.configuration.disable_client
       rescue StandardError => e
-        Unleash.logger.warn "ToggleFetcher was unable to fetch from the network or bootstrap, attempting to read from backup file."
+        # fail back to reading the backup file
+        Unleash.logger.warn "ToggleFetcher was unable to fetch from the network, attempting to read from backup file."
         Unleash.logger.debug "Exception Caught: #{e}"
         read!
       end
@@ -42,6 +40,8 @@ module Unleash
     # rename to refresh_from_server!  ??
     def fetch
       Unleash.logger.debug "fetch()"
+      return if Unleash.configuration.disable_client
+
       response = Unleash::Util::Http.get(Unleash.configuration.fetch_toggles_uri, etag)
 
       if response.code == '304'
@@ -52,14 +52,7 @@ module Unleash
       end
 
       self.etag = response['ETag']
-      response_hash = JSON.parse(response.body)
-
-      if response_hash['version'] >= 1
-        features = response_hash['features']
-      else
-        raise NotImplemented, "Version of features provided by unleash server" \
-          " is unsupported by this client."
-      end
+      features = get_features(response.body)
 
       # always synchronize with the local cache when fetching:
       synchronize_with_local_cache!(features)
@@ -131,6 +124,25 @@ module Unleash
       ensure
         file&.close
       end
+    end
+
+    def bootstrap
+      features = get_features(Unleash.configuration.bootstrap_data)
+
+      synchronize_with_local_cache! features
+      update_running_client!
+
+      # reset Unleash.configuration.bootstrap_data to free up memory, as we will never use it again
+      Unleash.configuration.bootstrap_data = nil
+    end
+
+    # @param response_body [String]
+    def get_features(response_body)
+      response_hash = JSON.parse(response_body)
+      return response_hash['features'] if response_hash['version'] >= 1
+
+      raise NotImplemented, "Version of features provided by unleash server" \
+        " is unsupported by this client."
     end
   end
 end

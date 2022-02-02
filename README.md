@@ -79,7 +79,7 @@ Argument | Description | Required? |  Type |  Default Value|
 `backup_file` | Filename to store the last known state from the Unleash server. Best to not change this from the default. | N | String | `Dir.tmpdir + "/unleash-#{app_name}-repo.json` |
 `logger` | Specify a custom `Logger` class to handle logs for the Unleash client. | N | Class | `Logger.new(STDOUT)` |
 `log_level` | Change the log level for the `Logger` class. Constant from `Logger::Severity`. | N | Constant | `Logger::WARN` |
-`bootstrapper` | Defines a bootstrapper object that unleash will use to get a list of toggles on load before it reads them from the unleash server. This is useful for loading large states on startup without hitting the network. Bootstrapping classes are provided for URL and file reading but you can implement your own for other sources of toggles. | N | Class | `nil` |
+`bootstrap_data` | Bootstrap data to be loaded on start-up. This is useful for loading large states on startup without (or before) hitting the network. | N | String | `nil` |
 
 For in a more in depth look, please see `lib/unleash/configuration.rb`.
 
@@ -89,14 +89,8 @@ For in a more in depth look, please see `lib/unleash/configuration.rb`.
 ```ruby
 require 'unleash'
 require 'unleash/context'
-require 'unleash/bootstrap'
 
-@unleash = Unleash::Client.new(
-            app_name: 'my_ruby_app',
-            url: 'http://unleash.herokuapp.com/api',
-            custom_http_headers: { 'Authorization': '<API token>' },
-            bootstrapper: Unleash::FileBootStrapper.new('./default-toggles.json')
-          )
+@unleash = Unleash::Client.new(app_name: 'my_ruby_app', url: 'http://unleash.herokuapp.com/api', custom_http_headers: { 'Authorization': '<API token>' })
 
 feature_name = "AwesomeFeature"
 unleash_context = Unleash::Context.new
@@ -116,15 +110,12 @@ end
 Put in `config/initializers/unleash.rb`:
 
 ```ruby
-require 'unleash/bootstrap'
-
 Unleash.configure do |config|
   config.app_name = Rails.application.class.parent.to_s
   config.url      = 'http://unleash.herokuapp.com/api'
   # config.instance_id = "#{Socket.gethostname}"
   config.logger   = Rails.logger
   config.environment = Rails.env
-  config.bootstrapper = Unleash::FileBootStrapper.new('./default-toggles.json')
 end
 
 UNLEASH = Unleash::Client.new
@@ -277,6 +268,27 @@ variant = UNLEASH.get_variant "ColorVariants", @unleash_context, fallback_varian
 puts "variant color is: #{variant.payload.fetch('color')}"
 ```
 
+#### Bootstrapping
+
+`bootstrap_data` configuration allows the client to be initialized with a predefined set of toggle states.
+The content of the parameter is a JSON string containing the response body from the unleash server.
+
+We provide two classes to help fetch the bootstrap files:
+* `Unleash::Bootstrap::FromFile`
+* `Unleash::Bootstrap::FromUri`
+
+Example usage:
+```ruby
+@unleash = Unleash::Client.new(
+        app_name: 'my_ruby_app',
+        url: 'http://unleash.herokuapp.com/api',
+        custom_http_headers: { 'Authorization': '<API token>' },
+        bootstrap_data: Unleash::Bootstrap::FromFile.new('./default-toggles.json').read
+        # or
+        # bootstrap_data: Unleash::Bootstrap::FromUri.new('https://example.com/unleash-default-toggles.json').read
+)
+
+```
 
 #### Client methods
 
@@ -315,6 +327,12 @@ This client comes with the all the required strategies out of the box:
  * UnknownStrategy
  * UserWithIdStrategy
 
+## Available Bootstrap Classes
+
+This client comes with these classes to load unleash features on startup, before making a request to the Unleash API:
+
+ * Unleash::Bootstrap::FromFile
+ * Unleash::Bootstrap::FromUri
 
 ## Development
 

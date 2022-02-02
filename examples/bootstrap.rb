@@ -2,7 +2,7 @@
 
 require 'unleash'
 require 'unleash/context'
-require 'unleash/bootstrap'
+require 'unleash/bootstrap/from_file'
 
 puts ">> START bootstrap.rb"
 
@@ -14,10 +14,9 @@ puts ">> START bootstrap.rb"
   refresh_interval: 2,
   metrics_interval: 2,
   retry_limit: 2,
-  bootstrapper: Unleash::FileBootStrapper.new('./examples/default-toggles.json')
+  bootstrap_data: Unleash::Bootstrap::FromFile.new('./examples/default-toggles.json').read
 )
 
-# feature_name = "AwesomeFeature"
 feature_name = "featureX"
 unleash_context = Unleash::Context.new
 unleash_context.user_id = 123

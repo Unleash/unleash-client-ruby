@@ -79,10 +79,14 @@ Argument | Description | Required? |  Type |  Default Value|
 `backup_file` | Filename to store the last known state from the Unleash server. Best to not change this from the default. | N | String | `Dir.tmpdir + "/unleash-#{app_name}-repo.json` |
 `logger` | Specify a custom `Logger` class to handle logs for the Unleash client. | N | Class | `Logger.new(STDOUT)` |
 `log_level` | Change the log level for the `Logger` class. Constant from `Logger::Severity`. | N | Constant | `Logger::WARN` |
-`bootstrap_data` | Bootstrap data to be loaded on start-up. This is useful for loading large states on startup without (or before) hitting the network. | N | String | `nil` |
+`bootstrap_config` | Bootstrap config on how to loaded data on start-up. This is useful for loading large states on startup without (or before) hitting the network. | N | Unleash::Bootstrap::Configuration | `nil` |
 
 For in a more in depth look, please see `lib/unleash/configuration.rb`.
 
+Environment Variable | Description
+---------|---------
+`UNLEASH_BOOTSTRAP_FILE` | File to read bootstrap data from
+`UNLEASH_BOOTSTRAP_URL` | URL to read bootstrap data from
 
 ## Usage in a plain Ruby Application
 
@@ -268,7 +272,7 @@ variant = UNLEASH.get_variant "ColorVariants", @unleash_context, fallback_varian
 puts "variant color is: #{variant.payload.fetch('color')}"
 ```
 
-#### Bootstrapping
+## Bootstrapping
 
 `bootstrap_data` configuration allows the client to be initialized with a predefined set of toggle states.
 The content of the parameter is a JSON string containing the response body from the unleash server.
@@ -281,18 +285,22 @@ Example usage:
 
 First saving the toggles locally:
 ```shell
-curl -H 'Authorization: abc' -XGET 'http://unleash.herokuapp.com/api' > ./default-toggles.json
-```.
+curl -H 'Authorization: <API token>' -XGET 'http://unleash.herokuapp.com/api' > ./default-toggles.json
+```
 
 Now using them on start up:
+
 ```ruby
 @unleash = Unleash::Client.new(
         app_name: 'my_ruby_app',
         url: 'http://unleash.herokuapp.com/api',
         custom_http_headers: { 'Authorization': '<API token>' },
-        bootstrap_data: Unleash::Bootstrap::FromFile.new('./default-toggles.json').read
-        # or
-        # bootstrap_data: Unleash::Bootstrap::FromUri.new('https://example.com/unleash-default-toggles.json').read
+        bootstrap: {
+                url: ""
+filePath : Unleash::Bootstrap::FromFile.new('./default-toggles.json').read,
+                bootstrap_data : Unleash::Bootstrap::FromFile.new('./default-toggles.json').read
+# or
+# bootstrap_data: Unleash::Bootstrap::FromUri.new('https://example.com/unleash-default-toggles.json').read
 )
 
 ```

@@ -15,7 +15,7 @@ module Unleash
 
       begin
         # if bootstrap configuration is available, initialize
-        bootstrap unless Unleash.configuration.bootstrap_data.nil?
+        Unleash::Bootstrap.Handler.new(Unleash.configuration.bootstrap_config).retrieve_toggles unless Unleash.configuration.bootstrap_config.nil?
 
         # if the client is enabled, fetch synchronously
         fetch unless Unleash.configuration.disable_client
@@ -127,13 +127,13 @@ module Unleash
     end
 
     def bootstrap
-      features = get_features(Unleash.configuration.bootstrap_data)
+      features = get_features(Unleash.configuration.bootstrap_config)
 
       synchronize_with_local_cache! features
       update_running_client!
 
       # reset Unleash.configuration.bootstrap_data to free up memory, as we will never use it again
-      Unleash.configuration.bootstrap_data = nil
+      Unleash.configuration.bootstrap_config = nil
     end
 
     # @param response_body [String]

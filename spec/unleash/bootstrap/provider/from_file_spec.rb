@@ -1,10 +1,10 @@
 require 'spec_helper'
 require 'rspec/json_expectations'
-require 'unleash/bootstrap/base'
-require 'unleash/bootstrap/from_file'
+require 'unleash/bootstrap/base_provider'
+require 'unleash/bootstrap/file_provider'
 require 'json'
 
-RSpec.describe Unleash::Bootstrap::FromFile do
+RSpec.describe Unleash::Bootstrap::Provider::FromFile do
   before do
     Unleash.configuration = Unleash::Configuration.new
     Unleash.logger = Unleash.configuration.logger

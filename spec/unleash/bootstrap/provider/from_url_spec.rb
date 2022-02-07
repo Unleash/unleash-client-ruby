@@ -1,7 +1,7 @@
-require 'unleash/bootstrap/from_uri'
+require 'unleash/bootstrap/url_provider'
 require 'json'
 
-RSpec.describe Unleash::Bootstrap::FromUri do
+RSpec.describe Unleash::Bootstrap::Provider::FromUrl do
   it 'loads bootstrap toggle correctly from URL' do
     bootstrap_file = './spec/unleash/bootstrap-resources/features-v1.json'
 
@@ -19,7 +19,7 @@ RSpec.describe Unleash::Bootstrap::FromUri do
       )
       .to_return(status: 200, body: file_contents, headers: {})
 
-    bootstrap_contents = Unleash::Bootstrap::FromUri.read('http://test-url/bootstrap-goodness', {})
+    bootstrap_contents = Unleash::Bootstrap::FromUrl.read('http://test-url/bootstrap-goodness', {})
     bootstrap_features = JSON.parse(bootstrap_contents)['features']
 
     expect(bootstrap_features).to include_json(file_features)

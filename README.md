@@ -278,6 +278,13 @@ We provide two classes to help fetch the bootstrap files:
 * `Unleash::Bootstrap::FromUri`
 
 Example usage:
+
+First saving the toggles locally:
+```shell
+curl -H 'Authorization: abc' -XGET 'http://unleash.herokuapp.com/api' > ./default-toggles.json
+```.
+
+Now using them on start up:
 ```ruby
 @unleash = Unleash::Client.new(
         app_name: 'my_ruby_app',

@@ -1,43 +1,42 @@
-
 {
-    "version": 1,
-    "features": [
+  "version": 1,
+  "features": [
     {
-        "name": "featureX",
-        "enabled": true,
-        "strategies": [
-            {
-                "name": "default"
-            }
-        ]
+      "name": "featureX",
+      "enabled": true,
+      "strategies": [
+        {
+          "name": "default"
+        }
+      ]
     },
     {
-        "name": "featureY",
-        "enabled": false,
-        "strategies": [
-            {
-                "name": "baz",
-                "parameters": {
-                    "foo": "bar"
-                }
-            }
-        ]
-
+      "name": "featureY",
+      "enabled": false,
+      "strategies": [
+        {
+          "name": "baz",
+          "parameters": {
+            "foo": "bar"
+          }
+        }
+      ]
     },
     {
-        "name": "featureZ",
-        "enabled": true,
-        "strategies": [
-            {
-                "name": "default"
-            },
-            {
-                "name": "hola",
-                "parameters": {
-                    "name": "val"
-                }
-            }
-        ]
-
+      "name": "featureZ",
+      "enabled": true,
+      "strategies": [
+        {
+          "name": "default"
+        },
+        {
+          "name": "hola",
+          "parameters": {
+            "name": "val"
+          }
+        }
+      ]
     }
-]}
+  ]
+}
+    

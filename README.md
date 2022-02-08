@@ -124,29 +124,71 @@ Unleash.configure do |config|
 end
 
 UNLEASH = Unleash::Client.new
+
+# Or if preferred:
+# Rails.configuration.unleash = Unleash::Client.new
 ```
 For `config.instance_id` use a string with a unique identification for the running instance. For example: it could be the hostname, if you only run one App per host. Or the docker container id, if you are running in docker. If it is not set the client will generate an unique UUID for each execution.
 
 
-#### Add Initializer if using [Puma](https://github.com/puma/puma)
+#### Add Initializer if using [Puma in clustered mode](https://github.com/puma/puma#clustered-mode)
 
-In `puma.rb` ensure that the unleash client is configured and instantiated as below, inside the `on_worker_boot` code block:
+That is, multiple workers configured in `puma.rb`:
+```ruby
+workers ENV.fetch("WEB_CONCURRENCY") { 2 }
+```
+
+##### with `preload_app!`
+
+Then you may keep the client configuration still in `config/initializers/unleash.rb`:
+```ruby
+Unleash.configure do |config|
+  config.app_name    = Rails.application.class.parent.to_s
+  config.environment = Rails.env
+  config.url                 = 'http://unleash.herokuapp.com/api'
+  config.custom_http_headers = {'Authorization': '<API token>'}
+end
+```
+
+But you must ensure that the unleash client is instantiated only after the process is forked.
+This is done by creating the client inside the `on_worker_boot` code block in `puma.rb` as below:
 
 ```ruby
 on_worker_boot do
   # ...
 
-  Unleash.configure do |config|
-    config.app_name    = Rails.application.class.parent.to_s
-    config.environment = Rails.env
-    config.url                 = 'http://unleash.herokuapp.com/api'
-    config.custom_http_headers = {'Authorization': '<API token>'}
-  end
-  Rails.configuration.unleash = Unleash::Client.new
+  ::UNLEASH = Unleash::Client.new
 end
 ```
 
-Instead of the configuration in `config/initializers/unleash.rb`.
+##### without `preload_app!`
+
+By not using `preload_app!`:
+- the `Rails` constant will NOT be available.
+- but phased restarts will be possible.
+
+You need to ensure that in `puma.rb`:
+- loading unleash sdk with `require 'unleash'` explicitly, as it will not be pre-loaded.
+- all parameters must be explicitly set in the `on_worker_boot` block, as `config/initializers/unleash.rb` is not read.
+- there are no references to `Rails` constant, as that is not yet available.
+
+Example for `puma.rb`:
+```ruby
+require 'unleash'
+
+#...
+
+on_worker_boot do
+  # ...
+
+  ::UNLEASH = Unleash::Client.new(
+    app_name: 'my_rails_app',
+    environment: 'development',
+    url: 'http://unleash.herokuapp.com/api',
+    custom_http_headers: {'Authorization': '<API token>'},
+  )
+end
+```
 
 #### Add Initializer if using [Phusion Passenger](https://github.com/phusion/passenger)
 

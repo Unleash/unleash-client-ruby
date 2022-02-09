@@ -199,10 +199,10 @@ RSpec.describe Unleash::Client do
       config.disable_metrics = true
       config.custom_http_headers = { 'X-API-KEY' => '123' }
       config.log_level = Logger::DEBUG
-      config.bootstrap_config = bootstrap_values
+      config.bootstrap_config = Unleash::Bootstrap::Configuration.new({ 'data' => bootstrap_values })
     end
 
-    expect(Unleash.configuration.bootstrap_config).to eq(bootstrap_values)
+    expect(Unleash.configuration.bootstrap_config.data).to eq(bootstrap_values)
 
     unleash_client = Unleash::Client.new
     expect(

@@ -1,4 +1,4 @@
-require 'unleash/bootstrap/url_provider'
+require 'unleash/bootstrap/provider/from_url'
 require 'json'
 
 RSpec.describe Unleash::Bootstrap::Provider::FromUrl do
@@ -19,7 +19,7 @@ RSpec.describe Unleash::Bootstrap::Provider::FromUrl do
       )
       .to_return(status: 200, body: file_contents, headers: {})
 
-    bootstrap_contents = Unleash::Bootstrap::FromUrl.read('http://test-url/bootstrap-goodness', {})
+    bootstrap_contents = Unleash::Bootstrap::Provider::FromUrl.read('http://test-url/bootstrap-goodness', {})
     bootstrap_features = JSON.parse(bootstrap_contents)['features']
 
     expect(bootstrap_features).to include_json(file_features)

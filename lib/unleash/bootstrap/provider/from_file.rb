@@ -1,3 +1,5 @@
+require 'unleash/bootstrap/provider/base'
+
 module Unleash
   module Bootstrap
     module Provider

@@ -1,4 +1,5 @@
 require 'unleash/configuration'
+require 'unleash/bootstrap/handler'
 require 'net/http'
 require 'json'
 
@@ -15,7 +16,7 @@ module Unleash
 
       begin
         # if bootstrap configuration is available, initialize
-        Unleash::Bootstrap.Handler.new(Unleash.configuration.bootstrap_config).retrieve_toggles unless Unleash.configuration.bootstrap_config.nil?
+        bootstrap if Unleash.configuration.use_bootstrap?
 
         # if the client is enabled, fetch synchronously
         fetch unless Unleash.configuration.disable_client
@@ -127,9 +128,8 @@ module Unleash
     end
 
     def bootstrap
-      features = get_features(Unleash.configuration.bootstrap_config)
-
-      synchronize_with_local_cache! features
+      unleash_response = Unleash::Bootstrap::Handler.new(Unleash.configuration.bootstrap_config).retrieve_toggles
+      synchronize_with_local_cache! get_features unleash_response
       update_running_client!
 
       # reset Unleash.configuration.bootstrap_data to free up memory, as we will never use it again

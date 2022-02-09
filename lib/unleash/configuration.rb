@@ -1,5 +1,6 @@
 require 'securerandom'
 require 'tmpdir'
+require 'unleash/bootstrap/configuration'
 
 module Unleash
   class Configuration
@@ -69,6 +70,10 @@ module Unleash
 
     def url_stripped_of_slash
       self.url.delete_suffix '/'
+    end
+
+    def use_bootstrap?
+      !self.bootstrap_config.nil? && self.bootstrap_config.valid?
     end
 
     private

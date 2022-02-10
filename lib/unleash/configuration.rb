@@ -73,7 +73,7 @@ module Unleash
     end
 
     def use_bootstrap?
-      !self.bootstrap_config.nil? && self.bootstrap_config.valid?
+      self.bootstrap_config&.valid?
     end
 
     private

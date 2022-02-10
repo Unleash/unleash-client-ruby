@@ -120,7 +120,8 @@ module Unleash
       self.fetcher_scheduled_executor = Unleash::ScheduledExecutor.new(
         'ToggleFetcher',
         Unleash.configuration.refresh_interval,
-        Unleash.configuration.retry_limit
+        Unleash.configuration.retry_limit,
+        first_fetch_is_eager
       )
       self.fetcher_scheduled_executor.run do
         Unleash.toggle_fetcher.fetch
@@ -155,6 +156,10 @@ module Unleash
 
     def disabled_variant
       @disabled_variant ||= Unleash::FeatureToggle.disabled_variant
+    end
+
+    def first_fetch_is_eager
+      Unleash.configuration.use_bootstrap?
     end
   end
 end

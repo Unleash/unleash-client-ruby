@@ -1,3 +1,6 @@
+require 'unleash/bootstrap/provider/from_url'
+require 'unleash/bootstrap/provider/from_file'
+
 module Unleash
   module Bootstrap
     class Handler
@@ -9,12 +12,18 @@ module Unleash
 
       # @return [Hash] parsed JSON object from the configuration provided
       def retrieve_toggles
-        return JSON.parse(FromFile.read(configuration.file_path)) unless self.configuration.file_path.nil?
-        return JSON.parse(FromUrl.read(configuration.url, configuration.http_headers)) unless self.configuration.url.nil?
-        return configuration.data unless self.configuration.data.nil?
-        # return configuration.klass.call unless self.configuration.klass.is_a?(Proc)
+        bootstrap = get_bootstrap_data
+        return JSON.parse(get_bootstrap_data) unless bootstrap.nil?
+        {}
+      end
 
-        []
+      private
+
+      def get_bootstrap_data
+        return Provider::FromFile.read(configuration.file_path) unless self.configuration.file_path.nil?
+        return Provider::FromUrl.read(configuration.url, configuration.url_headers) unless self.configuration.url.nil?
+        return configuration.data unless self.configuration.data.nil?
+        return configuration.klass.call if self.configuration.klass.is_a?(Proc)
       end
     end
   end

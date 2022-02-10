@@ -274,12 +274,24 @@ puts "variant color is: #{variant.payload.fetch('color')}"
 
 ## Bootstrapping
 
-`bootstrap_data` configuration allows the client to be initialized with a predefined set of toggle states.
-The content of the parameter is a JSON string containing the response body from the unleash server.
+Bootstrap configuration allows the client to be initialized with a predefined set of toggle states. Bootstrapping can be configured by providing a bootstrap configuration when initializing the client.
+```ruby
+@unleash = Unleash::Client.new(
+    url: 'http://unleash.herokuapp.com/api',
+    app_name: 'my_ruby_app',
+    custom_http_headers: { 'Authorization': '<API token>' },
+    bootstrap_config: Unleash::Bootstrap::Configuration.new({
+        url: "http://unleash.herokuapp.com/api/client/features",
+        url_headers: {'Authorization': '<API token>'}
+    })
+)
+```
+The `Bootstrap::Configuration` initializer takes a hash with one of the following options specified:
 
-We provide two classes to help fetch the bootstrap files:
-* `Unleash::Bootstrap::FromFile`
-* `Unleash::Bootstrap::FromUri`
+* `file_path` - An absolute or relative path to a file containing a JSON string of the response body from the Unleash server.
+* `url` - A url pointing to an Unleash server's features endpoint, the code sample above is illustrative. If using the `url` parameter, a second `url_headers` hash can be passed, which the bootstrapper will pass to the server, see the code sample above for an example. If this option isn't set then the bootstrapper will use the same url headers as the Unleash client.
+* `data` - A raw JSON string as returned by the Unleash server.
+* `closure` - A lambda containing custom logic if you need it, an example is provided below.
 
 Example usage:
 
@@ -291,19 +303,22 @@ curl -H 'Authorization: <API token>' -XGET 'http://unleash.herokuapp.com/api' > 
 Now using them on start up:
 
 ```ruby
-@unleash = Unleash::Client.new(
-        app_name: 'my_ruby_app',
-        url: 'http://unleash.herokuapp.com/api',
-        custom_http_headers: { 'Authorization': '<API token>' },
-        bootstrap: {
-                url: ""
-filePath : Unleash::Bootstrap::FromFile.new('./default-toggles.json').read,
-                bootstrap_data : Unleash::Bootstrap::FromFile.new('./default-toggles.json').read
-# or
-# bootstrap_data: Unleash::Bootstrap::FromUri.new('https://example.com/unleash-default-toggles.json').read
-)
 
+custom_boostrapper = -> {
+  File.read('./default-toggles.json')
+}
+
+@unleash = Unleash::Client.new(
+    app_name: 'my_ruby_app',
+    url: 'http://unleash.herokuapp.com/api',
+    custom_http_headers: { 'Authorization': '<API token>' },
+    bootstrap_config: Unleash::Bootstrap::Configuration.new({
+        closure: custom_boostrapper
+    }
+)
 ```
+
+This example could be easily achieved with a file bootstrapper, this is just to illustrate the usage of custom bootstrapping. Be aware that the client initializer will block until bootstrapping is complete.
 
 #### Client methods
 
@@ -341,13 +356,6 @@ This client comes with the all the required strategies out of the box:
  * RemoteAddressStrategy
  * UnknownStrategy
  * UserWithIdStrategy
-
-## Available Bootstrap Classes
-
-This client comes with these classes to load unleash features on startup, before making a request to the Unleash API:
-
- * Unleash::Bootstrap::FromFile
- * Unleash::Bootstrap::FromUri
 
 ## Development
 

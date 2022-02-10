@@ -98,7 +98,7 @@ module Unleash
       self.retry_limit      = 5
       self.backup_file      = nil
       self.log_level        = Logger::WARN
-      self.bootstrap_config = Unleash::Bootstrap::Configuration.new
+      self.bootstrap_config = nil
 
       self.custom_http_headers = {}
     end

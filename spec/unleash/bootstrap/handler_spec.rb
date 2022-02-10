@@ -89,7 +89,7 @@ RSpec.describe Unleash::Bootstrap::Handler do
     expect(JSON.parse(bootstrap_response)).to eq(JSON.parse(expected_repsonse_data))
   end
 
-  it 'resolves bootstrap toggle correctly from proc' do
+  it 'resolves bootstrap toggle correctly from lambda' do
     expected_repsonse_data = '{
       "version": 1,
       "features": [
@@ -102,7 +102,7 @@ RSpec.describe Unleash::Bootstrap::Handler do
     }'
 
     data_provider_options = {
-      'klass' =>  -> { return expected_repsonse_data }
+      'closure' => -> { expected_repsonse_data }
     }
 
     bootstrap_config = Unleash::Bootstrap::Configuration.new(data_provider_options)

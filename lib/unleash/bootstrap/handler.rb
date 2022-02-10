@@ -10,21 +10,12 @@ module Unleash
         self.configuration = configuration
       end
 
-      # @return [Hash] parsed JSON object from the configuration provided
+      # @return [String] JSON string representing data returned from an Unleash server
       def retrieve_toggles
-        bootstrap = resolve_bootstrap_data
-        return bootstrap unless bootstrap.nil?
-
-        {}
-      end
-
-      private
-
-      def resolve_bootstrap_data
         return Provider::FromFile.read(configuration.file_path) unless self.configuration.file_path.nil?
         return Provider::FromUrl.read(configuration.url, configuration.url_headers) unless self.configuration.url.nil?
         return configuration.data unless self.configuration.data.nil?
-        return configuration.klass.call if self.configuration.klass.is_a?(Proc)
+        return configuration.closure.call if self.configuration.closure.is_a?(Proc)
       end
     end
   end

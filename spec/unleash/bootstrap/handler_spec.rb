@@ -38,19 +38,19 @@ RSpec.describe Unleash::Bootstrap::Handler do
           'Accept' => '*/*',
           'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
           'Content-Type' => 'application/json',
-          'Unleash-Instanceid' => 'rspec/test',
           'User-Agent' => 'Ruby'
         }
       )
       .to_return(status: 200, body: expected_repsonse_data, headers: {})
 
     url_provider_options = {
-      'url' => 'http://test-url/'
+      'url' => 'http://test-url/',
+      'url_headers' => {}
     }
 
     bootstrap_config = Unleash::Bootstrap::Configuration.new(url_provider_options)
     bootstrap_response = Unleash::Bootstrap::Handler.new(bootstrap_config).retrieve_toggles
-    expect(bootstrap_response).to eq(JSON.parse(expected_repsonse_data))
+    expect(JSON.parse(bootstrap_response)).to eq(JSON.parse(expected_repsonse_data))
   end
 
   it 'resolves bootstrap toggle correctly from file provider' do
@@ -64,7 +64,7 @@ RSpec.describe Unleash::Bootstrap::Handler do
     bootstrap_config = Unleash::Bootstrap::Configuration.new(file_provider_options)
     bootstrap_response = Unleash::Bootstrap::Handler.new(bootstrap_config).retrieve_toggles
 
-    expect(bootstrap_response).to eq(JSON.parse(actual_file_contents))
+    expect(JSON.parse(bootstrap_response)).to eq(JSON.parse(actual_file_contents))
   end
 
   it 'resolves bootstrap toggle correctly from raw data' do
@@ -86,7 +86,7 @@ RSpec.describe Unleash::Bootstrap::Handler do
     bootstrap_config = Unleash::Bootstrap::Configuration.new(data_provider_options)
     bootstrap_response = Unleash::Bootstrap::Handler.new(bootstrap_config).retrieve_toggles
 
-    expect(bootstrap_response).to eq(JSON.parse(expected_repsonse_data))
+    expect(JSON.parse(bootstrap_response)).to eq(JSON.parse(expected_repsonse_data))
   end
 
   it 'resolves bootstrap toggle correctly from proc' do
@@ -108,6 +108,6 @@ RSpec.describe Unleash::Bootstrap::Handler do
     bootstrap_config = Unleash::Bootstrap::Configuration.new(data_provider_options)
     bootstrap_response = Unleash::Bootstrap::Handler.new(bootstrap_config).retrieve_toggles
 
-    expect(bootstrap_response).to eq(JSON.parse(expected_repsonse_data))
+    expect(JSON.parse(bootstrap_response)).to eq(JSON.parse(expected_repsonse_data))
   end
 end

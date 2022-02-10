@@ -15,11 +15,12 @@ module Unleash
       self.retry_count = 0
 
       begin
-        # if bootstrap configuration is available, initialize
-        bootstrap if Unleash.configuration.use_bootstrap?
-
-        # if the client is enabled, fetch synchronously
-        fetch unless Unleash.configuration.disable_client
+        # if bootstrap configuration is available, initialize. An immediate API read is also triggered
+        if Unleash.configuration.use_bootstrap?
+          bootstrap
+        else
+          fetch
+        end
       rescue StandardError => e
         # fail back to reading the backup file
         Unleash.logger.warn "ToggleFetcher was unable to fetch from the network, attempting to read from backup file."

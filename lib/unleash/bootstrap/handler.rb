@@ -12,14 +12,15 @@ module Unleash
 
       # @return [Hash] parsed JSON object from the configuration provided
       def retrieve_toggles
-        bootstrap = get_bootstrap_data
-        return JSON.parse(get_bootstrap_data) unless bootstrap.nil?
+        bootstrap = resolve_bootstrap_data
+        return bootstrap unless bootstrap.nil?
+
         {}
       end
 
       private
 
-      def get_bootstrap_data
+      def resolve_bootstrap_data
         return Provider::FromFile.read(configuration.file_path) unless self.configuration.file_path.nil?
         return Provider::FromUrl.read(configuration.url, configuration.url_headers) unless self.configuration.url.nil?
         return configuration.data unless self.configuration.data.nil?

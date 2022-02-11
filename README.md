@@ -305,7 +305,7 @@ Now using them on start up:
 
 ```ruby
 
-custom_boostrapper = -> {
+custom_boostrapper = lambda {
   File.read('./default-toggles.json')
 }
 

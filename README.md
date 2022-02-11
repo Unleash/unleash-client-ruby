@@ -82,7 +82,7 @@ Argument | Description | Required? |  Type |  Default Value|
 `log_level` | Change the log level for the `Logger` class. Constant from `Logger::Severity`. | N | Constant | `Logger::WARN` |
 `bootstrap_config` | Bootstrap config on how to loaded data on start-up. This is useful for loading large states on startup without (or before) hitting the network. | N | Unleash::Bootstrap::Configuration | `nil` |
 
-For in a more in depth look, please see `lib/unleash/configuration.rb`.
+For a more in-depth look, please see `lib/unleash/configuration.rb`.
 
 Environment Variable | Description
 ---------|---------

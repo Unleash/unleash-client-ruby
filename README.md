@@ -293,13 +293,13 @@ The `Bootstrap::Configuration` initializer takes a hash with one of the followin
 * `url` - A url pointing to an Unleash server's features endpoint, the code sample above is illustrative. This can also be set though the `UNLEASH_BOOTSTRAP_URL` environment variable.
 * `url_headers` - Headers for the GET http request to the `url` above. Only used if the `url` parameter is also set. If this option isn't set then the bootstrapper will use the same url headers as the Unleash client.
 * `data` - A raw JSON string as returned by the Unleash server.
-* `closure` - A lambda containing custom logic if you need it, an example is provided below.
+* `block` - A lambda containing custom logic if you need it, an example is provided below.
 
 You should only specify one type of bootstrapping since only one will be invoked and the others will be ignored. The order of preference is as follows:
 
 - Select a data bootstrapper if it exists.
-- If no data bootstrapper exists, select the closure bootstrapper.
-- If no closure bootstrapper exists, select the file bootstrapper from either parameters or the specified environment variable.
+- If no data bootstrapper exists, select the block bootstrapper.
+- If no block bootstrapper exists, select the file bootstrapper from either parameters or the specified environment variable.
 - If no file bootstrapper exists, then check for a URL bootstrapper from either the parameters or the specified environment variable.
 
 
@@ -323,7 +323,7 @@ custom_boostrapper = lambda {
     url: 'http://unleash.herokuapp.com/api',
     custom_http_headers: { 'Authorization': '<API token>' },
     bootstrap_config: Unleash::Bootstrap::Configuration.new({
-        closure: custom_boostrapper
+        block: custom_boostrapper
     }
 )
 ```

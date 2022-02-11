@@ -102,7 +102,7 @@ RSpec.describe Unleash::Bootstrap::Handler do
     }'
 
     data_provider_options = {
-      'closure' => -> { expected_repsonse_data }
+      'block' => -> { expected_repsonse_data }
     }
 
     bootstrap_config = Unleash::Bootstrap::Configuration.new(data_provider_options)

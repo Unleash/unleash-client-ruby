@@ -16,9 +16,7 @@ puts ">> START bootstrap.rb"
   disable_metrics: true,
   metrics_interval: 2,
   retry_limit: 2,
-  bootstrap_config: Unleash::Bootstrap::Configuration.new({
-                                                            file_path: "examples/default-toggles.json"
-                                                          })
+  bootstrap_config: Unleash::Bootstrap::Configuration.new(file_path: "examples/default-toggles.json")
 )
 
 feature_name = "featureX"

@@ -12,7 +12,7 @@ module Unleash
       end
 
       def valid?
-        !(self.data || self.file_path || self.url || self.closure).nil?
+        [self.data, self.file_path, self.url, self.closure].all?(:nil?)
       end
 
       private

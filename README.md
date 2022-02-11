@@ -290,7 +290,8 @@ Bootstrap configuration allows the client to be initialized with a predefined se
 The `Bootstrap::Configuration` initializer takes a hash with one of the following options specified:
 
 * `file_path` - An absolute or relative path to a file containing a JSON string of the response body from the Unleash server. This can also be set though the `UNLEASH_BOOTSTRAP_FILE` environment variable.
-* `url` - A url pointing to an Unleash server's features endpoint, the code sample above is illustrative. This can also be set though the `UNLEASH_BOOTSTRAP_URL` environment variable. If using the `url` parameter, a second `url_headers` hash can be passed, which the bootstrapper will pass to the server, see the code sample above for an example. If this option isn't set then the bootstrapper will use the same url headers as the Unleash client.
+* `url` - A url pointing to an Unleash server's features endpoint, the code sample above is illustrative. This can also be set though the `UNLEASH_BOOTSTRAP_URL` environment variable. 
+* `url_headers` - Headers for the GET http request to the `url` above. Only used if the `url` parameter is also set. If this option isn't set then the bootstrapper will use the same url headers as the Unleash client.
 * `data` - A raw JSON string as returned by the Unleash server.
 * `closure` - A lambda containing custom logic if you need it, an example is provided below.
 

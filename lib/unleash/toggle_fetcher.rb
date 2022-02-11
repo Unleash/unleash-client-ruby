@@ -129,8 +129,8 @@ module Unleash
     end
 
     def bootstrap
-      unleash_response = Unleash::Bootstrap::Handler.new(Unleash.configuration.bootstrap_config).retrieve_toggles
-      synchronize_with_local_cache! get_features unleash_response
+      bootstrap_payload = Unleash::Bootstrap::Handler.new(Unleash.configuration.bootstrap_config).retrieve_toggles
+      synchronize_with_local_cache! get_features bootstrap_payload
       update_running_client!
 
       # reset Unleash.configuration.bootstrap_data to free up memory, as we will never use it again

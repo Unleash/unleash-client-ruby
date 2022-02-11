@@ -2,7 +2,7 @@
 
 require 'unleash'
 require 'unleash/context'
-require 'unleash/bootstrap/from_file'
+require 'unleash/bootstrap/configuration'
 
 puts ">> START bootstrap.rb"
 
@@ -12,9 +12,13 @@ puts ">> START bootstrap.rb"
   app_name: 'bootstrap-test',
   instance_id: 'local-test-cli',
   refresh_interval: 2,
+  disable_client: true,
+  disable_metrics: true,
   metrics_interval: 2,
   retry_limit: 2,
-  bootstrap_data: Unleash::Bootstrap::FromFile.new('./examples/default-toggles.json').read
+  bootstrap_config: Unleash::Bootstrap::Configuration.new({
+                                                            file_path: "examples/default-toggles.json"
+                                                          })
 )
 
 feature_name = "featureX"

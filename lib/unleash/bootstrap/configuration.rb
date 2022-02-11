@@ -12,7 +12,7 @@ module Unleash
       end
 
       def valid?
-        !(self.data.nil? && self.file_path.nil? && self.url.nil? && self.closure.nil?)
+        !(self.data || self.file_path || self.url || self.closure).nil?
       end
 
       private

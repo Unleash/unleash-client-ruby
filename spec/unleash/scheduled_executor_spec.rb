@@ -51,7 +51,7 @@ RSpec.describe Unleash::ScheduledExecutor do
   end
 
   # These two tests are super flaky because they're checking if threading works
-  # We could extend the times to make them less flaky but that would mean slower tests so I'm disabling them for now  
+  # We could extend the times to make them less flaky but that would mean slower tests so I'm disabling them for now
   xit "will trigger immediate exection when set to do so" do
     max_exceptions = 1
 

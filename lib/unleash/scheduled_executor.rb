@@ -1,18 +1,21 @@
 module Unleash
   class ScheduledExecutor
-    attr_accessor :name, :interval, :max_exceptions, :retry_count, :thread
+    attr_accessor :name, :interval, :max_exceptions, :retry_count, :thread, :immediate_execution
 
-    def initialize(name, interval, max_exceptions = 5)
+    def initialize(name, interval, max_exceptions = 5, immediate_execution = false)
       self.name = name || ''
       self.interval = interval
       self.max_exceptions = max_exceptions
       self.retry_count = 0
       self.thread = nil
+      self.immediate_execution = immediate_execution
     end
 
     def run(&blk)
       self.thread = Thread.new do
         Thread.current[:name] = self.name
+
+        run_blk{ blk.call } if self.immediate_execution
 
         Unleash.logger.debug "thread #{name} loop starting"
         loop do

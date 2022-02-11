@@ -1,4 +1,5 @@
 require 'unleash/configuration'
+require 'unleash/bootstrap/handler'
 require 'net/http'
 require 'json'
 
@@ -13,10 +14,15 @@ module Unleash
       self.toggle_resource = ConditionVariable.new
       self.retry_count = 0
 
-      # start by fetching synchronously, and failing back to reading the backup file.
       begin
-        fetch
+        # if bootstrap configuration is available, initialize. An immediate API read is also triggered
+        if Unleash.configuration.use_bootstrap?
+          bootstrap
+        else
+          fetch
+        end
       rescue StandardError => e
+        # fail back to reading the backup file
         Unleash.logger.warn "ToggleFetcher was unable to fetch from the network, attempting to read from backup file."
         Unleash.logger.debug "Exception Caught: #{e}"
         read!
@@ -36,6 +42,8 @@ module Unleash
     # rename to refresh_from_server!  ??
     def fetch
       Unleash.logger.debug "fetch()"
+      return if Unleash.configuration.disable_client
+
       response = Unleash::Util::Http.get(Unleash.configuration.fetch_toggles_uri, etag)
 
       if response.code == '304'
@@ -46,14 +54,7 @@ module Unleash
       end
 
       self.etag = response['ETag']
-      response_hash = JSON.parse(response.body)
-
-      if response_hash['version'] >= 1
-        features = response_hash['features']
-      else
-        raise NotImplemented, "Version of features provided by unleash server" \
-          " is unsupported by this client."
-      end
+      features = get_features(response.body)
 
       # always synchronize with the local cache when fetching:
       synchronize_with_local_cache!(features)
@@ -125,6 +126,24 @@ module Unleash
       ensure
         file&.close
       end
+    end
+
+    def bootstrap
+      bootstrap_payload = Unleash::Bootstrap::Handler.new(Unleash.configuration.bootstrap_config).retrieve_toggles
+      synchronize_with_local_cache! get_features bootstrap_payload
+      update_running_client!
+
+      # reset Unleash.configuration.bootstrap_data to free up memory, as we will never use it again
+      Unleash.configuration.bootstrap_config = nil
+    end
+
+    # @param response_body [String]
+    def get_features(response_body)
+      response_hash = JSON.parse(response_body)
+      return response_hash['features'] if response_hash['version'] >= 1
+
+      raise NotImplemented, "Version of features provided by unleash server" \
+        " is unsupported by this client."
     end
   end
 end

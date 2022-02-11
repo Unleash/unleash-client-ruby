@@ -18,8 +18,9 @@ module Unleash
       Unleash.logger = Unleash.configuration.logger.clone
       Unleash.logger.level = Unleash.configuration.log_level
 
+      Unleash.toggle_fetcher = Unleash::ToggleFetcher.new
       if Unleash.configuration.disable_client
-        Unleash.logger.warn "Unleash::Client is disabled! Will only return default results!"
+        Unleash.logger.warn "Unleash::Client is disabled! Will only return default (or bootstrapped if available) results!"
         return
       end
 
@@ -36,11 +37,6 @@ module Unleash
                       else
                         default_value_param
                       end
-
-      if Unleash.configuration.disable_client
-        Unleash.logger.warn "unleash_client is disabled! Always returning #{default_value} for feature #{feature}!"
-        return default_value
-      end
 
       toggle_as_hash = Unleash&.toggles&.select{ |toggle| toggle['name'] == feature }&.first
 
@@ -121,11 +117,11 @@ module Unleash
     end
 
     def start_toggle_fetcher
-      Unleash.toggle_fetcher = Unleash::ToggleFetcher.new
       self.fetcher_scheduled_executor = Unleash::ScheduledExecutor.new(
         'ToggleFetcher',
         Unleash.configuration.refresh_interval,
-        Unleash.configuration.retry_limit
+        Unleash.configuration.retry_limit,
+        first_fetch_is_eager
       )
       self.fetcher_scheduled_executor.run do
         Unleash.toggle_fetcher.fetch
@@ -160,6 +156,10 @@ module Unleash
 
     def disabled_variant
       @disabled_variant ||= Unleash::FeatureToggle.disabled_variant
+    end
+
+    def first_fetch_is_eager
+      Unleash.configuration.use_bootstrap?
     end
   end
 end

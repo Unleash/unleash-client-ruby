@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "features": [
+    {
+      "name": "featureX",
+      "enabled": true,
+      "strategies": [
+        {
+          "name": "default"
+        }
+      ]
+    }
+  ]
+}

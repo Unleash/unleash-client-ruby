@@ -4,10 +4,10 @@ require 'uri'
 module Unleash
   module Util
     module Http
-      def self.get(uri, etag = nil)
+      def self.get(uri, etag = nil, headers_override = nil)
         http = http_connection(uri)
 
-        request = Net::HTTP::Get.new(uri.request_uri, http_headers(etag))
+        request = Net::HTTP::Get.new(uri.request_uri, http_headers(etag, headers_override))
 
         http.request(request)
       end
@@ -30,10 +30,13 @@ module Unleash
         http
       end
 
-      def self.http_headers(etag = nil)
+      # @param etag [String, nil]
+      # @param headers_override [Hash, nil]
+      def self.http_headers(etag = nil, headers_override = nil)
         Unleash.logger.debug "ETag: #{etag}" unless etag.nil?
 
         headers = (Unleash.configuration.http_headers || {}).dup
+        headers = headers_override if headers_override.is_a?(Hash)
         headers['Content-Type'] = 'application/json'
         headers['If-None-Match'] = etag unless etag.nil?
 

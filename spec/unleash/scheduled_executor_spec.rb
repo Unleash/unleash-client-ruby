@@ -49,4 +49,46 @@ RSpec.describe Unleash::ScheduledExecutor do
 
     Unleash.configuration.instance_id = original_instance_id
   end
+
+  # These two tests are super flaky because they're checking if threading works
+  # We could extend the times to make them less flaky but that would mean slower tests so I'm disabling them for now
+  xit "will trigger immediate exection when set to do so" do
+    max_exceptions = 1
+
+    scheduled_executor = Unleash::ScheduledExecutor.new('TesterLoop', 0.02, max_exceptions, true)
+    new_instance_id = SecureRandom.uuid
+    original_instance_id = Unleash.configuration.instance_id
+
+    scheduled_executor.run do
+      Unleash.configuration.instance_id = new_instance_id
+      raise StopIteration
+    end
+
+    sleep 0.01
+
+    expect(Unleash.configuration.instance_id).to eq(new_instance_id)
+    scheduled_executor.thread.join
+
+    Unleash.configuration.instance_id = original_instance_id
+  end
+
+  xit "will not trigger immediate exection when not set" do
+    max_exceptions = 1
+
+    scheduled_executor = Unleash::ScheduledExecutor.new('TesterLoop', 0.02, max_exceptions, false)
+    new_instance_id = SecureRandom.uuid
+    original_instance_id = Unleash.configuration.instance_id
+
+    scheduled_executor.run do
+      Unleash.configuration.instance_id = new_instance_id
+      raise StopIteration
+    end
+
+    sleep 0.01
+
+    expect(Unleash.configuration.instance_id).to eq(original_instance_id)
+    scheduled_executor.thread.join
+
+    Unleash.configuration.instance_id = original_instance_id
+  end
 end

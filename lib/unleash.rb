@@ -7,6 +7,14 @@ require 'logger'
 
 Gem.find_files('unleash/strategy/**/*.rb').each{ |path| require path unless path.end_with? '_spec.rb' }
 
+if Gem::Version.new(RUBY_VERSION.split(".")[0..1]&.join(".")) < Gem::Version.new('2.5')
+  # Monkey patch to allow supporting older versions of ruby
+  require 'unleash/core_ext/hash'
+  require 'unleash/core_ext/string'
+  String.include Unleash::CoreExtensions::String
+  Hash.include Unleash::CoreExtensions::Hash
+end
+
 module Unleash
   TIME_RESOLUTION = 3
 

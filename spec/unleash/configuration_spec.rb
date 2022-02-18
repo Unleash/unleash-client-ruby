@@ -20,7 +20,7 @@ RSpec.describe Unleash do
       expect(config.refresh_interval).to eq(10)
       expect(config.metrics_interval).to eq(60)
       expect(config.timeout).to eq(30)
-      expect(config.retry_limit).to eq(5)
+      expect(config.retry_limit).to eq(Float::INFINITY)
 
       expect(config.backup_file).to_not be_nil
       expect(config.backup_file).to eq(Dir.tmpdir + '/unleash--repo.json')

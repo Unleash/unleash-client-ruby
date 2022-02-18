@@ -76,7 +76,7 @@ Argument | Description | Required? |  Type |  Default Value|
 `disable_metrics` | Disables sending metrics to Unleash server. | N | Boolean | `false` |
 `custom_http_headers` | Custom headers to send to Unleash. As of Unleash v4.0.0, the `Authorization` header is required. For example: `{'Authorization': '<API token>'}` | N | Hash | {} |
 `timeout` | How long to wait for the connection to be established or wait in reading state (open_timeout/read_timeout) | N | Integer | 30 |
-`retry_limit` | How many consecutive failures in connecting to the Unleash server are allowed before giving up. Use `Float::INFINITY` if you would like it to never give up. | N | Numeric | 5 |
+`retry_limit` | How many consecutive failures in connecting to the Unleash server are allowed before giving up. The default here, `Float::INFINITY`, means the client will never give up. | N | Float::INFINITY | 5 |
 `backup_file` | Filename to store the last known state from the Unleash server. Best to not change this from the default. | N | String | `Dir.tmpdir + "/unleash-#{app_name}-repo.json` |
 `logger` | Specify a custom `Logger` class to handle logs for the Unleash client. | N | Class | `Logger.new(STDOUT)` |
 `log_level` | Change the log level for the `Logger` class. Constant from `Logger::Severity`. | N | Constant | `Logger::WARN` |

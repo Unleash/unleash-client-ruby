@@ -95,7 +95,7 @@ module Unleash
       self.refresh_interval = 10
       self.metrics_interval = 60
       self.timeout          = 30
-      self.retry_limit      = 5
+      self.retry_limit      = Float::INFINITY
       self.backup_file      = nil
       self.log_level        = Logger::WARN
       self.bootstrap_config = nil

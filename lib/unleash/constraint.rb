@@ -17,7 +17,7 @@ module Unleash
       ConstraintMatcher::SemverConstraint::OPERATORS
     ].flatten.freeze
 
-    def initialize(context_name, operator, value = [], inverted = false, case_insensitive = false)
+    def initialize(context_name, operator, value = [], inverted: false, case_insensitive: false)
       raise ArgumentError, "context_name is not a String" unless context_name.is_a?(String)
       raise ArgumentError, "operator does not hold a valid value:" + VALID_OPERATORS unless VALID_OPERATORS.include? operator
       raise ArgumentError, "value must either hold an array or a single string" unless value.is_a?(Array) || value.is_a?(String)
@@ -45,7 +45,7 @@ module Unleash
       if ConstraintMatcher::ContainsConstraint.include? self.operator
         ConstraintMatcher::ContainsConstraint.matches?(self.operator, context_value, self.value)
       elsif ConstraintMatcher::StringConstraint.include? self.operator
-        ConstraintMatcher::StringConstraint.matches?(self.operator, context_value, self.value, self.case_insensitive)
+        ConstraintMatcher::StringConstraint.matches?(self.operator, context_value, self.value, case_insensitive: self.case_insensitive)
       elsif ConstraintMatcher::NumericConstraint.include? self.operator
         ConstraintMatcher::NumericConstraint.matches?(self.operator, context_value, self.value)
       elsif ConstraintMatcher::DateConstraint.include? self.operator

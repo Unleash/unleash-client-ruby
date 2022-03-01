@@ -7,7 +7,7 @@ module Unleash
         'STR_CONTAINS'
       ].freeze
 
-      def self.matches?(operator, context_value, constraint_value, case_insensitive = false)
+      def self.matches?(operator, context_value, constraint_value, case_insensitive: false)
         if case_insensitive
           constraint_value = constraint_value.map(&:upcase)
           context_value = context_value.upcase

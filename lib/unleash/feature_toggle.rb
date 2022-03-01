@@ -140,8 +140,8 @@ module Unleash
                 c.fetch('contextName'),
                 c.fetch('operator'),
                 c.fetch('values', nil) || c.fetch('value', nil),
-                c.fetch('inverted', false),
-                c.fetch('caseInsensitive', false)
+                inverted: c.fetch('inverted', false),
+                case_insensitive: c.fetch('caseInsensitive', false)
               )
             end
           )

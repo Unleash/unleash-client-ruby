@@ -72,5 +72,306 @@ RSpec.describe Unleash::Constraint do
       constraint = Unleash::Constraint.new('user_id', 'NOT_IN', ['456', '789'])
       expect(constraint.matches_context?(context)).to be_truthy
     end
+
+    it 'matches based on property STR_STARTS_WITH value' do
+      context_params = {
+        user_id: '123',
+        session_id: 'verylongsesssionid',
+        remote_address: '127.0.0.1',
+        properties: {
+          env: 'development'
+        }
+      }
+      context = Unleash::Context.new(context_params)
+      constraint = Unleash::Constraint.new('env', 'STR_STARTS_WITH', ['dev'])
+      expect(constraint.matches_context?(context)).to be_truthy
+
+      constraint = Unleash::Constraint.new('env', 'STR_STARTS_WITH', ['development'])
+      expect(constraint.matches_context?(context)).to be_truthy
+
+      constraint = Unleash::Constraint.new('env', 'STR_STARTS_WITH', ['ment'])
+      expect(constraint.matches_context?(context)).to be_falsey
+    end
+
+    it 'matches based on property STR_ENDS_WITH value' do
+      context_params = {
+        user_id: '123',
+        session_id: 'verylongsesssionid',
+        remote_address: '127.0.0.1',
+        properties: {
+          env: 'development'
+        }
+      }
+      context = Unleash::Context.new(context_params)
+      constraint = Unleash::Constraint.new('env', 'STR_ENDS_WITH', ['ment'])
+      expect(constraint.matches_context?(context)).to be_truthy
+
+      constraint = Unleash::Constraint.new('env', 'STR_ENDS_WITH', ['development'])
+      expect(constraint.matches_context?(context)).to be_truthy
+
+      constraint = Unleash::Constraint.new('env', 'STR_ENDS_WITH', ['dev'])
+      expect(constraint.matches_context?(context)).to be_falsey
+    end
+
+    it 'matches based on property STR_CONTAINS value' do
+      context_params = {
+        user_id: '123',
+        session_id: 'verylongsesssionid',
+        remote_address: '127.0.0.1',
+        properties: {
+          env: 'development'
+        }
+      }
+      context = Unleash::Context.new(context_params)
+      constraint = Unleash::Constraint.new('env', 'STR_CONTAINS', ['ment'])
+      expect(constraint.matches_context?(context)).to be_truthy
+
+      constraint = Unleash::Constraint.new('env', 'STR_CONTAINS', ['dev'])
+      expect(constraint.matches_context?(context)).to be_truthy
+
+      constraint = Unleash::Constraint.new('env', 'STR_CONTAINS', ['development'])
+      expect(constraint.matches_context?(context)).to be_truthy
+
+      constraint = Unleash::Constraint.new('env', 'STR_CONTAINS', ['DEVELOPMENT'])
+      expect(constraint.matches_context?(context)).to be_falsey
+    end
+
+    it 'matches based on property NUM_EQ value' do
+      context_params = {
+        user_id: '123',
+        session_id: 'verylongsesssionid',
+        remote_address: '127.0.0.1',
+        properties: {
+          env: '3.141'
+        }
+      }
+      context = Unleash::Context.new(context_params)
+      constraint = Unleash::Constraint.new('env', 'NUM_EQ', '3.141')
+      expect(constraint.matches_context?(context)).to be_truthy
+
+      constraint = Unleash::Constraint.new('env', 'NUM_EQ', '2.718')
+      expect(constraint.matches_context?(context)).to be_falsey
+    end
+
+    it 'matches based on property NUM_LT value' do
+      context_params = {
+        user_id: '123',
+        session_id: 'verylongsesssionid',
+        remote_address: '127.0.0.1',
+        properties: {
+          env: '3.141'
+        }
+      }
+      context = Unleash::Context.new(context_params)
+
+      constraint = Unleash::Constraint.new('env', 'NUM_LT', '2.718')
+      expect(constraint.matches_context?(context)).to be_falsey
+
+      constraint = Unleash::Constraint.new('env', 'NUM_LT', '3.141')
+      expect(constraint.matches_context?(context)).to be_falsey
+
+      constraint = Unleash::Constraint.new('env', 'NUM_LT', '6.282')
+      expect(constraint.matches_context?(context)).to be_truthy
+    end
+
+    it 'matches based on property NUM_LTE value' do
+      context_params = {
+        user_id: '123',
+        session_id: 'verylongsesssionid',
+        remote_address: '127.0.0.1',
+        properties: {
+          env: '3.141'
+        }
+      }
+      context = Unleash::Context.new(context_params)
+
+      constraint = Unleash::Constraint.new('env', 'NUM_LTE', '2.718')
+      expect(constraint.matches_context?(context)).to be_falsey
+
+      constraint = Unleash::Constraint.new('env', 'NUM_LTE', '3.141')
+      expect(constraint.matches_context?(context)).to be_truthy
+
+      constraint = Unleash::Constraint.new('env', 'NUM_LTE', '6.282')
+      expect(constraint.matches_context?(context)).to be_truthy
+    end
+
+    it 'matches based on property NUM_GT value' do
+      context_params = {
+        user_id: '123',
+        session_id: 'verylongsesssionid',
+        remote_address: '127.0.0.1',
+        properties: {
+          env: '3.141'
+        }
+      }
+      context = Unleash::Context.new(context_params)
+
+      constraint = Unleash::Constraint.new('env', 'NUM_GT', '2.718')
+      expect(constraint.matches_context?(context)).to be_truthy
+
+      constraint = Unleash::Constraint.new('env', 'NUM_GT', '3.141')
+      expect(constraint.matches_context?(context)).to be_falsey
+
+      constraint = Unleash::Constraint.new('env', 'NUM_GT', '6.282')
+      expect(constraint.matches_context?(context)).to be_falsey
+    end
+
+    it 'matches based on property NUM_GTE value' do
+      context_params = {
+        user_id: '123',
+        session_id: 'verylongsesssionid',
+        remote_address: '127.0.0.1',
+        properties: {
+          env: '3.141'
+        }
+      }
+      context = Unleash::Context.new(context_params)
+
+      constraint = Unleash::Constraint.new('env', 'NUM_GTE', '2.718')
+      expect(constraint.matches_context?(context)).to be_truthy
+
+      constraint = Unleash::Constraint.new('env', 'NUM_GTE', '3.141')
+      expect(constraint.matches_context?(context)).to be_truthy
+
+      constraint = Unleash::Constraint.new('env', 'NUM_GTE', '6.282')
+      expect(constraint.matches_context?(context)).to be_falsey
+    end
+
+    it 'matches based on property SEMVER_EQ value' do
+      context_params = {
+        user_id: '123',
+        session_id: 'verylongsesssionid',
+        remote_address: '127.0.0.1',
+        properties: {
+          env: '3.1.41-beta'
+        }
+      }
+      context = Unleash::Context.new(context_params)
+
+      constraint = Unleash::Constraint.new('env', 'SEMVER_EQ', '3.1.41-beta')
+      expect(constraint.matches_context?(context)).to be_truthy
+    end
+
+    it 'matches based on property SEMVER_GT value' do
+      context_params = {
+        user_id: '123',
+        session_id: 'verylongsesssionid',
+        remote_address: '127.0.0.1',
+        properties: {
+          env: '3.1.41-gamma'
+        }
+      }
+      context = Unleash::Context.new(context_params)
+
+      constraint = Unleash::Constraint.new('env', 'SEMVER_GT', '3.1.41-beta')
+      expect(constraint.matches_context?(context)).to be_truthy
+    end
+
+    it 'matches based on property SEMVER_LT value' do
+      context_params = {
+        user_id: '123',
+        session_id: 'verylongsesssionid',
+        remote_address: '127.0.0.1',
+        properties: {
+          env: '3.1.41-alpha'
+        }
+      }
+      context = Unleash::Context.new(context_params)
+
+      constraint = Unleash::Constraint.new('env', 'SEMVER_LT', '3.1.41-beta')
+      expect(constraint.matches_context?(context)).to be_truthy
+    end
+
+    it 'matches based on property DATE_AFTER value' do
+      context_params = {
+        user_id: '123',
+        session_id: 'verylongsesssionid',
+        remote_address: '127.0.0.1',
+        currentTime: '2022-01-30T13:00:00.000Z'
+      }
+      context = Unleash::Context.new(context_params)
+
+      constraint = Unleash::Constraint.new('currentTime', 'DATE_AFTER', '2022-01-29T13:00:00.000Z')
+      expect(constraint.matches_context?(context)).to be_truthy
+
+      constraint = Unleash::Constraint.new('currentTime', 'DATE_AFTER', '2022-01-31T13:00:00.000Z')
+      expect(constraint.matches_context?(context)).to be_falsey
+    end
+
+    it 'matches based on property DATE_BEFORE value' do
+      context_params = {
+        user_id: '123',
+        session_id: 'verylongsesssionid',
+        remote_address: '127.0.0.1',
+        currentTime: '2022-01-30T13:00:00.000Z'
+      }
+      context = Unleash::Context.new(context_params)
+
+      constraint = Unleash::Constraint.new('currentTime', 'DATE_BEFORE', '2022-01-29T13:00:00.000Z')
+      expect(constraint.matches_context?(context)).to be_falsey
+
+      constraint = Unleash::Constraint.new('currentTime', 'DATE_BEFORE', '2022-01-31T13:00:00.000Z')
+      expect(constraint.matches_context?(context)).to be_truthy
+    end
+
+    it 'matches based on case insensitive property when operator is uppercased' do
+      context_params = {
+        user_id: '123',
+        session_id: 'verylongsesssionid',
+        remote_address: '127.0.0.1',
+        properties: {
+          env: 'development'
+        }
+      }
+      context = Unleash::Context.new(context_params)
+      constraint = Unleash::Constraint.new('env', 'STR_STARTS_WITH', ['DEV'], case_insensitive: true)
+      expect(constraint.matches_context?(context)).to be_truthy
+
+      constraint = Unleash::Constraint.new('env', 'STR_ENDS_WITH', ['MENT'], case_insensitive: true)
+      expect(constraint.matches_context?(context)).to be_truthy
+
+      constraint = Unleash::Constraint.new('env', 'STR_CONTAINS', ['LOP'], case_insensitive: true)
+      expect(constraint.matches_context?(context)).to be_truthy
+    end
+
+    it 'matches based on case insensitive property when context is uppercased' do
+      context_params = {
+        user_id: '123',
+        session_id: 'verylongsesssionid',
+        remote_address: '127.0.0.1',
+        properties: {
+          env: 'DEVELOPMENT'
+        }
+      }
+      context = Unleash::Context.new(context_params)
+      constraint = Unleash::Constraint.new('env', 'STR_STARTS_WITH', ['dev'], case_insensitive: true)
+      expect(constraint.matches_context?(context)).to be_truthy
+
+      constraint = Unleash::Constraint.new('env', 'STR_ENDS_WITH', ['ment'], case_insensitive: true)
+      expect(constraint.matches_context?(context)).to be_truthy
+
+      constraint = Unleash::Constraint.new('env', 'STR_CONTAINS', ['lop'], case_insensitive: true)
+      expect(constraint.matches_context?(context)).to be_truthy
+    end
+
+    it 'matches based on inverted property' do
+      context_params = {
+        user_id: '123',
+        session_id: 'verylongsesssionid',
+        remote_address: '127.0.0.1',
+        properties: {
+          env: 'development'
+        }
+      }
+      context = Unleash::Context.new(context_params)
+      constraint = Unleash::Constraint.new('env', 'STR_STARTS_WITH', ['dev'], inverted: true)
+      expect(constraint.matches_context?(context)).to be_falsey
+
+      constraint = Unleash::Constraint.new('env', 'STR_ENDS_WITH', ['ment'], inverted: true)
+      expect(constraint.matches_context?(context)).to be_falsey
+
+      constraint = Unleash::Constraint.new('env', 'STR_CONTAINS', ['lop'], inverted: true)
+      expect(constraint.matches_context?(context)).to be_falsey
+    end
   end
 end

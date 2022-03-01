@@ -1,6 +1,12 @@
 module Unleash
   module ConstraintMatcher
     class StringConstraint
+      OPERATORS = [
+        'STR_STARTS_WITH',
+        'STR_ENDS_WITH',
+        'STR_CONTAINS'
+      ].freeze
+
       def self.matches?(operator, context_value, constraint_value, case_insensitive = false)
         if case_insensitive
           constraint_value = constraint_value.map(&:upcase)
@@ -14,6 +20,10 @@ module Unleash
         when "STR_CONTAINS"
           constraint_value.any?{ |value| context_value.include? value }
         end
+      end
+
+      def self.include?(operator)
+        OPERATORS.include? operator
       end
     end
   end

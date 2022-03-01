@@ -1,6 +1,14 @@
 module Unleash
   module ConstraintMatcher
     class NumericConstraint
+      OPERATORS = [
+        'NUM_EQ',
+        'NUM_GT',
+        'NUM_GTE',
+        'NUM_LT',
+        'NUM_LTE'
+      ].freeze
+
       def self.matches?(operator, context_value, constraint_value)
         begin
           context_value = Float(context_value)
@@ -21,6 +29,10 @@ module Unleash
         when "NUM_GTE"
           constraint_value <= context_value
         end
+      end
+
+      def self.include?(operator)
+        OPERATORS.include? operator
       end
     end
   end

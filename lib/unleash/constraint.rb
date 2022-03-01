@@ -9,39 +9,12 @@ module Unleash
   class Constraint
     attr_accessor :context_name, :operator, :value, :inverted, :case_insensitive
 
-
-
-    STRING_OPERATORS = [
-      'STR_STARTS_WITH',
-      'STR_ENDS_WITH',
-      'STR_CONTAINS'
-    ].freeze
-
-    NUMERIC_OPERATORS = [
-      'NUM_EQ',
-      'NUM_GT',
-      'NUM_GTE',
-      'NUM_LT',
-      'NUM_LTE'
-    ].freeze
-
-    DATE_OPERATORS = [
-      'DATE_AFTER',
-      'DATE_BEFORE'
-    ].freeze
-
-    SEMVER_OPERATORS = [
-      'SEMVER_EQ',
-      'SEMVER_GT',
-      'SEMVER_LT'
-    ].freeze
-
     VALID_OPERATORS = [
-      CONTAINS_OPERATORS,
-      STRING_OPERATORS,
-      NUMERIC_OPERATORS,
-      DATE_OPERATORS,
-      SEMVER_OPERATORS
+      ConstraintMatcher::ContainsConstraint::OPERATORS,
+      ConstraintMatcher::StringConstraint::OPERATORS,
+      ConstraintMatcher::NumericConstraint::OPERATORS,
+      ConstraintMatcher::DateConstraint::OPERATORS,
+      ConstraintMatcher::SemverConstraint::OPERATORS
     ].flatten.freeze
 
     def initialize(context_name, operator, value = [], inverted = false, case_insensitive = false)
@@ -65,23 +38,25 @@ module Unleash
 
     private
 
+    # rubocop:disable Metrics/AbcSize
     def matches_constraint?(context)
       context_value = context.get_by_name(self.context_name)
 
-      if CONTAINS_OPERATORS.include? self.operator
+      if ConstraintMatcher::ContainsConstraint.include? self.operator
         ConstraintMatcher::ContainsConstraint.matches?(self.operator, context_value, self.value)
-      elsif STRING_OPERATORS.include? self.operator
+      elsif ConstraintMatcher::StringConstraint.include? self.operator
         ConstraintMatcher::StringConstraint.matches?(self.operator, context_value, self.value, self.case_insensitive)
-      elsif NUMERIC_OPERATORS.include? self.operator
+      elsif ConstraintMatcher::NumericConstraint.include? self.operator
         ConstraintMatcher::NumericConstraint.matches?(self.operator, context_value, self.value)
-      elsif DATE_OPERATORS.include? self.operator
+      elsif ConstraintMatcher::DateConstraint.include? self.operator
         ConstraintMatcher::DateConstraint.matches?(self.operator, context_value, self.value)
-      elsif SEMVER_OPERATORS.include? self.operator
+      elsif ConstraintMatcher::SemverConstraint.include? self.operator
         ConstraintMatcher::SemverConstraint.matches?(self.operator, context_value, self.value)
       else
         Unleash.logger.warn "Invalid constraint operator: #{self.operator}, this should be unreachable. Defaulting to false"
         false
       end
     end
+    # rubocop:enable Metrics/AbcSize
   end
 end

@@ -1,6 +1,11 @@
 module Unleash
   module ConstraintMatcher
     class DateConstraint
+      OPERATORS = [
+        'DATE_AFTER',
+        'DATE_BEFORE'
+      ].freeze
+
       def self.matches?(operator, context_value, constraint_value)
         begin
           context_value = DateTime.parse(context_value)
@@ -15,6 +20,10 @@ module Unleash
         when "DATE_BEFORE"
           constraint_value > context_value
         end
+      end
+
+      def self.include?(operator)
+        OPERATORS.include? operator
       end
     end
   end

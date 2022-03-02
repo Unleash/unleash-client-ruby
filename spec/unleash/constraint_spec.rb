@@ -75,9 +75,6 @@ RSpec.describe Unleash::Constraint do
 
     it 'matches based on property STR_STARTS_WITH value' do
       context_params = {
-        user_id: '123',
-        session_id: 'verylongsesssionid',
-        remote_address: '127.0.0.1',
         properties: {
           env: 'development'
         }

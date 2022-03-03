@@ -25,8 +25,8 @@ module Unleash
       self.context_name = context_name
       self.operator = operator
       self.value = value
-      self.inverted = inverted
-      self.case_insensitive = case_insensitive
+      self.inverted = !!inverted
+      self.case_insensitive = !!case_insensitive
     end
 
     def matches_context?(context)

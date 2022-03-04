@@ -32,6 +32,24 @@ module Unleash
       end
     end
 
+    # provide the context as expected by the url params
+    # TODO(rarruda): add unit test
+    def as_uri_params
+      [*ATTRS, :properties]
+        .flatten
+        .reject{ |k| self.send(k).nil? }
+        .map do |k|
+        if k == :properties
+          self.properties
+            .map{ |property, pval| "properties[#{property}]=#{pval}" }
+            .join("&")
+        else
+          "#{k}=#{self.send(k)}"
+        end
+      end
+        .join("&")
+    end
+
     private
 
     # Method to fetch values from hash for two types of keys: string in camelCase and symbol in snake_case

@@ -18,16 +18,16 @@ RSpec.describe Unleash::Constraint do
       }
       context = Unleash::Context.new(context_params)
       constraint = Unleash::Constraint.new('env', 'IN', ['dev'])
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
 
       constraint = Unleash::Constraint.new('env', 'IN', ['dev', 'pre'])
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
 
       constraint = Unleash::Constraint.new('env', 'NOT_IN', ['dev', 'pre'])
-      expect(constraint.matches_context?(context)).to be_falsey
+      expect(constraint.matches_context?(context)).to be false
 
       constraint = Unleash::Constraint.new('env', 'NOT_IN', ['pre', 'prod'])
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
     end
 
     it 'matches based on property NOT_IN value' do
@@ -41,13 +41,13 @@ RSpec.describe Unleash::Constraint do
       }
       context = Unleash::Context.new(context_params)
       constraint = Unleash::Constraint.new('env', 'NOT_IN', ['dev'])
-      expect(constraint.matches_context?(context)).to be_falsey
+      expect(constraint.matches_context?(context)).to be false
 
       constraint = Unleash::Constraint.new('env', 'NOT_IN', ['dev', 'pre'])
-      expect(constraint.matches_context?(context)).to be_falsey
+      expect(constraint.matches_context?(context)).to be false
 
       constraint = Unleash::Constraint.new('env', 'NOT_IN', ['pre', 'prod'])
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
     end
 
     it 'matches based on user_id IN/NOT_IN user_id' do
@@ -61,16 +61,16 @@ RSpec.describe Unleash::Constraint do
       }
       context = Unleash::Context.new(context_params)
       constraint = Unleash::Constraint.new('user_id', 'IN', ['123', '456'])
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
 
       constraint = Unleash::Constraint.new('user_id', 'IN', ['456', '789'])
-      expect(constraint.matches_context?(context)).to be_falsey
+      expect(constraint.matches_context?(context)).to be false
 
       constraint = Unleash::Constraint.new('user_id', 'NOT_IN', ['123', '456'])
-      expect(constraint.matches_context?(context)).to be_falsey
+      expect(constraint.matches_context?(context)).to be false
 
       constraint = Unleash::Constraint.new('user_id', 'NOT_IN', ['456', '789'])
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
     end
 
     it 'matches based on property STR_STARTS_WITH value' do
@@ -81,13 +81,13 @@ RSpec.describe Unleash::Constraint do
       }
       context = Unleash::Context.new(context_params)
       constraint = Unleash::Constraint.new('env', 'STR_STARTS_WITH', ['dev'])
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
 
       constraint = Unleash::Constraint.new('env', 'STR_STARTS_WITH', ['development'])
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
 
       constraint = Unleash::Constraint.new('env', 'STR_STARTS_WITH', ['ment'])
-      expect(constraint.matches_context?(context)).to be_falsey
+      expect(constraint.matches_context?(context)).to be false
     end
 
     it 'matches based on property STR_ENDS_WITH value' do
@@ -101,13 +101,13 @@ RSpec.describe Unleash::Constraint do
       }
       context = Unleash::Context.new(context_params)
       constraint = Unleash::Constraint.new('env', 'STR_ENDS_WITH', ['ment'])
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
 
       constraint = Unleash::Constraint.new('env', 'STR_ENDS_WITH', ['development'])
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
 
       constraint = Unleash::Constraint.new('env', 'STR_ENDS_WITH', ['dev'])
-      expect(constraint.matches_context?(context)).to be_falsey
+      expect(constraint.matches_context?(context)).to be false
     end
 
     it 'matches based on property STR_CONTAINS value' do
@@ -121,16 +121,16 @@ RSpec.describe Unleash::Constraint do
       }
       context = Unleash::Context.new(context_params)
       constraint = Unleash::Constraint.new('env', 'STR_CONTAINS', ['ment'])
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
 
       constraint = Unleash::Constraint.new('env', 'STR_CONTAINS', ['dev'])
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
 
       constraint = Unleash::Constraint.new('env', 'STR_CONTAINS', ['development'])
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
 
       constraint = Unleash::Constraint.new('env', 'STR_CONTAINS', ['DEVELOPMENT'])
-      expect(constraint.matches_context?(context)).to be_falsey
+      expect(constraint.matches_context?(context)).to be false
     end
 
     it 'matches based on property NUM_EQ value' do
@@ -144,13 +144,13 @@ RSpec.describe Unleash::Constraint do
       }
       context = Unleash::Context.new(context_params)
       constraint = Unleash::Constraint.new('env', 'NUM_EQ', '0.3')
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
 
       constraint = Unleash::Constraint.new('env', 'NUM_EQ', '0.2')
-      expect(constraint.matches_context?(context)).to be_falsey
+      expect(constraint.matches_context?(context)).to be false
 
       constraint = Unleash::Constraint.new('env', 'NUM_EQ', (0.1 + 0.2).to_s)
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
     end
 
     it 'matches based on property NUM_LT value' do
@@ -165,13 +165,13 @@ RSpec.describe Unleash::Constraint do
       context = Unleash::Context.new(context_params)
 
       constraint = Unleash::Constraint.new('env', 'NUM_LT', '2.718')
-      expect(constraint.matches_context?(context)).to be_falsey
+      expect(constraint.matches_context?(context)).to be false
 
       constraint = Unleash::Constraint.new('env', 'NUM_LT', '3.141')
-      expect(constraint.matches_context?(context)).to be_falsey
+      expect(constraint.matches_context?(context)).to be false
 
       constraint = Unleash::Constraint.new('env', 'NUM_LT', '6.282')
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
     end
 
     it 'matches based on property NUM_LTE value' do
@@ -186,13 +186,13 @@ RSpec.describe Unleash::Constraint do
       context = Unleash::Context.new(context_params)
 
       constraint = Unleash::Constraint.new('env', 'NUM_LTE', '2.718')
-      expect(constraint.matches_context?(context)).to be_falsey
+      expect(constraint.matches_context?(context)).to be false
 
       constraint = Unleash::Constraint.new('env', 'NUM_LTE', '3.141')
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
 
       constraint = Unleash::Constraint.new('env', 'NUM_LTE', '6.282')
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
     end
 
     it 'matches based on property NUM_GT value' do
@@ -207,13 +207,13 @@ RSpec.describe Unleash::Constraint do
       context = Unleash::Context.new(context_params)
 
       constraint = Unleash::Constraint.new('env', 'NUM_GT', '2.718')
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
 
       constraint = Unleash::Constraint.new('env', 'NUM_GT', '3.141')
-      expect(constraint.matches_context?(context)).to be_falsey
+      expect(constraint.matches_context?(context)).to be false
 
       constraint = Unleash::Constraint.new('env', 'NUM_GT', '6.282')
-      expect(constraint.matches_context?(context)).to be_falsey
+      expect(constraint.matches_context?(context)).to be false
     end
 
     it 'matches based on property NUM_GTE value' do
@@ -228,13 +228,13 @@ RSpec.describe Unleash::Constraint do
       context = Unleash::Context.new(context_params)
 
       constraint = Unleash::Constraint.new('env', 'NUM_GTE', '2.718')
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
 
       constraint = Unleash::Constraint.new('env', 'NUM_GTE', '3.141')
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
 
       constraint = Unleash::Constraint.new('env', 'NUM_GTE', '6.282')
-      expect(constraint.matches_context?(context)).to be_falsey
+      expect(constraint.matches_context?(context)).to be false
     end
 
     it 'matches based on property SEMVER_EQ value' do
@@ -249,7 +249,7 @@ RSpec.describe Unleash::Constraint do
       context = Unleash::Context.new(context_params)
 
       constraint = Unleash::Constraint.new('env', 'SEMVER_EQ', '3.1.41-beta')
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
     end
 
     it 'matches based on property SEMVER_GT value' do
@@ -264,7 +264,7 @@ RSpec.describe Unleash::Constraint do
       context = Unleash::Context.new(context_params)
 
       constraint = Unleash::Constraint.new('env', 'SEMVER_GT', '3.1.41-beta')
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
     end
 
     it 'matches based on property SEMVER_LT value' do
@@ -279,7 +279,7 @@ RSpec.describe Unleash::Constraint do
       context = Unleash::Context.new(context_params)
 
       constraint = Unleash::Constraint.new('env', 'SEMVER_LT', '3.1.41-beta')
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
     end
 
     it 'matches based on property DATE_AFTER value' do
@@ -316,7 +316,7 @@ RSpec.describe Unleash::Constraint do
       expect(constraint.matches_context?(context)).to be false
 
       constraint = Unleash::Constraint.new('currentTime', 'DATE_AFTER', '2022-01-31T13:00:00.000Z')
-      expect(constraint.matches_context?(context)).to be_falsey
+      expect(constraint.matches_context?(context)).to be false
     end
 
     it 'matches based on property DATE_BEFORE value' do
@@ -329,10 +329,10 @@ RSpec.describe Unleash::Constraint do
       context = Unleash::Context.new(context_params)
 
       constraint = Unleash::Constraint.new('currentTime', 'DATE_BEFORE', '2022-01-29T13:00:00.000Z')
-      expect(constraint.matches_context?(context)).to be_falsey
+      expect(constraint.matches_context?(context)).to be false
 
       constraint = Unleash::Constraint.new('currentTime', 'DATE_BEFORE', '2022-01-31T13:00:00.000Z')
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
     end
 
     it 'matches based on case insensitive property when operator is uppercased' do
@@ -346,13 +346,13 @@ RSpec.describe Unleash::Constraint do
       }
       context = Unleash::Context.new(context_params)
       constraint = Unleash::Constraint.new('env', 'STR_STARTS_WITH', ['DEV'], case_insensitive: true)
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
 
       constraint = Unleash::Constraint.new('env', 'STR_ENDS_WITH', ['MENT'], case_insensitive: true)
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
 
       constraint = Unleash::Constraint.new('env', 'STR_CONTAINS', ['LOP'], case_insensitive: true)
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
     end
 
     it 'matches based on case insensitive property when context is uppercased' do
@@ -366,13 +366,13 @@ RSpec.describe Unleash::Constraint do
       }
       context = Unleash::Context.new(context_params)
       constraint = Unleash::Constraint.new('env', 'STR_STARTS_WITH', ['dev'], case_insensitive: true)
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
 
       constraint = Unleash::Constraint.new('env', 'STR_ENDS_WITH', ['ment'], case_insensitive: true)
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
 
       constraint = Unleash::Constraint.new('env', 'STR_CONTAINS', ['lop'], case_insensitive: true)
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
     end
 
     it 'matches based on inverted property' do
@@ -386,13 +386,13 @@ RSpec.describe Unleash::Constraint do
       }
       context = Unleash::Context.new(context_params)
       constraint = Unleash::Constraint.new('env', 'STR_STARTS_WITH', ['dev'], inverted: true)
-      expect(constraint.matches_context?(context)).to be_falsey
+      expect(constraint.matches_context?(context)).to be false
 
       constraint = Unleash::Constraint.new('env', 'STR_ENDS_WITH', ['ment'], inverted: true)
-      expect(constraint.matches_context?(context)).to be_falsey
+      expect(constraint.matches_context?(context)).to be false
 
       constraint = Unleash::Constraint.new('env', 'STR_CONTAINS', ['lop'], inverted: true)
-      expect(constraint.matches_context?(context)).to be_falsey
+      expect(constraint.matches_context?(context)).to be false
     end
   end
 end

@@ -1,29 +1,33 @@
 require 'date'
-require 'unleash/constraints/contains_constraints'
-require 'unleash/constraints/date_constraints'
-require 'unleash/constraints/numeric_constraints'
-require 'unleash/constraints/semver_constraints'
-require 'unleash/constraints/string_constraints'
 
 module Unleash
   class Constraint
     attr_accessor :context_name, :operator, :value, :inverted, :case_insensitive
 
-    VALID_OPERATORS = [
-      ConstraintMatcher::ContainsConstraint::OPERATORS,
-      ConstraintMatcher::StringConstraint::OPERATORS,
-      ConstraintMatcher::NumericConstraint::OPERATORS,
-      ConstraintMatcher::DateConstraint::OPERATORS,
-      ConstraintMatcher::SemverConstraint::OPERATORS
-    ].flatten.freeze
-
+    OPERATORS = {
+      IN: ->(context_value, constraint_value){ constraint_value.include? context_value },
+      NOT_IN: ->(context_value, constraint_value){ !constraint_value.include? context_value },
+      STR_STARTS_WITH: ->(context_value, constraint_value){ constraint_value.any?{ |v| context_value.start_with? v } },
+      STR_ENDS_WITH: ->(context_value, constraint_value){ constraint_value.any?{ |v| context_value.end_with? v } },
+      STR_CONTAINS: ->(context_value, constraint_value){ constraint_value.any?{ |v| context_value.include? v } },
+      NUM_EQ: ->(context_value, constraint_value){ on_valid_float(constraint_value, context_value){ |x, y| (x - y).abs < Float::EPSILON } },
+      NUM_LT: ->(context_value, constraint_value){ on_valid_float(constraint_value, context_value){ |x, y| (x > y) } },
+      NUM_LTE: ->(context_value, constraint_value){ on_valid_float(constraint_value, context_value){ |x, y| (x >= y) } },
+      NUM_GT: ->(context_value, constraint_value){ on_valid_float(constraint_value, context_value){ |x, y| (x < y) } },
+      NUM_GTE: ->(context_value, constraint_value){ on_valid_float(constraint_value, context_value){ |x, y| (x <= y) } },
+      DATE_AFTER: ->(context_value, constraint_value){ on_valid_date(constraint_value, context_value){ |x, y| (x < y) } },
+      DATE_BEFORE: ->(context_value, constraint_value){ on_valid_date(constraint_value, context_value){ |x, y| (x > y) } },
+      SEMVER_EQ: ->(context_value, constraint_value){ on_valid_version(constraint_value, context_value){ |x, y| (x == y) } },
+      SEMVER_GT: ->(context_value, constraint_value){ on_valid_version(constraint_value, context_value){ |x, y| (x < y) } },
+      SEMVER_LT: ->(context_value, constraint_value){ on_valid_version(constraint_value, context_value){ |x, y| (x > y) } }
+    }.freeze
     def initialize(context_name, operator, value = [], inverted: false, case_insensitive: false)
       raise ArgumentError, "context_name is not a String" unless context_name.is_a?(String)
-      raise ArgumentError, "operator does not hold a valid value:" + VALID_OPERATORS unless VALID_OPERATORS.include? operator
+      raise ArgumentError, "operator does not hold a valid value:" + OPERATORS.keys unless OPERATORS.include? operator.to_sym
       raise ArgumentError, "value must either hold an array or a single string" unless value.is_a?(Array) || value.is_a?(String)
 
       self.context_name = context_name
-      self.operator = operator
+      self.operator = operator.to_sym
       self.value = value
       self.inverted = !!inverted
       self.case_insensitive = !!case_insensitive
@@ -36,27 +40,51 @@ module Unleash
       self.inverted ? !match : match
     end
 
+    def self.on_valid_date(val1, val2)
+      val1 = DateTime.parse(val1)
+      val2 = DateTime.parse(val2)
+      yield(val1, val2)
+    rescue ArgumentError
+      Unleash.logger.warn "Unleash::ConstraintMatcher unable to parse either context_value (#{val1}) \
+      or constraint_value (#{val2}) into a date. This will always return false."
+      false
+    end
+
+    def self.on_valid_float(val1, val2)
+      val1 = Float(val1)
+      val2 = Float(val2)
+      yield(val1, val2)
+    rescue ArgumentError
+      Unleash.logger.warn "Unleash::ConstraintMatcher unable to parse either context_value (#{val1}) \
+      or constraint_value (#{val2}) into a number. This will always return false."
+      false
+    end
+
+    def self.on_valid_version(val1, val2)
+      val1 = Gem::Version.new(val1)
+      val2 = Gem::Version.new(val2)
+      yield(val1, val2)
+    rescue ArgumentError
+      Unleash.logger.warn "Unleash::ConstraintMatcher unable to parse either context_value (#{val1}) \
+      or constraint_value (#{val2}) into a version. This will always return false."
+      false
+    end
+
     private
 
-    # rubocop:disable Metrics/AbcSize
     def matches_constraint?(context)
-      context_value = context.get_by_name(self.context_name)
-
-      if ConstraintMatcher::ContainsConstraint.include? self.operator
-        ConstraintMatcher::ContainsConstraint.matches?(self.operator, context_value, self.value)
-      elsif ConstraintMatcher::StringConstraint.include? self.operator
-        ConstraintMatcher::StringConstraint.matches?(self.operator, context_value, self.value, case_insensitive: self.case_insensitive)
-      elsif ConstraintMatcher::NumericConstraint.include? self.operator
-        ConstraintMatcher::NumericConstraint.matches?(self.operator, context_value, self.value)
-      elsif ConstraintMatcher::DateConstraint.include? self.operator
-        ConstraintMatcher::DateConstraint.matches?(self.operator, context_value, self.value)
-      elsif ConstraintMatcher::SemverConstraint.include? self.operator
-        ConstraintMatcher::SemverConstraint.matches?(self.operator, context_value, self.value)
-      else
-        Unleash.logger.warn "Invalid constraint operator: #{self.operator}, this should be unreachable. Defaulting to false"
+      unless OPERATORS.include?(self.operator)
+        Unleash.logger.warn "Invalid constraint operator: #{self.operator}, this should be unreachable. Always returning false."
         false
       end
+
+      v = self.value.dup
+      context_value = context.get_by_name(self.context_name)
+
+      v.map!(&:upcase) if self.case_insensitive
+      context_value.upcase! if self.case_insensitive
+
+      OPERATORS[self.operator].call(context_value, v)
     end
-    # rubocop:enable Metrics/AbcSize
   end
 end

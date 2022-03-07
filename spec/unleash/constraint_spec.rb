@@ -289,7 +289,28 @@ RSpec.describe Unleash::Constraint do
       context = Unleash::Context.new(context_params)
 
       constraint = Unleash::Constraint.new('currentTime', 'DATE_AFTER', '2022-01-29T13:00:00.000Z')
-      expect(constraint.matches_context?(context)).to be_truthy
+      expect(constraint.matches_context?(context)).to be true
+
+      constraint = Unleash::Constraint.new('currentTime', 'DATE_AFTER', '2022-01-29T13:00:00Z')
+      expect(constraint.matches_context?(context)).to be true
+
+      constraint = Unleash::Constraint.new('currentTime', 'DATE_AFTER', '2022-01-29T13:00Z')
+      expect(constraint.matches_context?(context)).to be true
+      
+      constraint = Unleash::Constraint.new('currentTime', 'DATE_AFTER', '2022-01-30T12:59:59.999999Z')
+      expect(constraint.matches_context?(context)).to be true
+
+      constraint = Unleash::Constraint.new('currentTime', 'DATE_AFTER', '2022-01-30T12:59:59.999Z')
+      expect(constraint.matches_context?(context)).to be true
+      
+      constraint = Unleash::Constraint.new('currentTime', 'DATE_AFTER', '2022-01-30T12:59:59')
+      expect(constraint.matches_context?(context)).to be true
+
+      constraint = Unleash::Constraint.new('currentTime', 'DATE_AFTER', '2022-01-30T12:59')
+      expect(constraint.matches_context?(context)).to be true
+      
+      constraint = Unleash::Constraint.new('currentTime', 'DATE_AFTER', '2022-01-30T13:00:00.000Z')
+      expect(constraint.matches_context?(context)).to be false
 
       constraint = Unleash::Constraint.new('currentTime', 'DATE_AFTER', '2022-01-31T13:00:00.000Z')
       expect(constraint.matches_context?(context)).to be_falsey

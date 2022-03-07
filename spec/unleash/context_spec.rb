@@ -134,4 +134,21 @@ RSpec.describe Unleash::Context do
     expect(context.get_by_name('CountryCode')).to eq('UK')
     expect(context.get_by_name(:CountryCode)).to eq('UK')
   end
+
+  it "creates default date for current time if not populated" do
+    params = {}
+    context = Unleash::Context.new(params)
+
+    expect(context.get_by_name(:CurrentTime)).not_to eq(nil)
+  end
+
+  it "creates doesn't create a default date if passed in" do
+    date = DateTime.now
+    params = {
+      'currentTime': date
+    }
+    context = Unleash::Context.new(params)
+
+    expect(context.get_by_name(:CurrentTime).to_s).to eq(date.to_s)
+  end
 end

@@ -74,6 +74,7 @@ module Unleash
       false
     end
 
+    # This should be a private method but for some reason this fails on Ruby 2.5
     def validate_constraint_value_type(operator, value)
       raise ArgumentError, "context_name is not an Array" if VALID_LIST_TYPES.include?(operator) && value.is_a?(String)
       raise ArgumentError, "context_name is not a String" if !VALID_LIST_TYPES.include?(operator) && value.is_a?(Array)

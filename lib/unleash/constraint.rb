@@ -21,10 +21,14 @@ module Unleash
       SEMVER_GT: ->(context_value, constraint_value){ on_valid_version(constraint_value, context_value){ |x, y| (x < y) } },
       SEMVER_LT: ->(context_value, constraint_value){ on_valid_version(constraint_value, context_value){ |x, y| (x > y) } }
     }.freeze
+
+    VALID_LIST_TYPES = ["IN", "NOT_IN", "STR_STARTS_WITH", "STR_ENDS_WITH", "STR_CONTAINS"].map(&:to_sym).freeze
+
     def initialize(context_name, operator, value = [], inverted: false, case_insensitive: false)
       raise ArgumentError, "context_name is not a String" unless context_name.is_a?(String)
       raise ArgumentError, "operator does not hold a valid value:" + OPERATORS.keys unless OPERATORS.include? operator.to_sym
-      raise ArgumentError, "value must either hold an array or a single string" unless value.is_a?(Array) || value.is_a?(String)
+
+      self.validate_constraint_value_type(operator.to_sym, value)
 
       self.context_name = context_name
       self.operator = operator.to_sym
@@ -71,6 +75,11 @@ module Unleash
     end
 
     private
+
+    def validate_constraint_value_type(operator, value)
+      raise ArgumentError, "context_name is not an Array" if VALID_LIST_TYPES.include?(operator) && value.is_a?(String)
+      raise ArgumentError, "context_name is not a String" if !VALID_LIST_TYPES.include?(operator) && value.is_a?(Array)
+    end
 
     def matches_constraint?(context)
       unless OPERATORS.include?(self.operator)

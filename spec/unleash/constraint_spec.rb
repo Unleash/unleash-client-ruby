@@ -394,5 +394,25 @@ RSpec.describe Unleash::Constraint do
       constraint = Unleash::Constraint.new('env', 'STR_CONTAINS', ['lop'], inverted: true)
       expect(constraint.matches_context?(context)).to be false
     end
+
+    it 'rejects constraint construction for invalid value types for operator' do
+      array_constraints = ['STR_CONTAINS', 'STR_ENDS_WITH', 'STR_STARTS_WITH', 'IN', 'NOT_IN']
+
+      array_constraints.each do |operator_name|
+        Unleash::Constraint.new('env', operator_name, [])
+        expect do
+          Unleash::Constraint.new('env', operator_name, '')
+        end.to raise_error
+      end
+
+      string_constraints = ['NUM_EQ', 'NUM_GT', 'NUM_GTE', 'NUM_LT', 'NUM_LTE',
+                            'DATE_AFTER', 'DATE_BEFORE', 'SEMVER_EQ', 'SEMVER_GT', 'SEMVER_LT']
+      string_constraints.each do |operator_name|
+        Unleash::Constraint.new('env', operator_name, '')
+        expect do
+          Unleash::Constraint.new('env', operator_name, [])
+        end.to raise_error
+      end
+    end
   end
 end

@@ -41,7 +41,12 @@ module Unleash
       Unleash.logger.debug "Unleash::Constraint matches_context? value: #{self.value} context.get_by_name(#{self.context_name})" \
         " #{context.get_by_name(self.context_name)} "
       match = matches_constraint?(context)
+      puts "CHECKING A CONSTRAIT #{match}, #{self.operator}, #{context}"
       self.inverted ? !match : match
+    rescue KeyError
+      Unleash.logger.debug "Attemped to resolve a context key during constraint resolution: #{self.context_name} but it wasn't \
+      found on the context"
+      false
     end
 
     def self.on_valid_date(val1, val2)

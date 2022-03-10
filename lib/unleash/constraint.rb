@@ -5,24 +5,24 @@ module Unleash
     attr_accessor :context_name, :operator, :value, :inverted, :case_insensitive
 
     OPERATORS = {
-      IN: ->(context_value, constraint_value){ constraint_value.include? context_value },
-      NOT_IN: ->(context_value, constraint_value){ !constraint_value.include? context_value },
-      STR_STARTS_WITH: ->(context_value, constraint_value){ constraint_value.any?{ |v| context_value.start_with? v } },
-      STR_ENDS_WITH: ->(context_value, constraint_value){ constraint_value.any?{ |v| context_value.end_with? v } },
-      STR_CONTAINS: ->(context_value, constraint_value){ constraint_value.any?{ |v| context_value.include? v } },
-      NUM_EQ: ->(context_value, constraint_value){ on_valid_float(constraint_value, context_value){ |x, y| (x - y).abs < Float::EPSILON } },
-      NUM_LT: ->(context_value, constraint_value){ on_valid_float(constraint_value, context_value){ |x, y| (x > y) } },
-      NUM_LTE: ->(context_value, constraint_value){ on_valid_float(constraint_value, context_value){ |x, y| (x >= y) } },
-      NUM_GT: ->(context_value, constraint_value){ on_valid_float(constraint_value, context_value){ |x, y| (x < y) } },
-      NUM_GTE: ->(context_value, constraint_value){ on_valid_float(constraint_value, context_value){ |x, y| (x <= y) } },
-      DATE_AFTER: ->(context_value, constraint_value){ on_valid_date(constraint_value, context_value){ |x, y| (x < y) } },
-      DATE_BEFORE: ->(context_value, constraint_value){ on_valid_date(constraint_value, context_value){ |x, y| (x > y) } },
-      SEMVER_EQ: ->(context_value, constraint_value){ on_valid_version(constraint_value, context_value){ |x, y| (x == y) } },
-      SEMVER_GT: ->(context_value, constraint_value){ on_valid_version(constraint_value, context_value){ |x, y| (x < y) } },
-      SEMVER_LT: ->(context_value, constraint_value){ on_valid_version(constraint_value, context_value){ |x, y| (x > y) } }
+      IN: ->(context_v, constraint_v){ constraint_v.include? context_v },
+      NOT_IN: ->(context_v, constraint_v){ !constraint_v.include? context_v },
+      STR_STARTS_WITH: ->(context_v, constraint_v){ constraint_v.any?{ |v| context_v.start_with? v } },
+      STR_ENDS_WITH: ->(context_v, constraint_v){ constraint_v.any?{ |v| context_v.end_with? v } },
+      STR_CONTAINS: ->(context_v, constraint_v){ constraint_v.any?{ |v| context_v.include? v } },
+      NUM_EQ: ->(context_v, constraint_v){ on_valid_float(constraint_v, context_v){ |x, y| (x - y).abs < Float::EPSILON } },
+      NUM_LT: ->(context_v, constraint_v){ on_valid_float(constraint_v, context_v){ |x, y| (x > y) } },
+      NUM_LTE: ->(context_v, constraint_v){ on_valid_float(constraint_v, context_v){ |x, y| (x >= y) } },
+      NUM_GT: ->(context_v, constraint_v){ on_valid_float(constraint_v, context_v){ |x, y| (x < y) } },
+      NUM_GTE: ->(context_v, constraint_v){ on_valid_float(constraint_v, context_v){ |x, y| (x <= y) } },
+      DATE_AFTER: ->(context_v, constraint_v){ on_valid_date(constraint_v, context_v){ |x, y| (x < y) } },
+      DATE_BEFORE: ->(context_v, constraint_v){ on_valid_date(constraint_v, context_v){ |x, y| (x > y) } },
+      SEMVER_EQ: ->(context_v, constraint_v){ on_valid_version(constraint_v, context_v){ |x, y| (x == y) } },
+      SEMVER_GT: ->(context_v, constraint_v){ on_valid_version(constraint_v, context_v){ |x, y| (x < y) } },
+      SEMVER_LT: ->(context_v, constraint_v){ on_valid_version(constraint_v, context_v){ |x, y| (x > y) } }
     }.freeze
 
-    VALID_LIST_TYPES = ["IN", "NOT_IN", "STR_STARTS_WITH", "STR_ENDS_WITH", "STR_CONTAINS"].map(&:to_sym).freeze
+    LIST_OPERATORS = [:IN, :NOT_IN, :STR_STARTS_WITH, :STR_ENDS_WITH, :STR_CONTAINS].freeze
 
     def initialize(context_name, operator, value = [], inverted: false, case_insensitive: false)
       raise ArgumentError, "context_name is not a String" unless context_name.is_a?(String)
@@ -43,7 +43,7 @@ module Unleash
       match = matches_constraint?(context)
       self.inverted ? !match : match
     rescue KeyError
-      Unleash.logger.debug "Attemped to resolve a context key during constraint resolution: #{self.context_name} but it wasn't \
+      Unleash.logger.warn "Attemped to resolve a context key during constraint resolution: #{self.context_name} but it wasn't \
       found on the context"
       false
     end
@@ -80,8 +80,8 @@ module Unleash
 
     # This should be a private method but for some reason this fails on Ruby 2.5
     def validate_constraint_value_type(operator, value)
-      raise ArgumentError, "context_name is not an Array" if VALID_LIST_TYPES.include?(operator) && value.is_a?(String)
-      raise ArgumentError, "context_name is not a String" if !VALID_LIST_TYPES.include?(operator) && value.is_a?(Array)
+      raise ArgumentError, "context_name is not an Array" if LIST_OPERATORS.include?(operator) && value.is_a?(String)
+      raise ArgumentError, "context_name is not a String" if !LIST_OPERATORS.include?(operator) && value.is_a?(Array)
     end
 
     private

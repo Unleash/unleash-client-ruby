@@ -136,7 +136,7 @@ RSpec.describe Unleash::Constraint do
     it 'matches based on property NUM_EQ value' do
       context_params = {
         properties: {
-          env: '0.3'
+          distance: '0.3'
         }
       }
       context = Unleash::Context.new(context_params)

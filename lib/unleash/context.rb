@@ -1,6 +1,6 @@
 module Unleash
   class Context
-    ATTRS = [:app_name, :environment, :user_id, :session_id, :remote_address].freeze
+    ATTRS = [:app_name, :environment, :user_id, :session_id, :remote_address, :current_time].freeze
 
     attr_accessor(*[ATTRS, :properties].flatten)
 
@@ -12,6 +12,7 @@ module Unleash
       self.user_id     = value_for('userId', params)
       self.session_id  = value_for('sessionId', params)
       self.remote_address = value_for('remoteAddress', params)
+      self.current_time = value_for('currentTime', params, Time.now.utc.iso8601.to_s)
 
       properties = value_for('properties', params)
       self.properties = properties.is_a?(Hash) ? properties.transform_keys(&:to_sym) : {}

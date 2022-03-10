@@ -139,7 +139,9 @@ module Unleash
               Constraint.new(
                 c.fetch('contextName'),
                 c.fetch('operator'),
-                c.fetch('values')
+                c.fetch('values', nil) || c.fetch('value', nil),
+                inverted: c.fetch('inverted', false),
+                case_insensitive: c.fetch('caseInsensitive', false)
               )
             end
           )

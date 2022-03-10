@@ -135,9 +135,6 @@ RSpec.describe Unleash::Constraint do
 
     it 'matches based on property NUM_EQ value' do
       context_params = {
-        user_id: '123',
-        session_id: 'verylongsesssionid',
-        remote_address: '127.0.0.1',
         properties: {
           env: '0.3'
         }

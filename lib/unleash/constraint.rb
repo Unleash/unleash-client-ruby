@@ -64,7 +64,7 @@ module Unleash
       yield(val1, val2)
     rescue ArgumentError
       Unleash.logger.warn "Unleash::ConstraintMatcher unable to parse either context_value (#{val1}) \
-      or constraint_value (#{val2}) into a number. This will always return false."
+      or constraint_value (#{val2}) into a number. Returning false!"
       false
     end
 

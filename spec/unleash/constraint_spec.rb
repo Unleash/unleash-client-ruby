@@ -134,13 +134,13 @@ RSpec.describe Unleash::Constraint do
         }
       }
       context = Unleash::Context.new(context_params)
-      constraint = Unleash::Constraint.new('env', 'NUM_EQ', '0.3')
+      constraint = Unleash::Constraint.new('distance', 'NUM_EQ', '0.3')
       expect(constraint.matches_context?(context)).to be true
 
-      constraint = Unleash::Constraint.new('env', 'NUM_EQ', '0.2')
+      constraint = Unleash::Constraint.new('distance', 'NUM_EQ', '0.2')
       expect(constraint.matches_context?(context)).to be false
 
-      constraint = Unleash::Constraint.new('env', 'NUM_EQ', (0.1 + 0.2).to_s)
+      constraint = Unleash::Constraint.new('distance', 'NUM_EQ', (0.1 + 0.2).to_s)
       expect(constraint.matches_context?(context)).to be true
     end
 
@@ -150,18 +150,18 @@ RSpec.describe Unleash::Constraint do
         session_id: 'verylongsesssionid',
         remote_address: '127.0.0.1',
         properties: {
-          env: '3.141'
+          distance: '3.141'
         }
       }
       context = Unleash::Context.new(context_params)
 
-      constraint = Unleash::Constraint.new('env', 'NUM_LT', '2.718')
+      constraint = Unleash::Constraint.new('distance', 'NUM_LT', '2.718')
       expect(constraint.matches_context?(context)).to be false
 
-      constraint = Unleash::Constraint.new('env', 'NUM_LT', '3.141')
+      constraint = Unleash::Constraint.new('distance', 'NUM_LT', '3.141')
       expect(constraint.matches_context?(context)).to be false
 
-      constraint = Unleash::Constraint.new('env', 'NUM_LT', '6.282')
+      constraint = Unleash::Constraint.new('distance', 'NUM_LT', '6.282')
       expect(constraint.matches_context?(context)).to be true
     end
 
@@ -171,18 +171,18 @@ RSpec.describe Unleash::Constraint do
         session_id: 'verylongsesssionid',
         remote_address: '127.0.0.1',
         properties: {
-          env: '3.141'
+          distance: '3.141'
         }
       }
       context = Unleash::Context.new(context_params)
 
-      constraint = Unleash::Constraint.new('env', 'NUM_LTE', '2.718')
+      constraint = Unleash::Constraint.new('distance', 'NUM_LTE', '2.718')
       expect(constraint.matches_context?(context)).to be false
 
-      constraint = Unleash::Constraint.new('env', 'NUM_LTE', '3.141')
+      constraint = Unleash::Constraint.new('distance', 'NUM_LTE', '3.141')
       expect(constraint.matches_context?(context)).to be true
 
-      constraint = Unleash::Constraint.new('env', 'NUM_LTE', '6.282')
+      constraint = Unleash::Constraint.new('distance', 'NUM_LTE', '6.282')
       expect(constraint.matches_context?(context)).to be true
     end
 
@@ -192,18 +192,18 @@ RSpec.describe Unleash::Constraint do
         session_id: 'verylongsesssionid',
         remote_address: '127.0.0.1',
         properties: {
-          env: '3.141'
+          distance: '3.141'
         }
       }
       context = Unleash::Context.new(context_params)
 
-      constraint = Unleash::Constraint.new('env', 'NUM_GT', '2.718')
+      constraint = Unleash::Constraint.new('distance', 'NUM_GT', '2.718')
       expect(constraint.matches_context?(context)).to be true
 
-      constraint = Unleash::Constraint.new('env', 'NUM_GT', '3.141')
+      constraint = Unleash::Constraint.new('distance', 'NUM_GT', '3.141')
       expect(constraint.matches_context?(context)).to be false
 
-      constraint = Unleash::Constraint.new('env', 'NUM_GT', '6.282')
+      constraint = Unleash::Constraint.new('distance', 'NUM_GT', '6.282')
       expect(constraint.matches_context?(context)).to be false
     end
 
@@ -213,18 +213,18 @@ RSpec.describe Unleash::Constraint do
         session_id: 'verylongsesssionid',
         remote_address: '127.0.0.1',
         properties: {
-          env: '3.141'
+          distance: '3.141'
         }
       }
       context = Unleash::Context.new(context_params)
 
-      constraint = Unleash::Constraint.new('env', 'NUM_GTE', '2.718')
+      constraint = Unleash::Constraint.new('distance', 'NUM_GTE', '2.718')
       expect(constraint.matches_context?(context)).to be true
 
-      constraint = Unleash::Constraint.new('env', 'NUM_GTE', '3.141')
+      constraint = Unleash::Constraint.new('distance', 'NUM_GTE', '3.141')
       expect(constraint.matches_context?(context)).to be true
 
-      constraint = Unleash::Constraint.new('env', 'NUM_GTE', '6.282')
+      constraint = Unleash::Constraint.new('distance', 'NUM_GTE', '6.282')
       expect(constraint.matches_context?(context)).to be false
     end
 

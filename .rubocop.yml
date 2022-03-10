@@ -8,7 +8,7 @@ Naming/PredicateName:
     - is_enabled?
 
 Metrics/ClassLength:
-  Max: 120
+  Max: 125
 Layout/LineLength:
   Max: 140
 Metrics/MethodLength:
@@ -16,13 +16,10 @@ Metrics/MethodLength:
 Metrics/BlockLength:
   Max: 110
   Exclude:
-    - 'spec/unleash/configuration_spec.rb'
-    - 'spec/unleash/client_spec.rb'
-    - 'spec/unleash/context_spec.rb'
-    - 'spec/unleash/feature_toggle_spec.rb'
+    - 'spec/**/*.rb'
 
 Metrics/AbcSize:
-  Max: 28
+  Max: 30
 Metrics/CyclomaticComplexity:
   Max: 9
 Metrics/PerceivedComplexity:

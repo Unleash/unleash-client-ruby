@@ -28,14 +28,9 @@ RSpec.describe Unleash::FeatureToggle do
       )
     end
 
-    it 'should return true if enabled, and default is true' do
+    it 'should return true if enabled' do
       context = Unleash::Context.new(user_id: 1)
-      expect(feature_toggle.is_enabled?(context, true)).to be_truthy
-    end
-
-    it 'should return true if enabled, and default is false' do
-      context = Unleash::Context.new(user_id: 1)
-      expect(feature_toggle.is_enabled?(context, false)).to be_truthy
+      expect(feature_toggle.is_enabled?(context)).to be_truthy
     end
   end
 
@@ -51,14 +46,9 @@ RSpec.describe Unleash::FeatureToggle do
       )
     end
 
-    it 'should return false if disabled and default is false' do
+    it 'should return false if disabled' do
       context = Unleash::Context.new(user_id: 1)
-      expect(feature_toggle.is_enabled?(context, false)).to be_falsey
-    end
-
-    it 'should return true if disabled and default is true' do
-      context = Unleash::Context.new(user_id: 1)
-      expect(feature_toggle.is_enabled?(context, true)).to be_truthy
+      expect(feature_toggle.is_enabled?(context)).to be_falsey
     end
   end
 
@@ -81,24 +71,14 @@ RSpec.describe Unleash::FeatureToggle do
       )
     end
 
-    it 'should return true if enabled, user_id matched, and default is true' do
+    it 'should return true if enabled and user_id is matched' do
       context = Unleash::Context.new(user_id: "12345")
-      expect(feature_toggle.is_enabled?(context, true)).to be_truthy
+      expect(feature_toggle.is_enabled?(context)).to be_truthy
     end
 
-    it 'should return true if enabled, user_id matched, and default is false' do
-      context = Unleash::Context.new(user_id: "12345")
-      expect(feature_toggle.is_enabled?(context, false)).to be_truthy
-    end
-
-    it 'should return false if enabled, user_id unmatched, and default is true' do
+    it 'should return false if enabled and user_id is unmatched' do
       context = Unleash::Context.new(user_id: "54321")
-      expect(feature_toggle.is_enabled?(context, true)).to be_falsey
-    end
-
-    it 'should return false if enabled, user_id unmatched, and default is false' do
-      context = Unleash::Context.new(user_id: "54321")
-      expect(feature_toggle.is_enabled?(context, false)).to be_falsey
+      expect(feature_toggle.is_enabled?(context)).to be_falsey
     end
   end
 
@@ -121,24 +101,14 @@ RSpec.describe Unleash::FeatureToggle do
       )
     end
 
-    it 'should return false if disabled, user_id matched, and default is false' do
+    it 'should return false if disabled and user_id matched' do
       context = Unleash::Context.new(user_id: "12345")
-      expect(feature_toggle.is_enabled?(context, false)).to be_falsey
+      expect(feature_toggle.is_enabled?(context)).to be_falsey
     end
 
-    it 'should return false if disabled, user_id unmatched, and default is false' do
+    it 'should return false if disabled and user_id unmatched' do
       context = Unleash::Context.new(user_id: "54321")
-      expect(feature_toggle.is_enabled?(context, false)).to be_falsey
-    end
-
-    it 'should return true if disabled, user_id matched, and default is true' do
-      context = Unleash::Context.new(user_id: "12345")
-      expect(feature_toggle.is_enabled?(context, true)).to be_truthy
-    end
-
-    it 'should return true if disabled, user_id unmatched, and default is true' do
-      context = Unleash::Context.new(user_id: "54321")
-      expect(feature_toggle.is_enabled?(context, true)).to be_truthy
+      expect(feature_toggle.is_enabled?(context)).to be_falsey
     end
   end
 
@@ -473,22 +443,22 @@ RSpec.describe Unleash::FeatureToggle do
 
     it 'should return true if it matches all constraints' do
       context = Unleash::Context.new(user_id: "123", environment: "dev")
-      expect(feature_toggle.is_enabled?(context, true)).to be_truthy
+      expect(feature_toggle.is_enabled?(context)).to be_truthy
     end
 
     it 'should return false if it does not match all constraints (env)' do
       context = Unleash::Context.new(user_id: "123", environment: "prod")
-      expect(feature_toggle.is_enabled?(context, true)).to be_falsey
+      expect(feature_toggle.is_enabled?(context)).to be_falsey
     end
 
     it 'should return false if it does not match all constraints (user_id)' do
       context = Unleash::Context.new(user_id: "11", environment: "dev")
-      expect(feature_toggle.is_enabled?(context, true)).to be_falsey
+      expect(feature_toggle.is_enabled?(context)).to be_falsey
     end
 
     it 'should return false if it does not match any constraint (env and user_id)' do
       context = Unleash::Context.new(user_id: "11", environment: "prod")
-      expect(feature_toggle.is_enabled?(context, true)).to be_falsey
+      expect(feature_toggle.is_enabled?(context)).to be_falsey
     end
   end
 
@@ -519,12 +489,12 @@ RSpec.describe Unleash::FeatureToggle do
 
     it 'should return true if it matches the constraint' do
       context = Unleash::Context.new(user_id: "123", environment: "dev")
-      expect(feature_toggle.is_enabled?(context, true)).to be_truthy
+      expect(feature_toggle.is_enabled?(context)).to be_truthy
     end
 
     it 'should return false if it does not match the constraint' do
       context = Unleash::Context.new(user_id: "123", environment: "prod")
-      expect(feature_toggle.is_enabled?(context, true)).to be_falsey
+      expect(feature_toggle.is_enabled?(context)).to be_falsey
     end
   end
 

@@ -8,7 +8,6 @@ RSpec.describe Unleash::Client do
   # load client spec
   SPECIFICATION_PATH = 'client-specification/specifications'.freeze
 
-  DEFAULT_RESULT = false
   DEFAULT_VARIANT = Unleash::Variant.new(name: 'unknown', enabled: false).freeze
 
   before do
@@ -41,7 +40,7 @@ RSpec.describe Unleash::Client do
               toggle = Unleash::FeatureToggle.new(test_toggle)
               context = Unleash::Context.new(test['context'])
 
-              toggle_result = toggle.is_enabled?(context, DEFAULT_RESULT)
+              toggle_result = toggle.is_enabled?(context)
 
               expect(toggle_result).to eq(test['expectedResult'])
             end

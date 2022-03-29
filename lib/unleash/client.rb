@@ -47,7 +47,7 @@ module Unleash
 
       toggle = Unleash::FeatureToggle.new(toggle_as_hash)
 
-      toggle.is_enabled?(context, default_value)
+      toggle.is_enabled?(context)
     end
 
     # enabled? is a more ruby idiomatic method name than is_enabled?

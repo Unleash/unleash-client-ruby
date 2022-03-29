@@ -23,8 +23,8 @@ module Unleash
       "<FeatureToggle: name=#{name},enabled=#{enabled},strategies=#{strategies},variant_definitions=#{variant_definitions}>"
     end
 
-    def is_enabled?(context, default_result)
-      result = am_enabled?(context, default_result)
+    def is_enabled?(context)
+      result = am_enabled?(context)
 
       choice = result ? :yes : :no
       Unleash.toggle_metrics.increment(name, choice) unless Unleash.configuration.disable_metrics
@@ -37,7 +37,7 @@ module Unleash
 
       context = ensure_valid_context(context)
 
-      return Unleash::FeatureToggle.disabled_variant unless self.enabled && am_enabled?(context, true)
+      return Unleash::FeatureToggle.disabled_variant unless self.enabled && am_enabled?(context)
       return Unleash::FeatureToggle.disabled_variant if sum_variant_defs_weights <= 0
 
       variant = variant_from_override_match(context) || variant_from_weights(context, resolve_stickiness)
@@ -57,7 +57,7 @@ module Unleash
     end
 
     # only check if it is enabled, do not do metrics
-    def am_enabled?(context, default_result)
+    def am_enabled?(context)
       result =
         if self.enabled
           self.strategies.empty? ||
@@ -65,10 +65,10 @@ module Unleash
               strategy_enabled?(s, context) && strategy_constraint_matches?(s, context)
             end
         else
-          default_result
+          false
         end
 
-      Unleash.logger.debug "Unleash::FeatureToggle (enabled:#{self.enabled} default_result:#{default_result} " \
+      Unleash.logger.debug "Unleash::FeatureToggle (enabled:#{self.enabled} " \
         "and Strategies combined with contraints returned #{result})"
 
       result

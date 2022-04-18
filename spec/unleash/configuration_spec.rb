@@ -26,6 +26,8 @@ RSpec.describe Unleash do
       expect(config.backup_file).to eq(Dir.tmpdir + '/unleash--repo.json')
       expect(config.project_name).to be_nil
 
+      expect(config.strategies).to be_instance_of(Unleash::Strategies)
+
       expect{ config.validate! }.to raise_error(ArgumentError)
     end
 

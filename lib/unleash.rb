@@ -33,4 +33,8 @@ module Unleash
     self.configuration.validate!
     self.configuration.refresh_backup_file!
   end
+
+  def self.strategies
+    self.configuration.strategies
+  end
 end

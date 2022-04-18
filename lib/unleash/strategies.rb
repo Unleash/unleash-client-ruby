@@ -1,5 +1,5 @@
 require 'unleash/strategy/base'
-Gem.find_files('unleash/strategy/**/*.rb').each{ |path| require path unless path.end_with? '_spec.rb' }
+Gem.find_files('unleash/strategy/**/*.rb').each{ |path| require path }
 
 module Unleash
   class Strategies

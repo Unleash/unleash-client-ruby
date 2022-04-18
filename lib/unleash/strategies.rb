@@ -26,5 +26,9 @@ module Unleash
 
       strategy
     end
+
+    def add(strategy)
+      @strategies[strategy.name] = strategy
+    end
   end
 end

@@ -31,4 +31,20 @@ RSpec.describe Unleash::Strategies do
       expect { strategies.fetch(:missing) }.to raise_error(Unleash::Strategy::NotImplemented, message)
     end
   end
+
+  describe '#add' do
+    let(:custom_strategy) { instance_double(Unleash::Strategy::Base, name: 'test') }
+
+    before do
+      strategies.add(custom_strategy)
+    end
+
+    it 'returns custom strategy' do
+      expect(strategies.keys.sort).to eq(['applicationHostname', 'default', 'flexibleRollout', 'gradualRolloutRandom',
+                                          'gradualRolloutSessionId', 'gradualRolloutUserId', 'remoteAddress',
+                                          'test', 'userWithId'])
+      expect(strategies.includes?('test')).to be_truthy
+      expect(strategies.fetch(:test)).to eq(custom_strategy)
+    end
+  end
 end

@@ -1,6 +1,7 @@
 require 'unleash/version'
 require 'unleash/configuration'
 require 'unleash/strategy/base'
+require 'unleash/strategies'
 require 'unleash/context'
 require 'unleash/client'
 require 'logger'

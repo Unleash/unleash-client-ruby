@@ -4,13 +4,15 @@ RSpec.describe Unleash::Strategies do
   let(:strategies) { described_class.new }
 
   it 'initialized with default strategies' do
-    expect(strategies.keys.sort).to eq([:applicationHostname, :default, :flexibleRollout, :gradualRolloutRandom,
-                                        :gradualRolloutSessionId, :gradualRolloutUserId, :remoteAddress, :userWithId])
+    expect(strategies.keys.sort).to eq(['applicationHostname', 'default', 'flexibleRollout', 'gradualRolloutRandom',
+                                        'gradualRolloutSessionId', 'gradualRolloutUserId', 'remoteAddress',
+                                        'userWithId'])
   end
 
   describe '#includes?' do
     it 'returns true for available strategy' do
-      expect(strategies.includes?(strategies.keys.sample)).to be_truthy
+      expect(strategies.includes?('gradualRolloutRandom')).to be_truthy
+      expect(strategies.includes?(:userWithId)).to be_truthy
     end
 
     it 'returns false for missing strategy' do
@@ -21,6 +23,7 @@ RSpec.describe Unleash::Strategies do
   describe '#fetch' do
     it 'returns available strategy' do
       expect(strategies.fetch(:flexibleRollout)).to be_instance_of(Unleash::Strategy::FlexibleRollout)
+      expect(strategies.fetch('applicationHostname')).to be_instance_of(Unleash::Strategy::ApplicationHostname)
     end
 
     it 'raising error when missing' do

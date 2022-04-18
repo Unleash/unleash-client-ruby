@@ -7,10 +7,9 @@ module Unleash
       @strategies = Unleash::Strategy.constants
         .select{ |c| Unleash::Strategy.const_get(c).is_a? Class }
         .reject{ |c| ['NotImplemented', 'Base'].include?(c.to_s) }
-        .map do |c|
-        lowered_c = c.to_s
-        lowered_c[0] = lowered_c[0].downcase
-        [lowered_c.to_sym, Object.const_get("Unleash::Strategy::#{c}").new]
+        .map do |strategy_class|
+        strategy = Object.const_get("Unleash::Strategy::#{strategy_class}").new
+        [strategy.name, strategy]
       end.to_h
     end
 
@@ -19,11 +18,11 @@ module Unleash
     end
 
     def includes?(name)
-      @strategies.has_key?(name)
+      @strategies.has_key?(name.to_s)
     end
 
     def fetch(name)
-      raise Unleash::Strategy::NotImplemented, "Strategy is not implemented" unless (strategy = @strategies[name])
+      raise Unleash::Strategy::NotImplemented, "Strategy is not implemented" unless (strategy = @strategies[name.to_s])
 
       strategy
     end

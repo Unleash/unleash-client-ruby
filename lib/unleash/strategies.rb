@@ -5,7 +5,7 @@ module Unleash
   class Strategies
     def initialize
       @strategies = {}
-      DEFAULT_STRATEGIES.each{ |strategy_class| add(strategy_class.new) }
+      register_strategies
     end
 
     def keys
@@ -32,6 +32,26 @@ module Unleash
 
     def [](key)
       @strategies[key.to_s]
+    end
+
+    def register_strategies
+      register_base_strategies
+      register_custom_strategies
+    end
+
+    protected
+
+    def register_custom_strategies
+      Unleash::Strategy.constants
+        .select{ |c| Unleash::Strategy.const_get(c).is_a? Class }
+        .reject{ |c| ['NotImplemented', 'Base'].include?(c.to_s) } # Reject abstract classes
+        .map{ |c| Object.const_get("Unleash::Strategy::#{c}") }
+        .reject{ |c| DEFAULT_STRATEGIES.include?(c) } # Reject base classes
+        .each{ |c| self.add(c.new) }
+    end
+
+    def register_base_strategies
+      DEFAULT_STRATEGIES.each{ |c| self.add(c.new) }
     end
 
     DEFAULT_STRATEGIES = [

@@ -3,10 +3,44 @@ require "spec_helper"
 RSpec.describe Unleash::Strategies do
   let(:strategies) { described_class.new }
 
-  it 'initialized with default strategies' do
-    expect(strategies.keys.sort).to eq(['applicationHostname', 'default', 'flexibleRollout', 'gradualRolloutRandom',
-                                        'gradualRolloutSessionId', 'gradualRolloutUserId', 'remoteAddress',
-                                        'userWithId'])
+  describe 'strategies registration' do
+    let(:default_strategies) do
+      ['applicationHostname', 'default', 'flexibleRollout', 'gradualRolloutRandom',
+       'gradualRolloutSessionId', 'gradualRolloutUserId', 'remoteAddress',
+       'userWithId']
+    end
+
+    context 'when no custom strategies are defined' do
+      it 'has default list' do
+        expect(strategies.keys.sort).to eq(default_strategies)
+      end
+    end
+
+    # This block testing previous way of loading strategies, when we dynamically picked up all classes
+    # defined under `Unleash::Strategy` module
+    context 'when custom strategy is defined' do
+      let(:custom_strategy) do
+        Class.new do
+          def name
+            'myCustomStrategy'
+          end
+        end
+      end
+
+      before do
+        # Define custom class
+        Unleash::Strategy.const_set("MyCustomStrategy", custom_strategy)
+      end
+
+      after do
+        # Remove custom class so it does not interfere with other tests
+        Unleash::Strategy.send(:remove_const, :MyCustomStrategy)
+      end
+
+      it 'includes custom strategy in default list' do
+        expect(strategies.keys.sort).to eq(default_strategies.concat(['myCustomStrategy']).sort)
+      end
+    end
   end
 
   describe '#includes?' do

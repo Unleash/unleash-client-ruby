@@ -26,6 +26,14 @@ module Unleash
       @strategies[strategy.name] = strategy
     end
 
+    def []=(key, strategy)
+      @strategies[key.to_s] = strategy
+    end
+
+    def [](key)
+      @strategies[key.to_s]
+    end
+
     DEFAULT_STRATEGIES = [
       Unleash::Strategy::ApplicationHostname,
       Unleash::Strategy::Default,

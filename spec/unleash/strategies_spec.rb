@@ -3,6 +3,15 @@ require "spec_helper"
 RSpec.describe Unleash::Strategies do
   let(:strategies) { described_class.new }
 
+  # Silence warnings we are triggering in this test
+  around do |example|
+    old_verbose = $VERBOSE
+    $VERBOSE = nil
+    example.run
+  ensure
+    $VERBOSE = old_verbose
+  end
+
   describe 'strategies registration' do
     let(:default_strategies) do
       ['applicationHostname', 'default', 'flexibleRollout', 'gradualRolloutRandom',
@@ -39,6 +48,13 @@ RSpec.describe Unleash::Strategies do
 
       it 'includes custom strategy in default list' do
         expect(strategies.keys.sort).to eq(default_strategies.concat(['myCustomStrategy']).sort)
+      end
+
+      it 'warns about deprecated functionality' do
+        allow(strategies).to receive(:warn)
+        strategies.send(:register_strategies)
+        message = '[DEPRECATED] Registering custom Unleash strategy by adding custom class into Unleash::Strategy'
+        expect(strategies).to have_received(:warn).with(start_with(message))
       end
     end
   end
@@ -109,14 +125,19 @@ RSpec.describe Unleash::Strategies do
     context 'when existing strategy is available' do
       let(:custom_strategy) { instance_double(Unleash::Strategy::Base, name: 'applicationHostname') }
 
-      before do
-        strategies[:applicationHostname] = custom_strategy
-      end
-
       it 'overrides previous strategy strategy' do
+        strategies[:applicationHostname] = custom_strategy
+
         expect(strategies.includes?('applicationHostname')).to be_truthy
         expect(strategies.fetch(:applicationHostname)).to eq(custom_strategy)
         expect(strategies.fetch('applicationHostname')).to eq(custom_strategy)
+      end
+
+      it 'warns when using this method' do
+        allow(strategies).to receive(:warn)
+        strategies[:applicationHostname] = custom_strategy
+        message = '[DEPRECATED] Registering custom Unleash strategy by modifying Unleash::STRATEGIES'
+        expect(strategies).to have_received(:warn).with(start_with(message))
       end
     end
 

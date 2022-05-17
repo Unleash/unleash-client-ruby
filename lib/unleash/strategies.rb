@@ -27,6 +27,7 @@ module Unleash
     end
 
     def []=(key, strategy)
+      warn_deprecated_registration(strategy, 'modifying Unleash::STRATEGIES')
       @strategies[key.to_s] = strategy
     end
 
@@ -41,13 +42,18 @@ module Unleash
 
     protected
 
+    # Deprecated: Use Unleash.configuration to add custom strategies
     def register_custom_strategies
       Unleash::Strategy.constants
         .select{ |c| Unleash::Strategy.const_get(c).is_a? Class }
         .reject{ |c| ['NotImplemented', 'Base'].include?(c.to_s) } # Reject abstract classes
         .map{ |c| Object.const_get("Unleash::Strategy::#{c}") }
         .reject{ |c| DEFAULT_STRATEGIES.include?(c) } # Reject base classes
-        .each{ |c| self.add(c.new) }
+        .each do |c|
+        strategy = c.new
+        warn_deprecated_registration(strategy, 'adding custom class into Unleash::Strategy namespace')
+        self.add(strategy)
+      end
     end
 
     def register_base_strategies
@@ -64,5 +70,11 @@ module Unleash
       Unleash::Strategy::RemoteAddress,
       Unleash::Strategy::UserWithId
     ].freeze
+
+    def warn_deprecated_registration(strategy, method)
+      warn "[DEPRECATED] Registering custom Unleash strategy by #{method} is deprecated.
+             Please use Unleash configuration to register custom strategy: " \
+           "`Unleash.configure {|c| c.strategies.add(#{strategy.class.name}.new) }`"
+    end
   end
 end

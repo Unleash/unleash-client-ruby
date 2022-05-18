@@ -12,9 +12,13 @@ module Unleash
     attr_accessor :configuration, :toggle_fetcher, :toggles, :toggle_metrics, :reporter, :logger
   end
 
+  self.configuration = Unleash::Configuration.new
+
+  # Deprecated: Use Unleash.configure to add custom strategies
+  STRATEGIES = self.configuration.strategies
+
   # Support for configuration via yield:
   def self.configure
-    self.configuration ||= Unleash::Configuration.new
     yield(configuration)
 
     self.configuration.validate!

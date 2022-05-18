@@ -4,7 +4,7 @@ require "unleash/configuration"
 RSpec.describe Unleash do
   describe 'Configuration' do
     before do
-      Unleash.configuration = nil
+      Unleash.configuration = Unleash::Configuration.new
     end
 
     it "should have the correct defaults" do

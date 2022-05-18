@@ -35,6 +35,7 @@ jobs:
       - name: Download test cases
         run: git clone --depth 5 --branch v4.1.0 https://github.com/Unleash/client-specification.git client-specification
       - name: rubocop
+        if: ${{ matrix.ruby-version != '2.5' && matrix.ruby-version != 'jruby-9.2' }}
         uses: reviewdog/action-rubocop@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

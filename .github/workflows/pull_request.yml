@@ -22,6 +22,8 @@ jobs:
           - 2.7
           - 2.6
           - 2.5
+    env:
+      slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
 
     steps:
       - uses: actions/checkout@v2
@@ -54,13 +56,13 @@ jobs:
           parallel: true
       - name: Notify Slack of pipeline completion
         uses: 8398a7/action-slack@v3
-        if: ${{ github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name }}
+        if: ${{ github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name && env.slack_webhook_url != '' }}
         with:
           status: ${{ job.status }}
           text: Built on ${{ matrix.os }} - Ruby ${{ matrix.ruby-version }}
           fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ env.slack_webhook_url }}
 
   finish:
     needs: test

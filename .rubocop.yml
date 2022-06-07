@@ -34,6 +34,9 @@ Style/StringLiterals:
 Style/RedundantSelf:
   Enabled: false
 
+Style/OptionalBooleanParameter:
+  Enabled: false
+
 Style/SymbolArray:
   EnforcedStyle: brackets
 Style/WordArray:

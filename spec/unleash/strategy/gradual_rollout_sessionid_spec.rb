@@ -1,4 +1,3 @@
-require "spec_helper"
 require "unleash/strategy/gradual_rollout_sessionid"
 require "unleash/strategy/util"
 

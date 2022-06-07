@@ -1,4 +1,3 @@
-require "spec_helper"
 
 RSpec.describe Unleash::Constraint do
   before do

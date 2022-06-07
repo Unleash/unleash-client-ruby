@@ -1,4 +1,3 @@
-require "spec_helper"
 require "unleash/strategy/remote_address"
 
 RSpec.describe Unleash::Strategy::RemoteAddress do

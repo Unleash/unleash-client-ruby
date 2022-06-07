@@ -1,4 +1,3 @@
-require "spec_helper"
 require "rspec/json_expectations"
 
 RSpec.describe Unleash::Metrics do

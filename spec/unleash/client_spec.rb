@@ -1,4 +1,3 @@
-require "spec_helper"
 
 RSpec.describe Unleash::Client do
   it "Uses custom http headers when initializing client" do

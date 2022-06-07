@@ -1,4 +1,3 @@
-require 'spec_helper'
 require 'unleash'
 require 'unleash/client'
 require 'unleash/configuration'

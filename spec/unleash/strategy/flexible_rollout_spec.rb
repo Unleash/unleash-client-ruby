@@ -1,4 +1,3 @@
-require 'spec_helper'
 require 'unleash/strategy/flexible_rollout'
 
 RSpec.describe Unleash::Strategy::FlexibleRollout do

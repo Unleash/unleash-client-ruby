@@ -23,7 +23,6 @@ module Unleash
       :bootstrap_config
 
     def initialize(opts = {})
-      ensure_valid_opts(opts)
       set_defaults
 
       initialize_default_logger if opts[:logger].nil?
@@ -40,7 +39,9 @@ module Unleash
       return if self.disable_client
 
       raise ArgumentError, "URL and app_name are required parameters." if self.app_name.nil? || self.url.nil?
-      raise ArgumentError, "custom_http_headers must be a hash." unless self.custom_http_headers.is_a?(Hash)
+      unless self.custom_http_headers.is_a?(Hash) || self.custom_http_headers.respond_to?(:call)
+        raise ArgumentError, "custom_http_headers must be a hash."
+      end
     end
 
     def refresh_backup_file!
@@ -51,7 +52,7 @@ module Unleash
       {
         'UNLEASH-INSTANCEID' => self.instance_id,
         'UNLEASH-APPNAME' => self.app_name
-      }.merge(custom_http_headers.dup)
+      }.merge(generate_custom_http_headers)
     end
 
     def fetch_toggles_uri
@@ -77,12 +78,6 @@ module Unleash
     end
 
     private
-
-    def ensure_valid_opts(opts)
-      unless opts[:custom_http_headers].is_a?(Hash) || opts[:custom_http_headers].nil?
-        raise ArgumentError, "custom_http_headers must be a hash."
-      end
-    end
 
     def set_defaults
       self.app_name         = nil
@@ -116,6 +111,14 @@ module Unleash
     def merge(opts)
       opts.each_pair{ |opt, val| set_option(opt, val) }
       self
+    end
+
+    def generate_custom_http_headers
+      if self.custom_http_headers.respond_to?(:call)
+        self.custom_http_headers.call
+      else
+        self.custom_http_headers
+      end
     end
 
     def set_option(opt, val)

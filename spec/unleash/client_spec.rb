@@ -1,4 +1,3 @@
-
 RSpec.describe Unleash::Client do
   it "Uses custom http headers when initializing client" do
     WebMock.stub_request(:post, "http://test-url/client/register")

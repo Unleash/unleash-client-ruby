@@ -1,4 +1,3 @@
-
 RSpec.describe Unleash::ToggleFetcher do
   subject(:toggle_fetcher) { Unleash::ToggleFetcher.new }
 

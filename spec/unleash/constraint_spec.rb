@@ -1,4 +1,3 @@
-
 RSpec.describe Unleash::Constraint do
   before do
     Unleash.configuration = Unleash::Configuration.new

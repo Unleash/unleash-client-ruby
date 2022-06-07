@@ -2,10 +2,12 @@ require 'spec_helper'
 
 RSpec.describe Unleash::ToggleFetcher do
   subject(:toggle_fetcher) { Unleash::ToggleFetcher.new }
+
   before do
     Unleash.configure do |config|
       config.url      = 'http://toggle-fetcher-test-url/'
       config.app_name = 'toggle-fetcher-my-test-app'
+      config.disable_client = false # Some test is changing the process state for this one
     end
 
     fetcher_features = {
@@ -26,6 +28,11 @@ RSpec.describe Unleash::ToggleFetcher do
                  headers: {})
 
     Unleash.logger = Unleash.configuration.logger
+  end
+
+  after do
+    WebMock.reset!
+    File.delete(Unleash.configuration.backup_file) if File.exist?(Unleash.configuration.backup_file)
   end
 
   describe '#save!' do

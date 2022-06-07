@@ -106,22 +106,15 @@ module Unleash
       backup_file = Unleash.configuration.backup_file
       return nil unless File.exist?(backup_file)
 
-      begin
-        file = File.new(backup_file, "r")
-        file_content = file.read
-
-        backup_as_hash = JSON.parse(file_content)
-        synchronize_with_local_cache!(backup_as_hash)
-        update_running_client!
-      rescue IOError => e
-        Unleash.logger.error "Unable to read the backup_file: #{e}"
-      rescue JSON::ParserError => e
-        Unleash.logger.error "Unable to parse JSON from existing backup_file: #{e}"
-      rescue StandardError => e
-        Unleash.logger.error "Unable to extract valid data from backup_file. Exception thrown: #{e}"
-      ensure
-        file&.close
-      end
+      backup_as_hash = JSON.load_file(backup_file)
+      synchronize_with_local_cache!(backup_as_hash)
+      update_running_client!
+    rescue IOError => e
+      Unleash.logger.error "Unable to read the backup_file: #{e}"
+    rescue JSON::ParserError => e
+      Unleash.logger.error "Unable to parse JSON from existing backup_file: #{e}"
+    rescue StandardError => e
+      Unleash.logger.error "Unable to extract valid data from backup_file. Exception thrown: #{e}"
     end
 
     def bootstrap

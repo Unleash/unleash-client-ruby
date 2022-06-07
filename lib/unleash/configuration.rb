@@ -40,7 +40,7 @@ module Unleash
 
       raise ArgumentError, "URL and app_name are required parameters." if self.app_name.nil? || self.url.nil?
       unless self.custom_http_headers.is_a?(Hash) || self.custom_http_headers.respond_to?(:call)
-        raise ArgumentError, "custom_http_headers must be a hash."
+        raise ArgumentError, "custom_http_headers must be a Hash or a Proc."
       end
     end
 

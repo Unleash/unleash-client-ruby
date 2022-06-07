@@ -106,7 +106,7 @@ module Unleash
       backup_file = Unleash.configuration.backup_file
       return nil unless File.exist?(backup_file)
 
-      backup_as_hash = JSON.load_file(backup_file)
+      backup_as_hash = JSON.parse(File.read(backup_file))
       synchronize_with_local_cache!(backup_as_hash)
       update_running_client!
     rescue IOError => e

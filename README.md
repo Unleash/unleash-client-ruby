@@ -67,8 +67,13 @@ If you need custom http headers that change during the lifetime of the client, a
 ```ruby
 Unleash.configure do |config|
   config.app_name            = 'my_ruby_app'
-  config.url                 = 'http://unleash.herokuapp.com/api'
-  config.custom_http_headers =  -> { {'Authorization': '<API token>'} }
+  config.url                 = 'https://unleash.herokuapp.com/api'
+  config.custom_http_headers =  proc do
+    {
+      'Authorization': '<API token>',
+      'X-Client-Request-Time': Time.now.iso8601
+    }
+  end
 end
 ```
 

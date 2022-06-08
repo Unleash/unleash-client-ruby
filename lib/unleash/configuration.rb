@@ -23,6 +23,7 @@ module Unleash
       :bootstrap_config
 
     def initialize(opts = {})
+      validate_custom_http_headers!(opts[:custom_http_headers]) if opts.has_key?(:custom_http_headers)
       set_defaults
 
       initialize_default_logger if opts[:logger].nil?
@@ -39,9 +40,8 @@ module Unleash
       return if self.disable_client
 
       raise ArgumentError, "URL and app_name are required parameters." if self.app_name.nil? || self.url.nil?
-      unless self.custom_http_headers.is_a?(Hash) || self.custom_http_headers.respond_to?(:call)
-        raise ArgumentError, "custom_http_headers must be a Hash or a Proc."
-      end
+
+      validate_custom_http_headers!(self.custom_http_headers)
     end
 
     def refresh_backup_file!
@@ -113,12 +113,16 @@ module Unleash
       self
     end
 
+    def validate_custom_http_headers!(custom_http_headers)
+      return if custom_http_headers.is_a?(Hash) || custom_http_headers.respond_to?(:call)
+
+      raise ArgumentError, "custom_http_headers must be a Hash or a Proc."
+    end
+
     def generate_custom_http_headers
-      if self.custom_http_headers.respond_to?(:call)
-        self.custom_http_headers.call
-      else
-        self.custom_http_headers
-      end
+      return self.custom_http_headers.call if self.custom_http_headers.respond_to?(:call)
+
+      self.custom_http_headers
     end
 
     def set_option(opt, val)

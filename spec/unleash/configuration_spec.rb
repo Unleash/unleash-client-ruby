@@ -107,35 +107,47 @@ RSpec.describe Unleash do
       Unleash.configure do |config|
         config.url      = 'http://test-url/'
         config.app_name = 'my-test-app'
-        config.custom_http_headers = { 'X-API-KEY' => '123' }
+        config.custom_http_headers = { 'X-API-KEY': '123' }
       end
       expect{ Unleash.configuration.validate! }.not_to raise_error
-      expect(Unleash.configuration.custom_http_headers).to eq({ 'X-API-KEY' => '123' })
-      expect(Unleash.configuration.http_headers).to include({ 'X-API-KEY' => '123' })
+      expect(Unleash.configuration.custom_http_headers).to eq({ 'X-API-KEY': '123' })
     end
 
     it "should allow hashes for custom_http_headers via new client" do
       config = Unleash::Configuration.new(
         url: 'https://testurl/api',
         app_name: 'test-app',
-        custom_http_headers: { 'X-API-KEY' => '123' }
+        custom_http_headers: { 'X-API-KEY': '123' }
       )
 
       expect{ config.validate! }.not_to raise_error
-      expect(config.custom_http_headers).to eq({ 'X-API-KEY' => '123' })
-      expect(config.http_headers).to eq('X-API-KEY' => '123', 'UNLEASH-APPNAME' => 'test-app', 'UNLEASH-INSTANCEID' => config.instance_id)
+      expect(config.custom_http_headers).to include({ 'X-API-KEY': '123' })
+      expect(config.http_headers).to include({ 'UNLEASH-APPNAME' => 'test-app' })
+      expect(config.http_headers).to include('UNLEASH-INSTANCEID')
     end
 
     it "should allow lambdas and procs for custom_https_headers via new client" do
+      proc = proc do
+        { 'X-API-KEY' => '123' }
+      end
+      allow(proc).to receive(:call).and_call_original
+
       config = Unleash::Configuration.new(
         url: 'https://testurl/api',
         app_name: 'test-app',
-        custom_http_headers: -> { { 'X-API-KEY' => '123' } }
+        custom_http_headers: proc
       )
 
       expect{ config.validate! }.not_to raise_error
       expect(config.custom_http_headers).to be_a(Proc)
-      expect(config.http_headers).to eq('X-API-KEY' => '123', 'UNLEASH-APPNAME' => 'test-app', 'UNLEASH-INSTANCEID' => config.instance_id)
+      expect(config.http_headers).to eq(
+        {
+          'X-API-KEY' => '123',
+          'UNLEASH-APPNAME' => 'test-app',
+          'UNLEASH-INSTANCEID' => config.instance_id
+        }
+      )
+      expect(proc).to have_received(:call)
     end
 
     it "should not accept invalid custom_http_headers via yield" do

@@ -127,15 +127,15 @@ RSpec.describe Unleash do
     end
 
     it "should allow lambdas and procs for custom_https_headers via new client" do
-      proc = proc do
+      custom_headers_proc = proc do
         { 'X-API-KEY' => '123' }
       end
-      allow(proc).to receive(:call).and_call_original
+      allow(custom_headers_proc).to receive(:call).and_call_original
 
       config = Unleash::Configuration.new(
         url: 'https://testurl/api',
         app_name: 'test-app',
-        custom_http_headers: proc
+        custom_http_headers: custom_headers_proc
       )
 
       expect{ config.validate! }.not_to raise_error
@@ -147,7 +147,7 @@ RSpec.describe Unleash do
           'UNLEASH-INSTANCEID' => config.instance_id
         }
       )
-      expect(proc).to have_received(:call)
+      expect(custom_headers_proc).to have_received(:call)
     end
 
     it "should not accept invalid custom_http_headers via yield" do

@@ -6,7 +6,7 @@ require 'unleash/context'
 puts ">> START simple.rb"
 
 # Unleash.configure do |config|
-#   config.url = 'http://unleash.herokuapp.com/api'
+#   config.url = 'https://unleash.herokuapp.com/api'
 #   config.custom_http_headers = { 'Authorization': '943ca9171e2c884c545c5d82417a655fb77cec970cc3b78a8ff87f4406b495d0' }
 #   config.app_name = 'simple-test'
 #   config.refresh_interval = 2
@@ -18,7 +18,7 @@ puts ">> START simple.rb"
 # or:
 
 @unleash = Unleash::Client.new(
-  url: 'http://unleash.herokuapp.com/api',
+  url: 'https://unleash.herokuapp.com/api',
   custom_http_headers: { 'Authorization': '943ca9171e2c884c545c5d82417a655fb77cec970cc3b78a8ff87f4406b495d0' },
   app_name: 'simple-test',
   instance_id: 'local-test-cli',

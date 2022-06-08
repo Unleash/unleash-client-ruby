@@ -41,7 +41,7 @@ It is **required** to configure:
 - `app_name` with the name of the runninng application.
 - `custom_http_headers` with `{'Authorization': '<API token>'}` when using Unleash v4.0.0 and later.
 
-Please substitute the example `'http://unleash.herokuapp.com/api'` for the url of your own instance.
+Please substitute the example `'https://unleash.herokuapp.com/api'` for the url of your own instance.
 
 It is **highly recommended** to configure:
 - `instance_id` parameter with a unique identifier for the running instance.
@@ -50,7 +50,7 @@ It is **highly recommended** to configure:
 ```ruby
 Unleash.configure do |config|
   config.app_name            = 'my_ruby_app'
-  config.url                 = 'http://unleash.herokuapp.com/api'
+  config.url                 = 'https://unleash.herokuapp.com/api'
   config.custom_http_headers = {'Authorization': '<API token>'}
 end
 ```
@@ -58,7 +58,7 @@ end
 or instantiate the client with the valid configuration:
 
 ```ruby
-UNLEASH = Unleash::Client.new(url: 'http://unleash.herokuapp.com/api', app_name: 'my_ruby_app', custom_http_headers: {'Authorization': '<API token>'})
+UNLEASH = Unleash::Client.new(url: 'https://unleash.herokuapp.com/api', app_name: 'my_ruby_app', custom_http_headers: {'Authorization': '<API token>'})
 ```
 
 #### List of Arguments
@@ -95,7 +95,7 @@ Environment Variable | Description
 require 'unleash'
 require 'unleash/context'
 
-@unleash = Unleash::Client.new(app_name: 'my_ruby_app', url: 'http://unleash.herokuapp.com/api', custom_http_headers: { 'Authorization': '<API token>' })
+@unleash = Unleash::Client.new(app_name: 'my_ruby_app', url: 'https://unleash.herokuapp.com/api', custom_http_headers: { 'Authorization': '<API token>' })
 
 feature_name = "AwesomeFeature"
 unleash_context = Unleash::Context.new
@@ -117,7 +117,7 @@ Put in `config/initializers/unleash.rb`:
 ```ruby
 Unleash.configure do |config|
   config.app_name = Rails.application.class.parent.to_s
-  config.url      = 'http://unleash.herokuapp.com/api'
+  config.url      = 'https://unleash.herokuapp.com/api'
   # config.instance_id = "#{Socket.gethostname}"
   config.logger   = Rails.logger
   config.environment = Rails.env
@@ -156,7 +156,7 @@ Then you may keep the client configuration still in `config/initializers/unleash
 Unleash.configure do |config|
   config.app_name    = Rails.application.class.parent.to_s
   config.environment = Rails.env
-  config.url                 = 'http://unleash.herokuapp.com/api'
+  config.url                 = 'https://unleash.herokuapp.com/api'
   config.custom_http_headers = {'Authorization': '<API token>'}
 end
 ```
@@ -204,7 +204,7 @@ on_worker_boot do
   ::UNLEASH = Unleash::Client.new(
     app_name: 'my_rails_app',
     environment: 'development',
-    url: 'http://unleash.herokuapp.com/api',
+    url: 'https://unleash.herokuapp.com/api',
     custom_http_headers: {'Authorization': '<API token>'},
   )
 end
@@ -230,7 +230,7 @@ PhusionPassenger.on_event(:starting_worker_process) do |forked|
       # config.instance_id = "#{Socket.gethostname}"
       config.logger      = Rails.logger
       config.environment = Rails.env
-      config.url                 = 'http://unleash.herokuapp.com/api'
+      config.url                 = 'https://unleash.herokuapp.com/api'
       config.custom_http_headers = {'Authorization': '<API token>'}
     end
 
@@ -365,11 +365,11 @@ Bootstrap configuration allows the client to be initialized with a predefined se
 Bootstrapping can be configured by providing a bootstrap configuration when initializing the client.
 ```ruby
 @unleash = Unleash::Client.new(
-    url: 'http://unleash.herokuapp.com/api',
+    url: 'https://unleash.herokuapp.com/api',
     app_name: 'my_ruby_app',
     custom_http_headers: { 'Authorization': '<API token>' },
     bootstrap_config: Unleash::Bootstrap::Configuration.new({
-        url: "http://unleash.herokuapp.com/api/client/features",
+        url: "https://unleash.herokuapp.com/api/client/features",
         url_headers: {'Authorization': '<API token>'}
     })
 )
@@ -395,7 +395,7 @@ Example usage:
 
 First saving the toggles locally:
 ```shell
-curl -H 'Authorization: <API token>' -XGET 'http://unleash.herokuapp.com/api' > ./default-toggles.json
+curl -H 'Authorization: <API token>' -XGET 'https://unleash.herokuapp.com/api' > ./default-toggles.json
 ```
 
 Now using them on start up:
@@ -408,7 +408,7 @@ custom_boostrapper = lambda {
 
 @unleash = Unleash::Client.new(
     app_name: 'my_ruby_app',
-    url: 'http://unleash.herokuapp.com/api',
+    url: 'https://unleash.herokuapp.com/api',
     custom_http_headers: { 'Authorization': '<API token>' },
     bootstrap_config: Unleash::Bootstrap::Configuration.new({
         block: custom_boostrapper

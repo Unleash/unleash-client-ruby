@@ -62,6 +62,7 @@ RSpec.describe Unleash::ToggleFetcher do
   describe '.new' do
     context 'when there are problems fetching toggles' do
       before do
+        # manually create a stub cache on disk, so we can test that we read it correctly later.
         cache_creator = described_class.new
         cache_creator.toggle_cache = { features: [] }
         cache_creator.save!

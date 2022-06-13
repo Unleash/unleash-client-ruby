@@ -52,7 +52,7 @@ module Unleash
       {
         'UNLEASH-INSTANCEID' => self.instance_id,
         'UNLEASH-APPNAME' => self.app_name
-      }.merge(generate_custom_http_headers)
+      }.merge!(generate_custom_http_headers)
     end
 
     def fetch_toggles_uri

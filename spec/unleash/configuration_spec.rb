@@ -147,7 +147,7 @@ RSpec.describe Unleash do
           'UNLEASH-INSTANCEID' => config.instance_id
         }
       )
-      expect(custom_headers_proc).to have_received(:call)
+      expect(custom_headers_proc).to have_received(:call).exactly(1).times
     end
 
     it "should not accept invalid custom_http_headers via yield" do

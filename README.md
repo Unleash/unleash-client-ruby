@@ -62,7 +62,7 @@ UNLEASH = Unleash::Client.new(url: 'http://unleash.herokuapp.com/api', app_name:
 ```
 
 ## Dynamic custom HTTP headers
-If you need custom http headers that change during the lifetime of the client, a the `custom_http_headers` can be given as a `Proc`.
+If you need custom HTTP headers that change during the lifetime of the client, the `custom_http_headers` can be given as a `Proc`.
 
 ```ruby
 Unleash.configure do |config|

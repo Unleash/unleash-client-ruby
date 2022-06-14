@@ -61,6 +61,22 @@ or instantiate the client with the valid configuration:
 UNLEASH = Unleash::Client.new(url: 'https://unleash.herokuapp.com/api', app_name: 'my_ruby_app', custom_http_headers: {'Authorization': '<API token>'})
 ```
 
+## Dynamic custom HTTP headers
+If you need custom HTTP headers that change during the lifetime of the client, the `custom_http_headers` can be given as a `Proc`.
+
+```ruby
+Unleash.configure do |config|
+  config.app_name            = 'my_ruby_app'
+  config.url                 = 'https://unleash.herokuapp.com/api'
+  config.custom_http_headers =  proc do
+    {
+      'Authorization': '<API token>',
+      'X-Client-Request-Time': Time.now.iso8601
+    }
+  end
+end
+```
+
 #### List of Arguments
 
 Argument | Description | Required? |  Type |  Default Value|
@@ -74,7 +90,7 @@ Argument | Description | Required? |  Type |  Default Value|
 `metrics_interval` | How often the unleash client should send metrics to server. | N | Integer | 60 |
 `disable_client` | Disables all communication with the Unleash server, effectively taking it *offline*. If set, `is_enabled?` will always answer with the `default_value` and configuration validation is skipped. Defeats the entire purpose of using unleash, but can be useful in when running tests. | N | Boolean | `false` |
 `disable_metrics` | Disables sending metrics to Unleash server. | N | Boolean | `false` |
-`custom_http_headers` | Custom headers to send to Unleash. As of Unleash v4.0.0, the `Authorization` header is required. For example: `{'Authorization': '<API token>'}` | N | Hash | {} |
+`custom_http_headers` | Custom headers to send to Unleash. As of Unleash v4.0.0, the `Authorization` header is required. For example: `{'Authorization': '<API token>'}` | N | Hash/Proc | {} |
 `timeout` | How long to wait for the connection to be established or wait in reading state (open_timeout/read_timeout) | N | Integer | 30 |
 `retry_limit` | How many consecutive failures in connecting to the Unleash server are allowed before giving up. The default is to retry indefinitely. | N | Float::INFINITY | 5 |
 `backup_file` | Filename to store the last known state from the Unleash server. Best to not change this from the default. | N | String | `Dir.tmpdir + "/unleash-#{app_name}-repo.json` |

@@ -405,5 +405,12 @@ RSpec.describe Unleash::Constraint do
         end.to raise_error
       end
     end
+
+    it 'handles missing custom field context' do
+      context_params = {}
+      context = Unleash::Context.new(context_params)
+      constraint = Unleash::Constraint.new('customField', 'STR_STARTS_WITH', ['customField'])
+      expect(constraint.matches_context?(context)).to be false
+    end
   end
 end

@@ -1,4 +1,3 @@
-require "spec_helper"
 require "unleash/strategy/base"
 
 RSpec.describe Unleash::Strategy::Base do

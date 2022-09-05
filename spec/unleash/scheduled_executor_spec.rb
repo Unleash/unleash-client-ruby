@@ -1,4 +1,3 @@
-require 'spec_helper'
 require 'securerandom'
 
 RSpec.describe Unleash::ScheduledExecutor do

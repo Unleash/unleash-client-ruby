@@ -1,6 +1,5 @@
 require 'unleash/bootstrap/handler'
 require 'unleash/bootstrap/configuration'
-require "spec_helper"
 
 RSpec.describe Unleash::Bootstrap::Handler do
   Unleash.configure do |config|

@@ -1,4 +1,3 @@
-require "spec_helper"
 require "unleash/strategy/user_with_id"
 require "unleash/context"
 

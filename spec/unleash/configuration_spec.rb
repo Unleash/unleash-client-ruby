@@ -1,4 +1,3 @@
-require "spec_helper"
 require "unleash/configuration"
 
 RSpec.describe Unleash do

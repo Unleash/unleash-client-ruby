@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 RSpec.describe Unleash::VariantOverride do
   context 'parameters correctly assigned in initialization'
 

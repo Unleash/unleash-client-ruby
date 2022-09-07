@@ -30,6 +30,7 @@ RSpec.describe Unleash::Client do
           tests = current_test_set.fetch('tests', [])
           state = current_test_set.fetch('state', {})
           state_features = state.fetch('features', [])
+          state_segments = state.fetch('segments', []).map{ |segment| [segment["id"], segment] }.to_h
 
           let(:unleash_toggles) { state_features }
 
@@ -37,7 +38,7 @@ RSpec.describe Unleash::Client do
             it "test that #{test['description']}" do
               test_toggle = unleash_toggles.select{ |t| t.fetch('name', '') == test.fetch('toggleName') }.first
 
-              toggle = Unleash::FeatureToggle.new(test_toggle)
+              toggle = Unleash::FeatureToggle.new(test_toggle, state_segments)
               context = Unleash::Context.new(test['context'])
 
               toggle_result = toggle.is_enabled?(context)
@@ -51,7 +52,7 @@ RSpec.describe Unleash::Client do
             it "test that #{test['description']}" do
               test_toggle = unleash_toggles.select{ |t| t.fetch('name', '') == test.fetch('toggleName') }.first
 
-              toggle = Unleash::FeatureToggle.new(test_toggle)
+              toggle = Unleash::FeatureToggle.new(test_toggle, state_segments)
               context = Unleash::Context.new(test['context'])
 
               variant = toggle.get_variant(context, DEFAULT_VARIANT)

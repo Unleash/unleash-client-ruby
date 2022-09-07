@@ -5,11 +5,12 @@ require 'json'
 
 module Unleash
   class ToggleFetcher
-    attr_accessor :toggle_cache, :toggle_lock, :toggle_resource, :etag, :retry_count
+    attr_accessor :toggle_cache, :toggle_lock, :toggle_resource, :etag, :retry_count, :segment_cache
 
     def initialize
       self.etag = nil
       self.toggle_cache = nil
+      self.segment_cache = nil
       self.toggle_lock = Mutex.new
       self.toggle_resource = ConditionVariable.new
       self.retry_count = 0
@@ -95,9 +96,10 @@ module Unleash
     end
 
     def update_running_client!
-      if Unleash.toggles != self.toggles
+      if Unleash.toggles != self.toggles["features"] || Unleash.segment_cache != self.toggles["segments"]
         Unleash.logger.info "Updating toggles to main client, there has been a change in the server."
-        Unleash.toggles = self.toggles
+        Unleash.toggles = self.toggles["features"]
+        Unleash.segment_cache = self.toggles["segments"]
       end
     end
 
@@ -126,10 +128,19 @@ module Unleash
       Unleash.configuration.bootstrap_config = nil
     end
 
+    def build_segment_map(segments_array)
+      return {} if segments_array.nil?
+
+      segments_array.map{ |segment| [segment["id"], segment] }.to_h
+    end
+
     # @param response_body [String]
     def get_features(response_body)
       response_hash = JSON.parse(response_body)
-      return response_hash['features'] if response_hash['version'] >= 1
+
+      if response_hash['version'] >= 1
+        return { "features" => response_hash["features"], "segments" => build_segment_map(response_hash["segments"]) }
+      end
 
       raise NotImplemented, "Version of features provided by unleash server" \
         " is unsupported by this client."

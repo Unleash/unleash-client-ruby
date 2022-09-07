@@ -21,7 +21,7 @@ module Unleash
     .to_h
 
   class << self
-    attr_accessor :configuration, :toggle_fetcher, :toggles, :toggle_metrics, :reporter, :logger
+    attr_accessor :configuration, :toggle_fetcher, :toggles, :toggle_metrics, :reporter, :segment_cache, :logger
   end
 
   # Support for configuration via yield:

@@ -51,7 +51,8 @@ module Unleash
     def http_headers
       {
         'UNLEASH-INSTANCEID' => self.instance_id,
-        'UNLEASH-APPNAME' => self.app_name
+        'UNLEASH-APPNAME' => self.app_name,
+        'Unleash-Client-Spec' => '4.2.2'
       }.merge!(generate_custom_http_headers)
     end
 

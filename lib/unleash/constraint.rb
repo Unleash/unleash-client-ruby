@@ -1,12 +1,11 @@
 require 'date'
-
 module Unleash
   class Constraint
     attr_accessor :context_name, :operator, :value, :inverted, :case_insensitive
 
     OPERATORS = {
-      IN: ->(context_v, constraint_v){ constraint_v.include? context_v },
-      NOT_IN: ->(context_v, constraint_v){ !constraint_v.include? context_v },
+      IN: ->(context_v, constraint_v){ constraint_v.include? context_v.to_s },
+      NOT_IN: ->(context_v, constraint_v){ !constraint_v.include? context_v.to_s },
       STR_STARTS_WITH: ->(context_v, constraint_v){ constraint_v.any?{ |v| context_v.start_with? v } },
       STR_ENDS_WITH: ->(context_v, constraint_v){ constraint_v.any?{ |v| context_v.end_with? v } },
       STR_CONTAINS: ->(context_v, constraint_v){ constraint_v.any?{ |v| context_v.include? v } },

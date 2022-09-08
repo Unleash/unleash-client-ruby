@@ -71,6 +71,24 @@ RSpec.describe Unleash::Constraint do
       expect(constraint.matches_context?(context)).to be true
     end
 
+    it 'matches based on user_id IN/NOT_IN user_id with user_id as int' do
+      context_params = {
+        user_id: 123
+      }
+      context = Unleash::Context.new(context_params)
+      constraint = Unleash::Constraint.new('user_id', 'IN', ['123', '456'])
+      expect(constraint.matches_context?(context)).to be true
+
+      constraint = Unleash::Constraint.new('user_id', 'IN', ['456', '789'])
+      expect(constraint.matches_context?(context)).to be false
+
+      constraint = Unleash::Constraint.new('user_id', 'NOT_IN', ['123', '456'])
+      expect(constraint.matches_context?(context)).to be false
+
+      constraint = Unleash::Constraint.new('user_id', 'NOT_IN', ['456', '789'])
+      expect(constraint.matches_context?(context)).to be true
+    end
+
     it 'matches based on property STR_STARTS_WITH value' do
       context_params = {
         properties: {

@@ -19,7 +19,7 @@ module Unleash
       SEMVER_EQ: ->(context_v, constraint_v){ on_valid_version(constraint_v, context_v){ |x, y| (x == y) } },
       SEMVER_GT: ->(context_v, constraint_v){ on_valid_version(constraint_v, context_v){ |x, y| (x < y) } },
       SEMVER_LT: ->(context_v, constraint_v){ on_valid_version(constraint_v, context_v){ |x, y| (x > y) } },
-      FALLBACK_VALIDATOR: ->(context_v, constraint_v){true}
+      FALLBACK_VALIDATOR: ->(context_v, constraint_v){false}
     }.freeze
 
     LIST_OPERATORS = [:IN, :NOT_IN, :STR_STARTS_WITH, :STR_ENDS_WITH, :STR_CONTAINS].freeze
@@ -47,7 +47,17 @@ module Unleash
     rescue KeyError
       Unleash.logger.warn "Attemped to resolve a context key during constraint resolution: #{self.context_name} but it wasn't \
       found on the context"
-      false
+      key_error_handler()
+    end
+
+    def key_error_handler()
+      case operator
+      when "NOT_IN".to_sym
+        # when there is no input data present, nothing can't be in anything.
+        true
+      else
+        false
+      end
     end
 
     def self.on_valid_date(val1, val2)

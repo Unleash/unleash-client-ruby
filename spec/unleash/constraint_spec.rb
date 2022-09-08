@@ -48,6 +48,16 @@ RSpec.describe Unleash::Constraint do
       expect(constraint.matches_context?(context)).to be true
     end
 
+    it 'matches based on property not set by operator NOT_IN value' do
+      context_params = {
+        properties: {
+        }
+      }
+      context = Unleash::Context.new(context_params)
+      constraint = Unleash::Constraint.new('env', 'NOT_IN', ['anything'])
+      expect(constraint.matches_context?(context)).to be true
+    end
+
     it 'matches based on user_id IN/NOT_IN user_id' do
       context_params = {
         user_id: '123',

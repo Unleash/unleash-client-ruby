@@ -1,5 +1,4 @@
 require 'date'
-
 module Unleash
   class Constraint
     attr_accessor :context_name, :operator, :value, :inverted, :case_insensitive
@@ -19,15 +18,18 @@ module Unleash
       DATE_BEFORE: ->(context_v, constraint_v){ on_valid_date(constraint_v, context_v){ |x, y| (x > y) } },
       SEMVER_EQ: ->(context_v, constraint_v){ on_valid_version(constraint_v, context_v){ |x, y| (x == y) } },
       SEMVER_GT: ->(context_v, constraint_v){ on_valid_version(constraint_v, context_v){ |x, y| (x < y) } },
-      SEMVER_LT: ->(context_v, constraint_v){ on_valid_version(constraint_v, context_v){ |x, y| (x > y) } }
+      SEMVER_LT: ->(context_v, constraint_v){ on_valid_version(constraint_v, context_v){ |x, y| (x > y) } },
+      FALLBACK_VALIDATOR: ->(context_v, constraint_v){true}
     }.freeze
 
     LIST_OPERATORS = [:IN, :NOT_IN, :STR_STARTS_WITH, :STR_ENDS_WITH, :STR_CONTAINS].freeze
 
     def initialize(context_name, operator, value = [], inverted: false, case_insensitive: false)
       raise ArgumentError, "context_name is not a String" unless context_name.is_a?(String)
-      raise ArgumentError, "operator does not hold a valid value:" + OPERATORS.keys unless OPERATORS.include? operator.to_sym
-
+      unless OPERATORS.include? operator.to_sym
+        Unleash.logger.warn "Operator #{operator} is not a supported operator, falling back to FALLBACK_VALIDATOR which skips this constraint"
+        operator = "FALLBACK_VALIDATOR"
+      end
       self.validate_constraint_value_type(operator.to_sym, value)
 
       self.context_name = context_name

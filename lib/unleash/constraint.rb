@@ -19,7 +19,7 @@ module Unleash
       SEMVER_EQ: ->(context_v, constraint_v){ on_valid_version(constraint_v, context_v){ |x, y| (x == y) } },
       SEMVER_GT: ->(context_v, constraint_v){ on_valid_version(constraint_v, context_v){ |x, y| (x < y) } },
       SEMVER_LT: ->(context_v, constraint_v){ on_valid_version(constraint_v, context_v){ |x, y| (x > y) } },
-      FALLBACK_VALIDATOR: ->(context_v, constraint_v){false}
+      FALLBACK_VALIDATOR: ->(_context_v, _constraint_v){false}
     }.freeze
 
     LIST_OPERATORS = [:IN, :NOT_IN, :STR_STARTS_WITH, :STR_ENDS_WITH, :STR_CONTAINS].freeze

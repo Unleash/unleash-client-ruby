@@ -1,4 +1,3 @@
-require 'spec_helper'
 require 'unleash/constraint'
 
 RSpec.describe Unleash::ActivationStrategy do

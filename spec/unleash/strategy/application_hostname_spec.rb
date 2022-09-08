@@ -1,4 +1,3 @@
-require "spec_helper"
 require "unleash/strategy/application_hostname"
 
 RSpec.describe Unleash::Strategy::ApplicationHostname do

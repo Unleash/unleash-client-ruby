@@ -1,4 +1,3 @@
-require 'spec_helper'
 require 'rspec/json_expectations'
 require 'unleash/bootstrap/provider/from_file'
 require 'json'

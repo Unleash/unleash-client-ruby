@@ -28,7 +28,8 @@ module Unleash
       raise ArgumentError, "context_name is not a String" unless context_name.is_a?(String)
 
       unless OPERATORS.include? operator.to_sym
-        Unleash.logger.warn "Operator #{operator} is not a supported operator, falling back to FALLBACK_VALIDATOR which skips this constraint"
+        Unleash.logger.warn "Operator #{operator} is not a supported operator, " + 
+        "falling back to FALLBACK_VALIDATOR which skips this constraint"
         operator = "FALLBACK_VALIDATOR"
       end
       self.validate_constraint_value_type(operator.to_sym, value)

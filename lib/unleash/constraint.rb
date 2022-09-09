@@ -91,7 +91,7 @@ module Unleash
       if LIST_OPERATORS.include?(operator) && value.is_a?(String)
         Unleash.logger.info "value is not an Array, operator is expecting an Array"
       end
-      Unleash.logger.info "value is an Array, operator is not an Array operator" if !LIST_OPERATORS.include?(operator) && value.is_a?(Array)
+      Unleash.logger.info "value is an Array, operator is expecting a String" if !LIST_OPERATORS.include?(operator) && value.is_a?(Array)
     end
 
     private

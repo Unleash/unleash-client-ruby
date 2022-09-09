@@ -26,6 +26,7 @@ module Unleash
 
     def initialize(context_name, operator, value = [], inverted: false, case_insensitive: false)
       raise ArgumentError, "context_name is not a String" unless context_name.is_a?(String)
+
       unless OPERATORS.include? operator.to_sym
         Unleash.logger.warn "Operator #{operator} is not a supported operator, falling back to FALLBACK_VALIDATOR which skips this constraint"
         operator = "FALLBACK_VALIDATOR"

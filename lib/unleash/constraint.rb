@@ -47,17 +47,10 @@ module Unleash
     rescue KeyError
       Unleash.logger.warn "Attemped to resolve a context key during constraint resolution: #{self.context_name} but it wasn't \
       found on the context"
-      key_error_handler()
-    end
 
-    def key_error_handler()
-      case operator
-      when "NOT_IN".to_sym
-        # when there is no input data present, nothing can't be in anything.
-        true
-      else
-        false
-      end
+      # when the operator is NOT_IN and there is no data, return true. In all other cases the operator doesn't match.
+      return true if operator == :NOT_IN
+      false
     end
 
     def self.on_valid_date(val1, val2)

@@ -388,7 +388,7 @@ RSpec.describe Unleash::Constraint do
       expect(constraint.matches_context?(context)).to be false
     end
 
-    it 'handles malconfiguration of constraint operators' do
+    it 'gracefully handles invalid constraint operators' do
       context_params = {
         user_id: '123',
         session_id: 'verylongsesssionid',

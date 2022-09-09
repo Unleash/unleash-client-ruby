@@ -388,24 +388,21 @@ RSpec.describe Unleash::Constraint do
       expect(constraint.matches_context?(context)).to be false
     end
 
-    it 'rejects constraint construction for invalid value types for operator' do
-      array_constraints = ['STR_CONTAINS', 'STR_ENDS_WITH', 'STR_STARTS_WITH', 'IN', 'NOT_IN']
+    it 'handles malconfiguration of constraint operators' do
+      context_params = {
+        user_id: '123',
+        session_id: 'verylongsesssionid',
+        remote_address: '127.0.0.1',
+        properties: {
+          env: 'development'
+        }
+      }
+      context = Unleash::Context.new(context_params)
+      constraint = Unleash::Constraint.new('env', 'NOT_A_VALID_OPERATOR', 'dev', inverted: true)
+      expect(constraint.matches_context?(context)).to be true
 
-      array_constraints.each do |operator_name|
-        Unleash::Constraint.new('env', operator_name, [])
-        expect do
-          Unleash::Constraint.new('env', operator_name, '')
-        end.to raise_error
-      end
-
-      string_constraints = ['NUM_EQ', 'NUM_GT', 'NUM_GTE', 'NUM_LT', 'NUM_LTE',
-                            'DATE_AFTER', 'DATE_BEFORE', 'SEMVER_EQ', 'SEMVER_GT', 'SEMVER_LT']
-      string_constraints.each do |operator_name|
-        Unleash::Constraint.new('env', operator_name, '')
-        expect do
-          Unleash::Constraint.new('env', operator_name, [])
-        end.to raise_error
-      end
+      constraint = Unleash::Constraint.new('env', 'NOT_A_VALID_OPERATOR', ['dev'], inverted: true)
+      expect(constraint.matches_context?(context)).to be true
     end
   end
 end

@@ -46,7 +46,7 @@ jobs:
       - name: Install dependencies
         run: bundle install
       - name: Download test cases
-        run: git clone --depth 5 --branch v4.2.2 https://github.com/Unleash/client-specification.git client-specification
+        run: git clone --depth 5 --branch v4.1.0 https://github.com/Unleash/client-specification.git client-specification
       - name: Run tests
         run: bundle exec rake
         env:

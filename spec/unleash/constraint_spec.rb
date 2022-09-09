@@ -42,7 +42,7 @@ RSpec.describe Unleash::Constraint do
       expect(constraint.matches_context?(context)).to be true
     end
 
-    it 'matches based on property not set by operator NOT_IN value' do
+    it 'matches based on a value NOT_IN in empty context field' do
       context_params = {
         properties: {
         }

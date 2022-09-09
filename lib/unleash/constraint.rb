@@ -88,8 +88,12 @@ module Unleash
 
     # This should be a private method but for some reason this fails on Ruby 2.5
     def validate_constraint_value_type(operator, value)
-      Unleash.logger.info "value is not an Array, operator is expecting an Array" if LIST_OPERATORS.include?(operator) && value.is_a?(String)
-      Unleash.logger.info "value is an Array, operator is not an Array operator" if !LIST_OPERATORS.include?(operator) && value.is_a?(Array)
+      if LIST_OPERATORS.include?(operator) && value.is_a?(String)
+        Unleash.logger.info "value is not an Array, operator is expecting an Array"
+      end
+      if !LIST_OPERATORS.include?(operator) && value.is_a?(Array)
+        Unleash.logger.info "value is an Array, operator is not an Array operator"
+      end
     end
 
     private

@@ -52,6 +52,7 @@ module Unleash
 
       # when the operator is NOT_IN and there is no data, return true. In all other cases the operator doesn't match.
       return true if operator == :NOT_IN
+
       false
     end
 

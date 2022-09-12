@@ -95,7 +95,7 @@ module Unleash
       end
 
       # when the operator is NOT_IN and there is no data, return true. In all other cases the operator doesn't match.
-      return self.operator == :NOT_IN unless context.has_property(self.context_name)
+      return self.operator == :NOT_IN unless context.property?(self.context_name)
 
       Unleash.logger.debug "Unleash::Constraint matches_context? value: #{self.value} context.get_by_name(#{self.context_name})" \
       " #{context.get_by_name(self.context_name)} "

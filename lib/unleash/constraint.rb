@@ -32,7 +32,7 @@ module Unleash
           falling back to FALLBACK_VALIDATOR which skips this constraint"
         operator = "FALLBACK_VALIDATOR"
       end
-      self.validate_constraint_value_type(operator.to_sym, value)
+      self.log_inconsistent_constraint_configuration(operator.to_sym, value)
 
       self.context_name = context_name
       self.operator = operator.to_sym
@@ -87,7 +87,7 @@ module Unleash
     end
 
     # This should be a private method but for some reason this fails on Ruby 2.5
-    def validate_constraint_value_type(operator, value)
+    def log_inconsistent_constraint_configuration(operator, value)
       Unleash.logger.warn "value is a String, operator is expecting an Array" if LIST_OPERATORS.include?(operator) && value.is_a?(String)
       Unleash.logger.warn "value is an Array, operator is expecting a String" if !LIST_OPERATORS.include?(operator) && value.is_a?(Array)
     end

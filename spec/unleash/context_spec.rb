@@ -134,6 +134,25 @@ RSpec.describe Unleash::Context do
     expect(context.get_by_name(:CountryCode)).to eq('UK')
   end
 
+  it "checks if property is found" do
+    params = {
+      'user_id' => '123',
+      'sessionId' => 'verylongsesssionid',
+      'properties' => {
+        'fancy' => 'polarbear',
+        'country_code' => 'UK'
+      }
+    }
+    context = Unleash::Context.new(params)
+    expect(context.has_property(:user_id)).to be true
+    expect(context.has_property(:user_name)).to be false
+    expect(context.has_property(:session_id)).to be true
+    expect(context.has_property(:fancy)).to be true
+    expect(context.has_property(:country_code)).to be true
+    expect(context.has_property(:countryCode)).to be true
+    expect(context.has_property(:CountryCode)).to be true
+  end
+
   it "creates default date for current time if not populated" do
     params = {}
     context = Unleash::Context.new(params)

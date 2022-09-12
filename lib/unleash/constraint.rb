@@ -42,17 +42,11 @@ module Unleash
     end
 
     def matches_context?(context)
-      Unleash.logger.debug "Unleash::Constraint matches_context? value: #{self.value} context.get_by_name(#{self.context_name})" \
-        " #{context.get_by_name(self.context_name)} "
       match = matches_constraint?(context)
       self.inverted ? !match : match
     rescue KeyError
       Unleash.logger.warn "Attemped to resolve a context key during constraint resolution: #{self.context_name} but it wasn't \
       found on the context"
-
-      # when the operator is NOT_IN and there is no data, return true. In all other cases the operator doesn't match.
-      return true if operator == :NOT_IN
-
       false
     end
 
@@ -99,6 +93,12 @@ module Unleash
         Unleash.logger.warn "Invalid constraint operator: #{self.operator}, this should be unreachable. Always returning false."
         false
       end
+
+      # when the operator is NOT_IN and there is no data, return true. In all other cases the operator doesn't match.
+      return self.operator == :NOT_IN unless context.has_property(self.context_name)
+
+      Unleash.logger.debug "Unleash::Constraint matches_context? value: #{self.value} context.get_by_name(#{self.context_name})" \
+      " #{context.get_by_name(self.context_name)} "
 
       v = self.value.dup
       context_value = context.get_by_name(self.context_name)

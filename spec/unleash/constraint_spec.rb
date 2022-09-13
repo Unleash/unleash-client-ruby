@@ -409,6 +409,12 @@ RSpec.describe Unleash::Constraint do
 
       constraint = Unleash::Constraint.new('env', 'NOT_A_VALID_OPERATOR', ['dev'], inverted: true)
       expect(constraint.matches_context?(context)).to be true
+
+      constraint = Unleash::Constraint.new('env', 'NOT_A_VALID_OPERATOR', 'dev')
+      expect(constraint.matches_context?(context)).to be false
+
+      constraint = Unleash::Constraint.new('env', 'NOT_A_VALID_OPERATOR', ['dev'])
+      expect(constraint.matches_context?(context)).to be false
     end
 
     it 'warns about constraint construction for invalid value types for operator' do

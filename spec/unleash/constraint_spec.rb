@@ -20,6 +20,12 @@ RSpec.describe Unleash::Constraint do
 
       constraint = Unleash::Constraint.new('env', 'IN', ['dev', 'pre'])
       expect(constraint.matches_context?(context)).to be true
+
+      constraint = Unleash::Constraint.new('env', 'NOT_IN', ['dev', 'pre'])
+      expect(constraint.matches_context?(context)).to be false
+
+      constraint = Unleash::Constraint.new('env', 'NOT_IN', ['pre', 'prod'])
+      expect(constraint.matches_context?(context)).to be true
     end
 
     it 'matches based on property NOT_IN value' do

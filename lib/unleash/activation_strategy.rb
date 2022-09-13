@@ -1,9 +1,10 @@
 module Unleash
   class ActivationStrategy
-    attr_accessor :name, :params, :constraints
+    attr_accessor :name, :params, :constraints, :disabled
 
     def initialize(name, params, constraints = [])
       self.name = name
+      self.disabled = false
 
       if params.is_a?(Hash)
         self.params = params
@@ -18,6 +19,7 @@ module Unleash
         self.constraints = constraints
       else
         Unleash.logger.warn "Invalid constraints provided for ActivationStrategy (contraints: #{constraints})"
+        self.disabled = true
         self.constraints = []
       end
     end

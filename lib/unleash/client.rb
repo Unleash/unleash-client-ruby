@@ -45,7 +45,7 @@ module Unleash
         return default_value
       end
 
-      toggle = Unleash::FeatureToggle.new(toggle_as_hash)
+      toggle = Unleash::FeatureToggle.new(toggle_as_hash, Unleash&.segment_cache)
 
       toggle.is_enabled?(context)
     end

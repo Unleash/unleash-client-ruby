@@ -9,13 +9,13 @@ module Unleash
   class FeatureToggle
     attr_accessor :name, :enabled, :strategies, :variant_definitions
 
-    def initialize(params = {})
+    def initialize(params = {}, segment_map = {})
       params = {} if params.nil?
 
       self.name       = params.fetch('name', nil)
       self.enabled    = params.fetch('enabled', false)
 
-      self.strategies = initialize_strategies(params)
+      self.strategies = initialize_strategies(params, segment_map)
       self.variant_definitions = initialize_variant_definitions(params)
     end
 
@@ -81,6 +81,8 @@ module Unleash
     end
 
     def strategy_constraint_matches?(strategy, context)
+      return false if strategy.disabled
+
       strategy.constraints.empty? || strategy.constraints.all?{ |c| c.matches_context?(context) }
     end
 
@@ -128,24 +130,33 @@ module Unleash
       context
     end
 
-    def initialize_strategies(params)
+    def initialize_strategies(params, segment_map)
       params.fetch('strategies', [])
         .select{ |s| s.has_key?('name') && Unleash::STRATEGIES.has_key?(s['name'].to_sym) }
         .map do |s|
           ActivationStrategy.new(
             s['name'],
             s['parameters'],
-            (s['constraints'] || []).map do |c|
-              Constraint.new(
-                c.fetch('contextName'),
-                c.fetch('operator'),
-                c.fetch('values', nil) || c.fetch('value', nil),
-                inverted: c.fetch('inverted', false),
-                case_insensitive: c.fetch('caseInsensitive', false)
-              )
-            end
+            resolve_constraints(s, segment_map)
           )
         end || []
+    end
+
+    def resolve_constraints(strategy, segment_map)
+      segment_constraints = (strategy["segments"] || []).map do |segment_id|
+        segment_map[segment_id]&.fetch("constraints")
+      end
+      (strategy.fetch("constraints", []) + segment_constraints).flatten.map do |constraint|
+        return nil if constraint.nil?
+
+        Constraint.new(
+          constraint.fetch('contextName'),
+          constraint.fetch('operator'),
+          constraint.fetch('value', nil) || constraint.fetch('values', nil),
+          inverted: constraint.fetch('inverted', false),
+          case_insensitive: constraint.fetch('caseInsensitive', false)
+        )
+      end
     end
 
     def initialize_variant_definitions(params)

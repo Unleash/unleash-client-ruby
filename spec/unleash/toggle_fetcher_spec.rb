@@ -17,7 +17,28 @@ RSpec.describe Unleash::ToggleFetcher do
           "enabled": true,
           "strategies": [{ "name": "toggle-fetcher" }]
         }
+      ],
+      "segments": [
+        {
+          "id": 1,
+          "name": "test-segment",
+          "description": "test-segment",
+          "constraints": [
+            {
+              "values": [
+                "7"
+              ],
+              "inverted": false,
+              "operator": "IN",
+              "contextName": "test",
+              "caseInsensitive": false
+            }
+          ],
+          "createdBy": "admin",
+          "createdAt": "2022-09-02T00:00:00.000Z"
+        }
       ]
+
     }
 
     WebMock.stub_request(:get, "http://toggle-fetcher-test-url/client/features")
@@ -81,6 +102,28 @@ RSpec.describe Unleash::ToggleFetcher do
 
       it 'returns an empty toggle_cache' do
         expect(toggle_fetcher.toggle_cache).to eq(nil)
+      end
+    end
+
+    context 'segments are present' do
+      it 'loads a segement map correctly' do
+        expect(toggle_fetcher.toggle_cache["segments"].count).to eq 1
+      end
+    end
+
+    context 'segments are not present' do
+      before do
+        WebMock.stub_request(:get, "http://toggle-fetcher-test-url/client/features")
+          .to_return(status: 200,
+                     body: {
+                       "version": 1,
+                       "features": []
+                     }.to_json,
+                     headers: {})
+      end
+
+      it 'loads an empty segment map' do
+        expect(toggle_fetcher.toggle_cache["segments"].count).to eq 0
       end
     end
   end

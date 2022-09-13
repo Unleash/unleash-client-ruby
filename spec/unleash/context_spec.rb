@@ -144,13 +144,13 @@ RSpec.describe Unleash::Context do
       }
     }
     context = Unleash::Context.new(params)
-    expect(context.property?(:user_id)).to be true
-    expect(context.property?(:user_name)).to be false
-    expect(context.property?(:session_id)).to be true
-    expect(context.property?(:fancy)).to be true
-    expect(context.property?(:country_code)).to be true
-    expect(context.property?(:countryCode)).to be true
-    expect(context.property?(:CountryCode)).to be true
+    expect(context.include?(:user_id)).to be true
+    expect(context.include?(:user_name)).to be false
+    expect(context.include?(:session_id)).to be true
+    expect(context.include?(:fancy)).to be true
+    expect(context.include?(:country_code)).to be true
+    expect(context.include?(:countryCode)).to be true
+    expect(context.include?(:CountryCode)).to be true
   end
 
   it "creates default date for current time if not populated" do

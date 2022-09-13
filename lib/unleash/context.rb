@@ -33,7 +33,7 @@ module Unleash
       end
     end
 
-    def property?(name)
+    def include?(name)
       normalized_name = underscore(name)
       return self.instance_variable_defined? "@#{normalized_name}" if ATTRS.include? normalized_name.to_sym
 

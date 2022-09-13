@@ -33,6 +33,13 @@ module Unleash
       end
     end
 
+    def include?(name)
+      normalized_name = underscore(name)
+      return self.instance_variable_defined? "@#{normalized_name}" if ATTRS.include? normalized_name.to_sym
+
+      self.properties.include?(normalized_name.to_sym) || self.properties.include?(name.to_sym)
+    end
+
     private
 
     # Method to fetch values from hash for two types of keys: string in camelCase and symbol in snake_case

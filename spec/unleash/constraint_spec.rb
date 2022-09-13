@@ -48,6 +48,16 @@ RSpec.describe Unleash::Constraint do
       expect(constraint.matches_context?(context)).to be true
     end
 
+    it 'matches based on a value NOT_IN in a not existing context field' do
+      context_params = {
+        properties: {
+        }
+      }
+      context = Unleash::Context.new(context_params)
+      constraint = Unleash::Constraint.new('env', 'NOT_IN', ['anything'])
+      expect(constraint.matches_context?(context)).to be true
+    end
+
     it 'matches based on user_id IN/NOT_IN user_id' do
       context_params = {
         user_id: '123',
@@ -402,23 +412,42 @@ RSpec.describe Unleash::Constraint do
       expect(constraint.matches_context?(context)).to be false
     end
 
-    it 'rejects constraint construction for invalid value types for operator' do
+    it 'gracefully handles invalid constraint operators' do
+      context_params = {
+        user_id: '123',
+        session_id: 'verylongsesssionid',
+        remote_address: '127.0.0.1',
+        properties: {
+          env: 'development'
+        }
+      }
+      context = Unleash::Context.new(context_params)
+      constraint = Unleash::Constraint.new('env', 'NOT_A_VALID_OPERATOR', 'dev', inverted: true)
+      expect(constraint.matches_context?(context)).to be true
+
+      constraint = Unleash::Constraint.new('env', 'NOT_A_VALID_OPERATOR', ['dev'], inverted: true)
+      expect(constraint.matches_context?(context)).to be true
+
+      constraint = Unleash::Constraint.new('env', 'NOT_A_VALID_OPERATOR', 'dev')
+      expect(constraint.matches_context?(context)).to be false
+
+      constraint = Unleash::Constraint.new('env', 'NOT_A_VALID_OPERATOR', ['dev'])
+      expect(constraint.matches_context?(context)).to be false
+    end
+
+    it 'warns about constraint construction for invalid value types for operator' do
       array_constraints = ['STR_CONTAINS', 'STR_ENDS_WITH', 'STR_STARTS_WITH', 'IN', 'NOT_IN']
 
       array_constraints.each do |operator_name|
-        Unleash::Constraint.new('env', operator_name, [])
-        expect do
-          Unleash::Constraint.new('env', operator_name, '')
-        end.to raise_error
+        expect(Unleash.logger).to receive(:warn).with("value is a String, operator is expecting an Array")
+        Unleash::Constraint.new('env', operator_name, '')
       end
 
       string_constraints = ['NUM_EQ', 'NUM_GT', 'NUM_GTE', 'NUM_LT', 'NUM_LTE',
                             'DATE_AFTER', 'DATE_BEFORE', 'SEMVER_EQ', 'SEMVER_GT', 'SEMVER_LT']
       string_constraints.each do |operator_name|
-        Unleash::Constraint.new('env', operator_name, '')
-        expect do
-          Unleash::Constraint.new('env', operator_name, [])
-        end.to raise_error
+        expect(Unleash.logger).to receive(:warn).with("value is an Array, operator is expecting a String")
+        Unleash::Constraint.new('env', operator_name, [])
       end
     end
   end

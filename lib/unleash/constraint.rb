@@ -47,8 +47,8 @@ module Unleash
       match = matches_constraint?(context)
       self.inverted ? !match : match
     rescue KeyError
-      Unleash.logger.warn "Attempted to resolve a context key during constraint resolution: #{self.context_name} but it wasn't " \
-        "found on the context"
+      Unleash.logger.warn "Attemped to resolve a context key during constraint resolution: #{self.context_name} but it wasn't \
+      found on the context"
       false
     end
 
@@ -57,8 +57,8 @@ module Unleash
       val2 = DateTime.parse(val2)
       yield(val1, val2)
     rescue ArgumentError
-      Unleash.logger.warn "Unleash::ConstraintMatcher unable to parse either context_value (#{val1}) " \
-        "or constraint_value (#{val2}) into a date. Returning false!"
+      Unleash.logger.warn "Unleash::ConstraintMatcher unable to parse either context_value (#{val1}) \
+      or constraint_value (#{val2}) into a date. Returning false!"
       false
     end
 
@@ -67,8 +67,8 @@ module Unleash
       val2 = Float(val2)
       yield(val1, val2)
     rescue ArgumentError
-      Unleash.logger.warn "Unleash::ConstraintMatcher unable to parse either context_value (#{val1}) " \
-        "or constraint_value (#{val2}) into a number. Returning false!"
+      Unleash.logger.warn "Unleash::ConstraintMatcher unable to parse either context_value (#{val1}) \
+      or constraint_value (#{val2}) into a number. Returning false!"
       false
     end
 
@@ -77,8 +77,8 @@ module Unleash
       val2 = Gem::Version.new(val2)
       yield(val1, val2)
     rescue ArgumentError
-      Unleash.logger.warn "Unleash::ConstraintMatcher unable to parse either context_value (#{val1}) " \
-        "or constraint_value (#{val2}) into a version. Return false!"
+      Unleash.logger.warn "Unleash::ConstraintMatcher unable to parse either context_value (#{val1}) \
+      or constraint_value (#{val2}) into a version. Return false!"
       false
     end
 

@@ -28,8 +28,8 @@ module Unleash
       raise ArgumentError, "context_name is not a String" unless context_name.is_a?(String)
 
       unless OPERATORS.include? operator.to_sym
-        Unleash.logger.warn "Operator #{operator} is not a supported operator, \
-          falling back to FALLBACK_VALIDATOR which skips this constraint"
+        Unleash.logger.warn "Operator #{operator} is not a supported operator, " \
+          "falling back to FALLBACK_VALIDATOR which skips this constraint."
         operator = "FALLBACK_VALIDATOR"
       end
       self.log_inconsistent_constraint_configuration(operator.to_sym, value)
@@ -91,6 +91,9 @@ module Unleash
     private
 
     def matches_constraint?(context)
+      Unleash.logger.debug "Unleash::Constraint matches_constraint? value: #{self.value} operator: #{self.operator} " \
+        " context.get_by_name(#{self.context_name})"
+
       unless OPERATORS.include?(self.operator)
         Unleash.logger.warn "Invalid constraint operator: #{self.operator}, this should be unreachable. Always returning false."
         false

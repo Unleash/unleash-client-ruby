@@ -134,7 +134,7 @@ RSpec.describe Unleash::Context do
     expect(context.get_by_name(:CountryCode)).to eq('UK')
   end
 
-  it "checks if property is found" do
+  it "checks if property is included in the context" do
     params = {
       'user_id' => '123',
       'sessionId' => 'verylongsesssionid',

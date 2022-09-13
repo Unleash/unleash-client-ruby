@@ -18,16 +18,21 @@ module Unleash
       DATE_BEFORE: ->(context_v, constraint_v){ on_valid_date(constraint_v, context_v){ |x, y| (x > y) } },
       SEMVER_EQ: ->(context_v, constraint_v){ on_valid_version(constraint_v, context_v){ |x, y| (x == y) } },
       SEMVER_GT: ->(context_v, constraint_v){ on_valid_version(constraint_v, context_v){ |x, y| (x < y) } },
-      SEMVER_LT: ->(context_v, constraint_v){ on_valid_version(constraint_v, context_v){ |x, y| (x > y) } }
+      SEMVER_LT: ->(context_v, constraint_v){ on_valid_version(constraint_v, context_v){ |x, y| (x > y) } },
+      FALLBACK_VALIDATOR: ->(_context_v, _constraint_v){ false }
     }.freeze
 
     LIST_OPERATORS = [:IN, :NOT_IN, :STR_STARTS_WITH, :STR_ENDS_WITH, :STR_CONTAINS].freeze
 
     def initialize(context_name, operator, value = [], inverted: false, case_insensitive: false)
       raise ArgumentError, "context_name is not a String" unless context_name.is_a?(String)
-      raise ArgumentError, "operator does not hold a valid value:" + OPERATORS.keys unless OPERATORS.include? operator.to_sym
 
-      self.validate_constraint_value_type(operator.to_sym, value)
+      unless OPERATORS.include? operator.to_sym
+        Unleash.logger.warn "Operator #{operator} is not a supported operator, " \
+          "falling back to FALLBACK_VALIDATOR which skips this constraint."
+        operator = "FALLBACK_VALIDATOR"
+      end
+      self.log_inconsistent_constraint_configuration(operator.to_sym, value)
 
       self.context_name = context_name
       self.operator = operator.to_sym
@@ -37,8 +42,8 @@ module Unleash
     end
 
     def matches_context?(context)
-      Unleash.logger.debug "Unleash::Constraint matches_context? value: #{self.value} context.get_by_name(#{self.context_name})" \
-        " #{context.get_by_name(self.context_name)} "
+      Unleash.logger.debug "Unleash::Constraint matches_context? value: #{self.value} context.get_by_name(#{self.context_name})"
+
       match = matches_constraint?(context)
       self.inverted ? !match : match
     rescue KeyError
@@ -78,18 +83,24 @@ module Unleash
     end
 
     # This should be a private method but for some reason this fails on Ruby 2.5
-    def validate_constraint_value_type(operator, value)
-      raise ArgumentError, "context_name is not an Array" if LIST_OPERATORS.include?(operator) && value.is_a?(String)
-      raise ArgumentError, "context_name is not a String" if !LIST_OPERATORS.include?(operator) && value.is_a?(Array)
+    def log_inconsistent_constraint_configuration(operator, value)
+      Unleash.logger.warn "value is a String, operator is expecting an Array" if LIST_OPERATORS.include?(operator) && value.is_a?(String)
+      Unleash.logger.warn "value is an Array, operator is expecting a String" if !LIST_OPERATORS.include?(operator) && value.is_a?(Array)
     end
 
     private
 
     def matches_constraint?(context)
+      Unleash.logger.debug "Unleash::Constraint matches_constraint? value: #{self.value} operator: #{self.operator} " \
+        " context.get_by_name(#{self.context_name})"
+
       unless OPERATORS.include?(self.operator)
         Unleash.logger.warn "Invalid constraint operator: #{self.operator}, this should be unreachable. Always returning false."
         false
       end
+
+      # when the operator is NOT_IN and there is no data, return true. In all other cases the operator doesn't match.
+      return self.operator == :NOT_IN unless context.include?(self.context_name)
 
       v = self.value.dup
       context_value = context.get_by_name(self.context_name)

@@ -421,7 +421,6 @@ RSpec.describe Unleash::Constraint do
       array_constraints = ['STR_CONTAINS', 'STR_ENDS_WITH', 'STR_STARTS_WITH', 'IN', 'NOT_IN']
 
       array_constraints.each do |operator_name|
-        Unleash::Constraint.new('env', operator_name, [])
         expect(Unleash.logger).to receive(:warn).with("value is a String, operator is expecting an Array")
         Unleash::Constraint.new('env', operator_name, '')
       end
@@ -429,7 +428,6 @@ RSpec.describe Unleash::Constraint do
       string_constraints = ['NUM_EQ', 'NUM_GT', 'NUM_GTE', 'NUM_LT', 'NUM_LTE',
                             'DATE_AFTER', 'DATE_BEFORE', 'SEMVER_EQ', 'SEMVER_GT', 'SEMVER_LT']
       string_constraints.each do |operator_name|
-        Unleash::Constraint.new('env', operator_name, '')
         expect(Unleash.logger).to receive(:warn).with("value is an Array, operator is expecting a String")
         Unleash::Constraint.new('env', operator_name, [])
       end

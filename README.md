@@ -97,6 +97,7 @@ Argument | Description | Required? |  Type |  Default Value|
 `logger` | Specify a custom `Logger` class to handle logs for the Unleash client. | N | Class | `Logger.new(STDOUT)` |
 `log_level` | Change the log level for the `Logger` class. Constant from `Logger::Severity`. | N | Constant | `Logger::WARN` |
 `bootstrap_config` | Bootstrap config on how to loaded data on start-up. This is useful for loading large states on startup without (or before) hitting the network. | N | Unleash::Bootstrap::Configuration | `nil` |
+`strategies` | Strategies manager that holds all strategies and allows to add custom strategies | N | Unleash::Strategies | `Unleash::Strategies.new` |
 
 For a more in-depth look, please see `lib/unleash/configuration.rb`.
 
@@ -471,6 +472,27 @@ This client comes with the all the required strategies out of the box:
  * RemoteAddressStrategy
  * UnknownStrategy
  * UserWithIdStrategy
+
+## Custom Strategies
+
+Client allows to add [custom activation strategies](https://docs.getunleash.io/advanced/custom_activation_strategy) using configuration. 
+In order for strategy to work correctly it should support two methods `name` and `is_enabled?`
+
+```ruby
+class MyCustomStrategy
+  def name
+    'muCustomStrategy'
+  end
+  
+  def is_enabled?(params = {}, context = nil)
+    true
+  end
+end
+
+Unleash.configure do |config|
+  config.strategies.add(MyCustomStrategy.new)
+end
+```
 
 ## Development
 

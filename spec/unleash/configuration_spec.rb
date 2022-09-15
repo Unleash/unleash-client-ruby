@@ -3,7 +3,7 @@ require "unleash/configuration"
 RSpec.describe Unleash do
   describe 'Configuration' do
     before do
-      Unleash.configuration = nil
+      Unleash.configuration = Unleash::Configuration.new
     end
 
     it "should have the correct defaults" do
@@ -24,6 +24,8 @@ RSpec.describe Unleash do
       expect(config.backup_file).to_not be_nil
       expect(config.backup_file).to eq(Dir.tmpdir + '/unleash--repo.json')
       expect(config.project_name).to be_nil
+
+      expect(config.strategies).to be_instance_of(Unleash::Strategies)
 
       expect{ config.validate! }.to raise_error(ArgumentError)
     end

@@ -14,7 +14,7 @@ module Unleash
     end
 
     def matches_context?(context)
-      raise ArgumentError, 'context must be of class Unleash::Context' unless context.class.name == 'Unleash::Context'
+      raise ArgumentError, 'context must be of class Unleash::Context' unless context.instance_of?(Unleash::Context)
 
       context_value =
         case self.context_name

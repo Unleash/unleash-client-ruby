@@ -10,7 +10,7 @@ module Unleash
       # need: params['percentage']
       def is_enabled?(params = {}, context = nil)
         return false unless params.is_a?(Hash)
-        return false unless context.class.name == 'Unleash::Context'
+        return false unless context.instance_of?(Unleash::Context)
 
         stickiness = params.fetch('stickiness', 'default')
         stickiness_id = resolve_stickiness(stickiness, context)

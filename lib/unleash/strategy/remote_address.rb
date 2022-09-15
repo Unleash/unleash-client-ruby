@@ -11,7 +11,7 @@ module Unleash
       def is_enabled?(params = {}, context = nil)
         return false unless params.is_a?(Hash) && params.has_key?(PARAM)
         return false unless params.fetch(PARAM, nil).is_a? String
-        return false unless context.class.name == 'Unleash::Context'
+        return false unless context.instance_of?(Unleash::Context)
 
         remote_address = ipaddr_or_nil_from_str(context.remote_address)
 

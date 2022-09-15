@@ -102,7 +102,7 @@ module Unleash
     end
 
     def initialize_default_logger
-      self.logger = Logger.new(STDOUT)
+      self.logger = Logger.new($stdout)
 
       # on default logger, use custom formatter that includes thread_name:
       self.logger.formatter = proc do |severity, datetime, _progname, msg|

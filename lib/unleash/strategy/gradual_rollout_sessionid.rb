@@ -10,7 +10,7 @@ module Unleash
       # need: params['percentage'], params['groupId'], context.user_id,
       def is_enabled?(params = {}, context = nil)
         return false unless params.is_a?(Hash) && params.has_key?('percentage')
-        return false unless context.class.name == 'Unleash::Context'
+        return false unless context.instance_of?(Unleash::Context)
         return false if context.session_id.nil? || context.session_id.empty?
 
         percentage = Integer(params['percentage'] || 0)

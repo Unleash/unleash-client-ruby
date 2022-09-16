@@ -12,7 +12,7 @@ module Unleash
     attr_accessor :fetcher_scheduled_executor, :metrics_scheduled_executor
 
     def initialize(*opts)
-      Unleash.configuration ||= Unleash::Configuration.new(*opts)
+      Unleash.configuration = Unleash::Configuration.new(*opts) unless opts.empty?
       Unleash.configuration.validate!
 
       Unleash.logger = Unleash.configuration.logger.clone

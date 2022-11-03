@@ -9,7 +9,7 @@ module Unleash
 
       self.app_name    = value_for('appName', params, Unleash&.configuration&.app_name)
       self.environment = value_for('environment', params, Unleash&.configuration&.environment || 'default')
-      self.user_id     = value_for('userId', params)
+      self.user_id     = value_for('userId', params)&.to_s
       self.session_id  = value_for('sessionId', params)
       self.remote_address = value_for('remoteAddress', params)
       self.current_time = value_for('currentTime', params, Time.now.utc.iso8601.to_s)

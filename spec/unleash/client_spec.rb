@@ -409,8 +409,10 @@ RSpec.describe Unleash::Client do
 
   it "should yield correctly to block when using if_enabled" do
     unleash_client = Unleash::Client.new
+    cont = Unleash::Context.new(user_id: 1)
 
     expect{ |b| unleash_client.if_enabled('any_feature', {}, true, &b).to yield_with_no_args }
+    expect{ |b| unleash_client.if_enabled('any_feature', cont, true, &b).to yield_with_no_args }
     expect{ |b| unleash_client.if_enabled('any_feature', {}, false, &b).not_to yield_with_no_args }
   end
 

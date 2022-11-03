@@ -22,7 +22,7 @@ Metrics/BlockLength:
 Metrics/AbcSize:
   Max: 30
 Metrics/CyclomaticComplexity:
-  Max: 9
+  Max: 10
 Metrics/PerceivedComplexity:
   Max: 10
 

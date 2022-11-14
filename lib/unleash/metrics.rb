@@ -15,15 +15,19 @@ module Unleash
     def increment(feature, choice)
       raise "InvalidArgument choice must be :yes or :no" unless [:yes, :no].include? choice
 
-      self.features[feature] = { yes: 0, no: 0 } unless self.features.include? feature
-      self.features[feature][choice] += 1
+      feature_matrix = self.features[feature] || { yes: 0, no: 0 }
+      feature_matrix[choice] += 1
+
+      self.features[feature] = feature_matrix
     end
 
     def increment_variant(feature, variant)
-      self.features[feature] = { yes: 0, no: 0 } unless self.features.include? feature
-      self.features[feature]['variant'] = {}     unless self.features[feature].include? 'variant'
-      self.features[feature]['variant'][variant] = 0 unless self.features[feature]['variant'].include? variant
-      self.features[feature]['variant'][variant] += 1
+      feature_matrix = self.features[feature] || { yes: 0, no: 0 }
+      feature_matrix['variant'] ||= {}
+      feature_matrix['variant'][variant] ||= 0
+      feature_matrix['variant'][variant] += 1
+
+      self.features[feature] = feature_matrix
     end
 
     def reset

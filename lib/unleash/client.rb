@@ -162,7 +162,7 @@ module Unleash
     end
 
     def disabled_variant
-      @disabled_variant ||= Unleash::FeatureToggle.disabled_variant
+      Unleash::FeatureToggle.disabled_variant
     end
 
     def first_fetch_is_eager

@@ -41,8 +41,10 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "simplecov-lcov", "~> 0.8.0"
 
   # NOTE: only require rbs/steep in supported ruby versions. In EOL ruby, just ignore.
+  # rubocop:todo Gemspec/RubyVersionGlobalsUsage
   if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.6')
     spec.add_development_dependency "rbs", "~> 2.7"
     spec.add_development_dependency "steep", "~> 1.2"
   end
+  # rubocop:enable Gemspec/RubyVersionGlobalsUsage
 end

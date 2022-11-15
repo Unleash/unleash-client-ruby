@@ -40,6 +40,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "simplecov", "~> 0.21.2"
   spec.add_development_dependency "simplecov-lcov", "~> 0.8.0"
 
-  spec.add_development_dependency "rbs", "~> 2.7"
-  spec.add_development_dependency "steep", "~> 1.2"
+  # NOTE: only require rbs/steep in supported ruby versions. In EOL ruby, just ignore.
+  if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.6')
+    spec.add_development_dependency "rbs", "~> 2.7"
+    spec.add_development_dependency "steep", "~> 1.2"
+  end
 end

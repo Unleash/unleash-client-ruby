@@ -475,7 +475,7 @@ This client comes with the all the required strategies out of the box:
 
 ## Custom Strategies
 
-Client allows to add [custom activation strategies](https://docs.getunleash.io/advanced/custom_activation_strategy) using configuration. 
+Client allows to add [custom activation strategies](https://docs.getunleash.io/advanced/custom_activation_strategy) using configuration.
 In order for strategy to work correctly it should support two methods `name` and `is_enabled?`
 
 ```ruby
@@ -483,7 +483,7 @@ class MyCustomStrategy
   def name
     'muCustomStrategy'
   end
-  
+
   def is_enabled?(params = {}, context = nil)
     true
   end
@@ -497,6 +497,12 @@ end
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+
+This SDK is also built against the Unleash Client Specification tests. To run the Ruby SDK against this test suite, you'll need to have a copy on your machine, you can clone the repository directly using:
+
+`git clone --depth 5 --branch v4.2.2 https://github.com/Unleash/client-specification.git client-specification`
+
+After doing this, `rake spec` will also run the client specification tests.
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 

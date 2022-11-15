@@ -5,6 +5,7 @@ target :lib do
 
   check "lib/unleash/client.rb"
   check "lib/unleash/context.rb"
+  check "lib/unleash/variant.rb"
   check "lib/unleash/scheduled_executor.rb"
 
   ignore "lib/unleash/bootstrap"

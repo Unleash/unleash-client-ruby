@@ -3,7 +3,7 @@ D = Steep::Diagnostic
 target :lib do
   signature "*.rbs"
 
-  # Note: All client-exposed methods/types should now have type signatures / rbs support
+  # NOTE: All client-exposed methods/types should now have type signatures / rbs support
   check "lib/unleash/client.rb"
   check "lib/unleash/context.rb"
   check "lib/unleash/variant.rb"

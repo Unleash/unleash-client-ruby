@@ -37,12 +37,11 @@ module Unleash
 
       context = ensure_valid_context(context)
 
-      return Unleash::FeatureToggle.disabled_variant unless self.enabled && am_enabled?(context)
-      return Unleash::FeatureToggle.disabled_variant if sum_variant_defs_weights <= 0
+      toggle_enabled = am_enabled?(context)
+      variant = resolve_variant(context, toggle_enabled)
 
-      variant = variant_from_override_match(context) || variant_from_weights(context, resolve_stickiness)
-
-      Unleash.toggle_metrics.increment_variant(self.name, variant.name) unless Unleash.configuration.disable_metrics
+      choice = toggle_enabled ? :yes : :no
+      Unleash.toggle_metrics.increment_variant(self.name, choice, variant.name) unless Unleash.configuration.disable_metrics
       variant
     end
 
@@ -51,6 +50,13 @@ module Unleash
     end
 
     private
+
+    def resolve_variant(context, toggle_enabled)
+      return Unleash::FeatureToggle.disabled_variant unless toggle_enabled
+      return Unleash::FeatureToggle.disabled_variant if sum_variant_defs_weights <= 0
+
+      variant_from_override_match(context) || variant_from_weights(context, resolve_stickiness)
+    end
 
     def resolve_stickiness
       self.variant_definitions&.map(&:stickiness)&.compact&.first || "default"

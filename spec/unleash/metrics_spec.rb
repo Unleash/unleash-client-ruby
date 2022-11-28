@@ -52,16 +52,21 @@ RSpec.describe Unleash::Metrics do
 
   describe "when dealing with variants" do
     it "counts up correctly" do
-      metrics.increment('featureA', :yes)
+      metrics.increment_variant('featureA', :yes, 'variantA')
+      metrics.increment_variant('featureA', :yes, 'variantA')
+      metrics.increment_variant('featureA', :yes, 'variantB')
 
-      metrics.increment_variant('featureA', 'variantA')
-      metrics.increment_variant('featureA', 'variantA')
-      metrics.increment_variant('featureA', 'variantB')
-
-      expect(metrics.features['featureA'][:yes]).to eq(1)
+      expect(metrics.features['featureA'][:yes]).to eq(3)
       expect(metrics.features['featureA'][:no]).to eq(0)
       expect(metrics.features['featureA']['variant']['variantA']).to eq(2)
       expect(metrics.features['featureA']['variant']['variantB']).to eq(1)
     end
+  end
+
+  it "increments feature toggle counter when variant is resolved" do
+    metrics.increment_variant('featureA', :yes, 'variantA')
+
+    expect(metrics.features['featureA'][:yes]).to eq(1)
+    expect(metrics.features['featureA'][:no]).to eq(0)
   end
 end

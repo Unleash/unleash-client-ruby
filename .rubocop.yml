@@ -9,7 +9,7 @@ Naming/PredicateName:
 
 
 Metrics/ClassLength:
-  Max: 130
+  Max: 135
 Layout/LineLength:
   Max: 140
 Metrics/MethodLength:

@@ -91,6 +91,7 @@ RSpec.describe Unleash::Client do
 
     # Sending metrics, if they have been evaluated:
     unleash_client.is_enabled?("Feature.A")
+    unleash_client.get_variant("Feature.A")
     Unleash.reporter.post
     expect(
       a_request(:post, "http://test-url/client/metrics")
@@ -98,6 +99,7 @@ RSpec.describe Unleash::Client do
       .with(headers: { 'X-API-KEY': '123', 'Content-Type': 'application/json' })
       .with(headers: { 'UNLEASH-APPNAME': 'my-test-app' })
       .with(headers: { 'UNLEASH-INSTANCEID': 'rspec/test' })
+      .with{ |request| JSON.parse(request.body)['bucket']['toggles']['Feature.A']['yes'] == 2 }
     ).to have_been_made.once
   end
 

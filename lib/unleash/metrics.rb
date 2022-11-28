@@ -22,9 +22,10 @@ module Unleash
       end
     end
 
-    def increment_variant(feature, variant)
+    def increment_variant(feature, choice, variant)
       self.features_lock.synchronize do
         self.features[feature] = { yes: 0, no: 0 } unless self.features.include? feature
+        self.features[feature][choice] += 1
         self.features[feature]['variant'] = {}     unless self.features[feature].include? 'variant'
         self.features[feature]['variant'][variant] = 0 unless self.features[feature]['variant'].include? variant
         self.features[feature]['variant'][variant] += 1

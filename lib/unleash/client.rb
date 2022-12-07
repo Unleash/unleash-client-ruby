@@ -48,6 +48,9 @@ module Unleash
       toggle = Unleash::FeatureToggle.new(toggle_as_hash, Unleash&.segment_cache)
 
       toggle.is_enabled?(context)
+    rescue StandardError => e
+      Unleash.logger.warn "An unexpected error occured when evaluating #{feature}: #{e}"
+      false
     end
 
     # enabled? is a more ruby idiomatic method name than is_enabled?
@@ -84,6 +87,9 @@ module Unleash
       # TODO: Add to README: name, payload, enabled (bool)
 
       variant
+    rescue StandardError => e
+      Unleash.logger.warn "An unexpected error occured when resolving variant for #{feature}: #{e}"
+      fallback_variant
     end
 
     # safe shutdown: also flush metrics to server and toggles to disk

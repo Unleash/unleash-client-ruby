@@ -300,6 +300,12 @@ RSpec.describe Unleash::Client do
       unleash_client.is_enabled?('any_feature5', {}) { nil }
     ).to be false
 
+    expect(
+      unleash_client.is_enabled?('any_feature5', {}) do
+        raise StandardError, "Oops, evaluating a feature should not have done this!"
+      end
+    ).to be false
+
     # should never really send both the default value and a default block,
     # but if it is done, we OR the two values
     expect(
@@ -536,6 +542,16 @@ RSpec.describe Unleash::Client do
         ret = client.get_variant(feature)
         expect(ret.enabled).to be false
         expect(ret.name).to eq 'disabled'
+      end
+    end
+
+    context 'when resolve variant errors' do
+      it 'returns disabled variant without crashing' do
+        variant = client.get_variant(feature, {}) do
+          raise StandardError, "Oops, evaluating a feature should not have done this!"
+        end
+        expect(variant.enabled).to be false
+        expect(variant.name).to eq 'disabled'
       end
     end
   end

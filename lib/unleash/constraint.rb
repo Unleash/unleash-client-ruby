@@ -43,6 +43,7 @@ module Unleash
 
     def matches_context?(context)
       Unleash.logger.debug "Unleash::Constraint matches_context? value: #{self.value} context.get_by_name(#{self.context_name})"
+      return false if context.nil?
 
       match = matches_constraint?(context)
       self.inverted ? !match : match

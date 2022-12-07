@@ -451,4 +451,9 @@ RSpec.describe Unleash::Constraint do
       end
     end
   end
+
+  it 'does resolves to false rather than crashing when passed a nil context' do
+    constraint = Unleash::Constraint.new('anything', 'NUM_GTE', '6.282')
+    expect(constraint.matches_context?(nil)).to be false
+  end
 end

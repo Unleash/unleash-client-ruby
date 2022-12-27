@@ -50,12 +50,23 @@ module Unleash
       toggle.is_enabled?(context)
     end
 
+    def is_disabled?(feature, context = nil, default_value_param = true, &fallback_blk)
+      !is_enabled?(feature, context, !default_value_param, &fallback_blk)
+    end
+
     # enabled? is a more ruby idiomatic method name than is_enabled?
     alias enabled? is_enabled?
+    # disabled? is a more ruby idiomatic method name than is_disabled?
+    alias disabled? is_disabled?
 
     # execute a code block (passed as a parameter), if is_enabled? is true.
     def if_enabled(feature, context = nil, default_value = false, &blk)
       yield(blk) if is_enabled?(feature, context, default_value)
+    end
+
+    # execute a code block (passed as a parameter), if is_disabled? is true.
+    def if_disabled(feature, context = nil, default_value = true, &blk)
+      yield(blk) if is_disabled?(feature, context, default_value)
     end
 
     def get_variant(feature, context = Unleash::Context.new, fallback_variant = disabled_variant)

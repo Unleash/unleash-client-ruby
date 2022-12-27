@@ -125,6 +125,12 @@ if @unleash.is_enabled?(feature_name, unleash_context)
 else
   puts " #{feature_name} is disabled according to unleash"
 end
+
+if @unleash.is_disabled?(feature_name, unleash_context)
+  puts " #{feature_name} is disabled according to unleash"
+else
+  puts " #{feature_name} is enabled according to unleash"
+end
 ```
 
 ## Usage in a Rails Application
@@ -304,12 +310,18 @@ Then wherever in your application that you need a feature toggle, you can use:
 if UNLEASH.is_enabled? "AwesomeFeature", @unleash_context
   puts "AwesomeFeature is enabled"
 end
+if UNLEASH.is_disabled? "AwesomeFeature", @unleash_context
+  puts "AwesomeFeature is disabled"
+end
 ```
 
 or if client is set in `Rails.configuration.unleash`:
 
 ```ruby
 if Rails.configuration.unleash.is_enabled? "AwesomeFeature", @unleash_context
+  puts "AwesomeFeature is enabled"
+end
+if Rails.configuration.unleash.is_disabled? "AwesomeFeature", @unleash_context
   puts "AwesomeFeature is enabled"
 end
 ```
@@ -445,6 +457,9 @@ Method Name | Description | Return Type |
 `is_enabled?` | Check if feature toggle is to be enabled or not. | Boolean |
 `enabled?` | Alias to the `is_enabled?` method. But more ruby idiomatic. | Boolean |
 `if_enabled` | Run a code block, if a feature is enabled. | `yield` |
+`is_disabled?` | Check if feature toggle is to be enabled or not. | Boolean |
+`disabled?` | Alias to the `is_disabled?` method. But more ruby idiomatic. | Boolean |
+`if_disabled` | Run a code block, if a feature is disabled. | `yield` |
 `get_variant` | Get variant for a given feature | `Unleash::Variant` |
 `shutdown` | Save metrics to disk, flush metrics to server, and then kill ToggleFetcher and MetricsReporter threads. A safe shutdown. Not really useful in long running applications, like web applications. | nil |
 `shutdown!` | Kill ToggleFetcher and MetricsReporter threads immediately. | nil |

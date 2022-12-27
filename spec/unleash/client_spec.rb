@@ -173,6 +173,9 @@ RSpec.describe Unleash::Client do
     expect(
       unleash_client.is_enabled?('toggleName', {}, true)
     ).to eq(true)
+    expect(
+      unleash_client.disabled?('toggleName', {}, false)
+    ).to eq(false)
 
     expect(WebMock).not_to have_requested(:get, 'http://test-url/')
     expect(WebMock).to have_requested(:post, 'http://test-url/client/register')

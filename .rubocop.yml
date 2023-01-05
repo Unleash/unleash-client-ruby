@@ -6,6 +6,7 @@ AllCops:
 Naming/PredicateName:
   AllowedMethods:
     - is_enabled?
+    - is_disabled?
 
 
 Metrics/ClassLength:

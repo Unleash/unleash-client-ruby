@@ -310,9 +310,6 @@ Then wherever in your application that you need a feature toggle, you can use:
 if UNLEASH.is_enabled? "AwesomeFeature", @unleash_context
   puts "AwesomeFeature is enabled"
 end
-if UNLEASH.is_disabled? "AwesomeFeature", @unleash_context
-  puts "AwesomeFeature is disabled"
-end
 ```
 
 or if client is set in `Rails.configuration.unleash`:
@@ -321,17 +318,32 @@ or if client is set in `Rails.configuration.unleash`:
 if Rails.configuration.unleash.is_enabled? "AwesomeFeature", @unleash_context
   puts "AwesomeFeature is enabled"
 end
-if Rails.configuration.unleash.is_disabled? "AwesomeFeature", @unleash_context
-  puts "AwesomeFeature is enabled"
+```
+
+If you don't want to check a feature is disabled with `unless`, you can also use `is_disabled?`:
+
+```ruby
+# so instead of:
+unless UNLEASH.is_enabled? "AwesomeFeature", @unleash_context
+  puts "AwesomeFeature is disabled"
+end
+
+# it might be more intelligible:
+if UNLEASH.is_disabled? "AwesomeFeature", @unleash_context
+  puts "AwesomeFeature is disabled"
 end
 ```
 
 If the feature is not found in the server, it will by default return false.
-However you can override that by setting the default return value to `true`:
+However, you can override that by setting the default return value to `true`:
 
 ```ruby
 if UNLEASH.is_enabled? "AwesomeFeature", @unleash_context, true
   puts "AwesomeFeature is enabled by default"
+end
+# or
+if UNLEASH.is_disabled? "AwesomeFeature", @unleash_context, true
+  puts "AwesomeFeature is disabled by default"
 end
 ```
 
@@ -355,7 +367,7 @@ awesomeness = 10
 @unleash_context.properties[:coolness] = 10
 
 if UNLEASH.is_enabled?("AwesomeFeature", @unleash_context) { |feat, ctx| awesomeness >= 6 && ctx.properties[:coolness] >= 8 }
-  puts "AwesomeFeature is enabled by default if both the user has a high enought coolness and the application has a high enough awesomeness"
+  puts "AwesomeFeature is enabled by default if both the user has a high enough coolness and the application has a high enough awesomeness"
 end
 ```
 
@@ -364,12 +376,12 @@ Note:
 - The client will evaluate the fallback function once per call of `is_enabled()`.
   Please keep this in mind when creating your fallback function!
 - The returned value of the block should be a boolean.
-  However the client will coerce the result to boolean via `!!`.
+  However, the client will coerce the result to boolean via `!!`.
 - If both a `default_value` and `fallback_function` are supplied,
   the client will define the default value by `OR`ing the default value and the output of the fallback function.
 
 
-Alternatively by using `if_enabled` you can send a code block to be executed as a parameter:
+Alternatively by using `if_enabled` (or `if_disabled`) you can send a code block to be executed as a parameter:
 
 ```ruby
 UNLEASH.if_enabled "AwesomeFeature", @unleash_context, true do
@@ -377,7 +389,7 @@ UNLEASH.if_enabled "AwesomeFeature", @unleash_context, true do
 end
 ```
 
-Note: `if_enabled` only supports `default_value`, but not `fallback_function`.
+Note: `if_enabled` (and `if_disabled`) only support `default_value`, but not `fallback_function`.
 
 ##### Variations
 
@@ -498,7 +510,7 @@ In order for strategy to work correctly it should support two methods `name` and
 ```ruby
 class MyCustomStrategy
   def name
-    'muCustomStrategy'
+    'myCustomStrategy'
   end
 
   def is_enabled?(params = {}, context = nil)
@@ -513,15 +525,19 @@ end
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+After checking out the repo, run `bin/setup` to install dependencies.
+Then, run `rake spec` to run the tests.
+You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
-This SDK is also built against the Unleash Client Specification tests. To run the Ruby SDK against this test suite, you'll need to have a copy on your machine, you can clone the repository directly using:
+This SDK is also built against the Unleash Client Specification tests.
+To run the Ruby SDK against this test suite, you'll need to have a copy on your machine, you can clone the repository directly using:
 
 `git clone --depth 5 --branch v4.2.2 https://github.com/Unleash/client-specification.git client-specification`
 
 After doing this, `rake spec` will also run the client specification tests.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+To install this gem onto your local machine, run `bundle exec rake install`.
+To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
 
 ## Contributing

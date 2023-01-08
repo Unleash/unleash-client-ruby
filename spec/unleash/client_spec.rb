@@ -173,9 +173,6 @@ RSpec.describe Unleash::Client do
     expect(
       unleash_client.is_enabled?('toggleName', {}, true)
     ).to eq(true)
-    expect(
-      unleash_client.disabled?('toggleName', {}, false)
-    ).to eq(false)
 
     expect(WebMock).not_to have_requested(:get, 'http://test-url/')
     expect(WebMock).to have_requested(:post, 'http://test-url/client/register')
@@ -412,6 +409,23 @@ RSpec.describe Unleash::Client do
     expect(WebMock).not_to have_requested(:post, 'http://test-url/client/metrics')
   end
 
+  it "should return correct default values" do
+    unleash_client = Unleash::Client.new
+    expect(unleash_client.is_enabled?('any_feature')).to eq(false)
+    expect(unleash_client.is_enabled?('any_feature', {}, false)).to eq(false)
+    expect(unleash_client.is_enabled?('any_feature', {}, true)).to eq(true)
+
+    expect(unleash_client.enabled?('any_feature', {}, true)).to eq(true)
+    expect(unleash_client.enabled?('any_feature', {}, false)).to eq(false)
+
+    expect(unleash_client.is_disabled?('any_feature')).to eq(true)
+    expect(unleash_client.is_disabled?('any_feature', {}, true)).to eq(true)
+    expect(unleash_client.is_disabled?('any_feature', {}, false)).to eq(false)
+
+    expect(unleash_client.disabled?('any_feature', {}, true)).to eq(true)
+    expect(unleash_client.disabled?('any_feature', {}, false)).to eq(false)
+  end
+
   it "should yield correctly to block when using if_enabled" do
     unleash_client = Unleash::Client.new
     cont = Unleash::Context.new(user_id: 1)
@@ -419,6 +433,19 @@ RSpec.describe Unleash::Client do
     expect{ |b| unleash_client.if_enabled('any_feature', {}, true, &b).to yield_with_no_args }
     expect{ |b| unleash_client.if_enabled('any_feature', cont, true, &b).to yield_with_no_args }
     expect{ |b| unleash_client.if_enabled('any_feature', {}, false, &b).not_to yield_with_no_args }
+  end
+
+  it "should yield correctly to block when using if_disabled" do
+    unleash_client = Unleash::Client.new
+    cont = Unleash::Context.new(user_id: 1)
+
+    expect{ |b| unleash_client.if_disabled('any_feature', {}, true, &b).not_to yield_with_no_args }
+    expect{ |b| unleash_client.if_disabled('any_feature', cont, true, &b).not_to yield_with_no_args }
+
+    expect{ |b| unleash_client.if_disabled('any_feature', {}, false, &b).to yield_with_no_args }
+    expect{ |b| unleash_client.if_disabled('any_feature', cont, false, &b).to yield_with_no_args }
+    expect{ |b| unleash_client.if_disabled('any_feature', {}, &b).to yield_with_no_args }
+    expect{ |b| unleash_client.if_disabled('any_feature', &b).to yield_with_no_args }
   end
 
   describe 'get_variant' do

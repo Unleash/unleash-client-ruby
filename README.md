@@ -86,7 +86,7 @@ Argument | Description | Required? |  Type |  Default Value|
 `url`      | Unleash server URL. | Y | String | N/A |
 `app_name` | Name of your program. | Y | String | N/A |
 `instance_id` | Identifier for the running instance of program. Important so you can trace back to where metrics are being collected from. **Highly recommended be be set.** | N | String | random UUID |
-`environment` | Environment the program is running on. Could be for example `prod` or `dev`. Not yet in use. | N | String | `default` |
+`environment` | Unleash context option. Could be for example `prod` or `dev`. Not yet in use. **Not** the same as the SDK's [Unleash environment](https://docs.getunleash.io/reference/environments). | N | String | `default` |
 `project_name` | Name of the project to retrieve features from. If not set, all feature flags will be retrieved. | N | String | nil |
 `refresh_interval` | How often the unleash client should check with the server for configuration changes. | N | Integer |  15 |
 `metrics_interval` | How often the unleash client should send metrics to server. | N | Integer | 60 |
@@ -145,7 +145,6 @@ Unleash.configure do |config|
   config.url      = 'https://unleash.herokuapp.com/api'
   # config.instance_id = "#{Socket.gethostname}"
   config.logger   = Rails.logger
-  config.environment = Rails.env
 end
 
 UNLEASH = Unleash::Client.new
@@ -180,7 +179,6 @@ Then you may keep the client configuration still in `config/initializers/unleash
 ```ruby
 Unleash.configure do |config|
   config.app_name    = Rails.application.class.parent.to_s
-  config.environment = Rails.env
   config.url                 = 'https://unleash.herokuapp.com/api'
   config.custom_http_headers = {'Authorization': '<API token>'}
 end
@@ -228,7 +226,6 @@ on_worker_boot do
 
   ::UNLEASH = Unleash::Client.new(
     app_name: 'my_rails_app',
-    environment: 'development',
     url: 'https://unleash.herokuapp.com/api',
     custom_http_headers: {'Authorization': '<API token>'},
   )
@@ -254,7 +251,6 @@ PhusionPassenger.on_event(:starting_worker_process) do |forked|
       config.app_name    = Rails.application.class.parent.to_s
       # config.instance_id = "#{Socket.gethostname}"
       config.logger      = Rails.logger
-      config.environment = Rails.env
       config.url                 = 'https://unleash.herokuapp.com/api'
       config.custom_http_headers = {'Authorization': '<API token>'}
     end

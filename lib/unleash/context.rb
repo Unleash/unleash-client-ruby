@@ -22,9 +22,9 @@ module Unleash
       "<Context: user_id=#{@user_id},session_id=#{@session_id},remote_address=#{@remote_address},properties=#{@properties}" \
         ",app_name=#{@app_name},environment=#{@environment}>"
     end
-    
+
     def to_h
-      ATTRS.map { |attr| [attr, self.send(attr)] }.to_h.merge(properties: @properties)
+      ATTRS.map{ |attr| [attr, self.send(attr)] }.to_h.merge(properties: @properties)
     end
 
     def get_by_name(name)

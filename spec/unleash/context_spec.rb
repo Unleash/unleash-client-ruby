@@ -169,4 +169,20 @@ RSpec.describe Unleash::Context do
 
     expect(context.get_by_name(:CurrentTime).to_s).to eq(date.to_s)
   end
+
+  it "converts context to hash" do
+    params = {
+      app_name: 'my_ruby_app',
+      environment: 'dev',
+      user_id: '123',
+      session_id: 'verylongsesssionid',
+      remote_address: '127.0.0.2',
+      current_time: '2023-03-22T00:00:00Z',
+      properties: {
+        fancy: 'polarbear'
+      }
+    }
+    context = Unleash::Context.new(params)
+    expect(context.to_h).to eq(params)
+  end
 end

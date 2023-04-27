@@ -187,6 +187,22 @@ RSpec.describe Unleash::Client do
           "name": "featureX",
           "enabled": true,
           "strategies": [{ "name": "default" }]
+        },
+        {
+          "enabled": true,
+          "name": "featureVariantX",
+          "strategies": [{ "name": "default" }],
+          "variants": [
+            {
+              "name": "default-value",
+              "payload": {
+                "type": "string",
+                "value": "info"
+              },
+              "weight": 100,
+              "weightType": "variable"
+            }
+          ]
         }
       ]
     }'
@@ -208,6 +224,15 @@ RSpec.describe Unleash::Client do
     expect(
       unleash_client.is_enabled?('featureX', {}, false)
     ).to be true
+
+    default_variant = Unleash::Variant.new(
+      name: 'featureVariantX',
+      enabled: false,
+      payload: { type: 'string', value: 'bogus' }
+    )
+    variant = unleash_client.get_variant('featureVariantX', nil, default_variant)
+    expect(variant.enabled).to be true
+    expect(variant.payload.fetch('value')).to eq('info')
 
     expect(WebMock).not_to have_requested(:get, 'http://test-url/')
     expect(WebMock).not_to have_requested(:post, 'http://test-url/client/register')

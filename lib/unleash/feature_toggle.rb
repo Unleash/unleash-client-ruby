@@ -98,9 +98,9 @@ module Unleash
 
     def variant_salt(context, stickiness = "default")
       return context.get_by_name(stickiness) unless stickiness == "default"
-      return context.user_id unless context.user_id.to_s.empty?
-      return context.session_id unless context.session_id.to_s.empty?
-      return context.remote_address unless context.remote_address.to_s.empty?
+      return context.user_id unless context&.user_id.to_s.empty?
+      return context.session_id unless context&.session_id.to_s.empty?
+      return context.remote_address unless context&.remote_address.to_s.empty?
 
       SecureRandom.random_number
     end

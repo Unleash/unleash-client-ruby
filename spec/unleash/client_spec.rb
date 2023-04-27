@@ -199,6 +199,7 @@ RSpec.describe Unleash::Client do
                 "type": "string",
                 "value": "info"
               },
+              "stickiness": "custom_attribute",
               "weight": 100,
               "weightType": "variable"
             }

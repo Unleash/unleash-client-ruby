@@ -21,7 +21,7 @@ module Unleash
       Unleash.toggle_fetcher = Unleash::ToggleFetcher.new
       if Unleash.configuration.disable_client
         Unleash.logger.warn "Unleash::Client is disabled! Will only return default (or bootstrapped if available) results!"
-        Unleash.logger.warn "Unleash::Client is disabled! Metrics and MetricsReporter also are disabled!"
+        Unleash.logger.warn "Unleash::Client is disabled! Metrics and MetricsReporter are also disabled!"
         Unleash.configuration.disable_metrics = true
         return
       end

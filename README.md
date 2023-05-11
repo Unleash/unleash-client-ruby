@@ -90,8 +90,8 @@ Argument | Description | Required? |  Type |  Default Value|
 `project_name` | Name of the project to retrieve features from. If not set, all feature flags will be retrieved. | N | String | nil |
 `refresh_interval` | How often the unleash client should check with the server for configuration changes. | N | Integer |  15 |
 `metrics_interval` | How often the unleash client should send metrics to server. | N | Integer | 60 |
-`disable_client` | Disables all communication with the Unleash server, effectively taking it *offline*. If set, `is_enabled?` will always answer with the `default_value` and configuration validation is skipped. Defeats the entire purpose of using unleash, but can be useful in when running tests. | N | Boolean | `false` |
-`disable_metrics` | Disables sending metrics to Unleash server. | N | Boolean | `false` |
+`disable_client` | Disables all communication with the Unleash server, effectively taking it *offline*. If set, `is_enabled?` will always answer with the `default_value` and configuration validation is skipped. Will also forcefully set `disable_metrics` to `true`. Defeats the entire purpose of using unleash, except when running tests. | N | Boolean | `false` |
+`disable_metrics` | Disables sending metrics to Unleash server. If the `disable_client` option is set to `true`, then this option will also be set to `true`, regardless of the value provided. | N | Boolean | `false` |
 `custom_http_headers` | Custom headers to send to Unleash. As of Unleash v4.0.0, the `Authorization` header is required. For example: `{'Authorization': '<API token>'}` | N | Hash/Proc | {} |
 `timeout` | How long to wait for the connection to be established or wait in reading state (open_timeout/read_timeout) | N | Integer | 30 |
 `retry_limit` | How many consecutive failures in connecting to the Unleash server are allowed before giving up. The default is to retry indefinitely. | N | Float::INFINITY | 5 |

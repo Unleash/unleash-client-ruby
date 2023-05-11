@@ -1,4 +1,9 @@
 RSpec.describe Unleash::Client do
+  after do
+    WebMock.reset!
+    File.delete(Unleash.configuration.backup_file) if File.exist?(Unleash.configuration.backup_file)
+  end
+
   it "Uses custom http headers when initializing client" do
     WebMock.stub_request(:post, "http://test-url/client/register")
       .with(
@@ -212,6 +217,10 @@ RSpec.describe Unleash::Client do
     expect(WebMock).not_to have_requested(:get, 'http://test-url/')
     expect(WebMock).not_to have_requested(:post, 'http://test-url/client/register')
     expect(WebMock).not_to have_requested(:get, 'http://test-url/client/features')
+
+    # No requests at all:
+    expect(WebMock).not_to have_requested(:get, /.*/)
+    expect(WebMock).not_to have_requested(:post, /.*/)
   end
 
   it "should not fail if we are provided no toggles from the unleash server" do
@@ -260,6 +269,30 @@ RSpec.describe Unleash::Client do
     expect(WebMock).to have_requested(:get, 'http://test-url/client/features')
     expect(WebMock).to have_requested(:post, 'http://test-url/client/register')
     expect(WebMock).not_to have_requested(:post, 'http://test-url/client/metrics')
+  end
+
+  it "should forcefully disable metrics if the client is disabled" do
+    Unleash.configure do |config|
+      config.url      = 'http://test-url/'
+      config.app_name = 'my-test-app'
+      config.instance_id = 'rspec/test'
+      config.disable_client = true
+      config.disable_metrics = false
+      config.custom_http_headers = { 'X-API-KEY' => '123' }
+    end
+
+    unleash_client = Unleash::Client.new
+
+    expect(
+      unleash_client.is_enabled?('any_feature', {}, true)
+    ).to eq(true)
+
+    expect(Unleash.configuration.disable_client).to be true
+    expect(Unleash.configuration.disable_metrics).to be true
+
+    # No requests at all:
+    expect(WebMock).not_to have_requested(:get, /.*/)
+    expect(WebMock).not_to have_requested(:post, /.*/)
   end
 
   it "should return default results via block or param if running with disable_client" do

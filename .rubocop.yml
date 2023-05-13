@@ -11,6 +11,8 @@ Naming/PredicateName:
 
 Metrics/ClassLength:
   Max: 135
+  CountAsOne:
+    - 'method_call'
 Layout/LineLength:
   Max: 140
 Metrics/MethodLength:

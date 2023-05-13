@@ -50,8 +50,7 @@ RSpec.describe Unleash::Constraint do
 
     it 'matches based on a value NOT_IN in a not existing context field' do
       context_params = {
-        properties: {
-        }
+        properties: {}
       }
       context = Unleash::Context.new(context_params)
       constraint = Unleash::Constraint.new('env', 'NOT_IN', ['anything'])

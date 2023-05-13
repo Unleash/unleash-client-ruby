@@ -434,8 +434,7 @@ RSpec.describe Unleash::FeatureToggle do
               }
             ],
             "name" => "default",
-            "parameters" => {
-            }
+            "parameters" => {}
           }
         ]
       )
@@ -480,8 +479,7 @@ RSpec.describe Unleash::FeatureToggle do
               }
             ],
             "name" => "default",
-            "parameters" => {
-            }
+            "parameters" => {}
           }
         ]
       )

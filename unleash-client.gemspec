@@ -27,11 +27,16 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 2.1"
   spec.add_development_dependency "rake", "~> 12.3"
-  spec.add_development_dependency "rspec", "~> 3.9"
+  spec.add_development_dependency "rspec", "~> 3.12"
   spec.add_development_dependency "rspec-json_expectations", "~> 2.2"
-  spec.add_development_dependency "webmock", "~> 3.8"
+  spec.add_development_dependency "webmock", "~> 3.18.1"
 
-  spec.add_development_dependency "rubocop", "~> 1.28.2"
+  # rubocop:disable Gemspec/RubyVersionGlobalsUsage, Style/IfUnlessModifier
+  if Gem::Version.new(RUBY_VERSION) > Gem::Version.new('3.0')
+    spec.add_development_dependency "rubocop", "~> 1.51.0"
+  end
+  # rubocop:enable Gemspec/RubyVersionGlobalsUsage, Style/IfUnlessModifier
+
   spec.add_development_dependency "simplecov", "~> 0.21.2"
   spec.add_development_dependency "simplecov-lcov", "~> 0.8.0"
 end

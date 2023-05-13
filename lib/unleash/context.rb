@@ -27,6 +27,7 @@ module Unleash
       ATTRS.map{ |attr| [attr, self.send(attr)] }.to_h.merge(properties: @properties)
     end
 
+    # returns the value found for the key in the context, or raises a KeyError exception if not found.
     def get_by_name(name)
       normalized_name = underscore(name).to_sym
 

@@ -506,7 +506,7 @@ RSpec.describe Unleash::FeatureToggle do
     end
   end
 
-  describe 'FeatureToggle with custom stickiness' do
+  describe 'FeatureToggle variant with custom stickiness' do
     let(:feature_toggle) do
       Unleash::FeatureToggle.new(
         "name" => "toggleName",
@@ -589,6 +589,77 @@ RSpec.describe Unleash::FeatureToggle do
         name: "variant4",
         enabled: true
       )
+    end
+
+    it 'should work with a nil context' do
+      variant = feature_toggle.get_variant(nil)
+
+      expect(variant.name).to match(/variant\d/)
+      expect(variant.enabled).to be true
+      expect(variant).to be_a_kind_of(Unleash::Variant)
+    end
+  end
+
+  describe 'FeatureToggle Variant with payload and custom stickiness' do
+    let(:feature_toggle) do
+      Unleash::FeatureToggle.new(
+        "name" => "featureVariantX",
+        "description" => nil,
+        "enabled" => true,
+        "strategies" => [
+          { "name" => "default" }
+        ],
+        "variants" => [
+          {
+            "name" => "default-value",
+            "payload" => {
+              "type" => "string",
+              "value" => "payloadData"
+            },
+            "stickiness" => "custom_context_attribute",
+            "weight" => 100,
+            "weightType" => "variable"
+          }
+        ]
+      )
+    end
+
+    let(:expected_variant) do
+      {
+        name: "default-value",
+        enabled: true,
+        payload: {
+          "type" => "string",
+          "value" => "payloadData"
+        }
+      }
+    end
+
+    it 'should return the one variant, when the context correctly contains the custom stickiness parameter' do
+      context = Unleash::Context.new(
+        properties: {
+          default: 'foo',
+          custom_context_attribute: 'uniqueContextValue'
+        }
+      )
+      expect(feature_toggle.get_variant(context)).to have_attributes(expected_variant)
+    end
+
+    it 'should return the one variant, with context that is nil' do
+      expect(feature_toggle.get_variant(nil)).to have_attributes(expected_variant)
+    end
+
+    it 'should return the one variant, even when the contexts do not contain the stickiness parameter' do
+      [
+        nil,
+        Unleash::Context.new,
+        Unleash::Context.new(user_id: '123'),
+        Unleash::Context.new(session_id: '123'),
+        Unleash::Context.new(remote_address: '127.0.0.1'),
+        Unleash::Context.new(properties: { not_custom_context_attribute: 'foo' })
+      ].each do |context|
+        expect(feature_toggle.get_variant(context)).to have_attributes(expected_variant)
+      end
     end
   end
 end

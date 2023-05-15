@@ -97,7 +97,12 @@ module Unleash
     end
 
     def variant_salt(context, stickiness = "default")
-      return context.get_by_name(stickiness) if !context.nil? && stickiness != "default"
+      begin
+        return context.get_by_name(stickiness) if !context.nil? && stickiness != "default"
+      rescue KeyError
+        Unleash.logger.warn "Custom stickiness key (#{stickiness}) not found in the provided context #{context}. " \
+          "Falling back to default behavior."
+      end
       return context.user_id unless context&.user_id.to_s.empty?
       return context.session_id unless context&.session_id.to_s.empty?
       return context.remote_address unless context&.remote_address.to_s.empty?

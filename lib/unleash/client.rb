@@ -74,11 +74,6 @@ module Unleash
     def get_variant(feature, context = Unleash::Context.new, fallback_variant = disabled_variant)
       Unleash.logger.debug "Unleash::Client.get_variant for feature: #{feature} with context #{context}"
 
-      if Unleash.configuration.disable_client
-        Unleash.logger.debug "unleash_client is disabled! Always returning #{fallback_variant} for feature #{feature}!"
-        return fallback_variant
-      end
-
       toggle_as_hash = Unleash&.toggles&.select{ |toggle| toggle['name'] == feature }&.first
 
       if toggle_as_hash.nil?

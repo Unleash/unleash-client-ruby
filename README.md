@@ -533,11 +533,25 @@ To run the Ruby SDK against this test suite, you'll need to have a copy on your 
 After doing this, `rake spec` will also run the client specification tests.
 
 To install this gem onto your local machine, run `bundle exec rake install`.
-To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+
+## Releasing
+
+Choose a new version number following [Semantic Versioning](https://semver.org/spec/v2.0.0.html) semantics and then:
+
+- update the version number in [./lib/unleash/version.rb](./lib/unleash/version.rb),
+- if a major or minor version bump, update the [Installation section](#Installation) in [README.md](README.md)
+- update [CHANGELOG.md](CHANGELOG.md) following the format on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
+- commit with message `chore: bump version to x.y.z`
+- then run `bundle exec rake release`
+  - This will create a git tag for the version on the current commit,
+  - push git commits and tags to origin and
+  - push the `.gem` file to [rubygems.org](https://rubygems.org)
 
 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/unleash/unleash-client-ruby.
+
+Be sure to run both `bundle exec rspec` and `bundle exec rubocop` in your branch before creating a pull request.
 
 Please include tests with any pull requests, to avoid regressions.

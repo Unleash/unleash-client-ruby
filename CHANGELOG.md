@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-Note: These changes are not considered notable: 
+Note: These changes are not considered notable:
 - build
 - documentation
 - dependencies
@@ -70,26 +70,26 @@ Note: These changes are not considered notable:
 - feat: add support for cidr in `RemoteAddress` strategy (#77)
 
 ### Changed
-- default values for `metrics_interval` to `60s` and `retry_limit` to `5`
+- default values for `metrics_interval` to `60s` and `retry_limit` to `5` 
 
 ## [4.0.0] - 2021-12-16
 ### Added
 - Support for projects query (requires unleash 4.x) (#38)
 - Allow passing blocks to is_enabled? to determine default_result (#33)
 - Implement custom stickiness (#69)
-- Allow using custom_http_headers from the CLI utility
+- Allow using custom_http_headers from the CLI utility (#75)
 
 ### Fixed
 - Allow context to correctly resolve camelCase property values (#74)
 - Avoid unlikely situation of config changing under the read operation
-- backup path file being incorrectly set
+- backup path file being incorrectly set (#63)
 
 ### Changed
 - change how we handle the server api url (avoid double slashes in urls used for API calls.)
-- default values: refresh_interval => 10, metrics_interval=> 30
+- default values: refresh_interval => 10, metrics_interval=> 30 (#59)
 - changed metrics reporting behavior
 - only send metrics if there is data to send. (#58)
-- in Client#get_variant() allow context and fallback_variant as nil
+- in Client#get_variant() allow context and fallback_variant as nil (#51)
 
 [unreleased]: https://git1hub.com/unleash/unleash-client-ruby/compare/v4.4.3...HEAD
 [4.4.3]: https://github.com/unleash/unleash-client-ruby/compare/v4.4.2...v4.4.3

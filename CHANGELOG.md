@@ -13,7 +13,7 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
-## [4.4.3] - 2023-06-14
+## [4.4.4] - 2023-06-14
 
 ### Fixed
 - Variant metrics are now sent correctly to Unleash. Fixed a typo in the payload name. (#145)
@@ -96,7 +96,8 @@ Note: These changes are not considered notable:
 - only send metrics if there is data to send. (#58)
 - in Client#get_variant() allow context and fallback_variant as nil (#51)
 
-[unreleased]: https://git1hub.com/unleash/unleash-client-ruby/compare/v4.4.3...HEAD
+[unreleased]: https://git1hub.com/unleash/unleash-client-ruby/compare/v4.4.4...HEAD
+[4.4.4]: https://github.com/unleash/unleash-client-ruby/compare/v4.4.3...v4.4.4
 [4.4.3]: https://github.com/unleash/unleash-client-ruby/compare/v4.4.2...v4.4.3
 [4.4.2]: https://github.com/unleash/unleash-client-ruby/compare/v4.4.1...v4.4.2
 [4.4.1]: https://github.com/unleash/unleash-client-ruby/compare/v4.4.0...v4.4.1

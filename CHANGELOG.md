@@ -13,17 +13,13 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
-## [4.4.4] - 2023-06-14
-
-### Fixed
-- Variant metrics are now sent correctly to Unleash. Fixed a typo in the payload name. (#145)
-
-## [4.4.3] - 2023-05-23
+## [4.4.3] - 2023-06-14
 ### Added
 - Add Context#to_h method (#136)
 
 ### Fixed
 - Bootstrapped variants now work when client is disabled (#138)
+- Variant metrics are now sent correctly to Unleash. Fixed a typo in the payload name. (#145)
 
 ### Changed
 - Automatically disable metrics/MetricsReporter when client is disabled (#139) (#140)
@@ -75,7 +71,7 @@ Note: These changes are not considered notable:
 - feat: add support for cidr in `RemoteAddress` strategy (#77)
 
 ### Changed
-- default values for `metrics_interval` to `60s` and `retry_limit` to `5` 
+- default values for `metrics_interval` to `60s` and `retry_limit` to `5`
 
 ## [4.0.0] - 2021-12-16
 ### Added
@@ -96,8 +92,7 @@ Note: These changes are not considered notable:
 - only send metrics if there is data to send. (#58)
 - in Client#get_variant() allow context and fallback_variant as nil (#51)
 
-[unreleased]: https://git1hub.com/unleash/unleash-client-ruby/compare/v4.4.4...HEAD
-[4.4.4]: https://github.com/unleash/unleash-client-ruby/compare/v4.4.3...v4.4.4
+[unreleased]: https://git1hub.com/unleash/unleash-client-ruby/compare/v4.4.3...HEAD
 [4.4.3]: https://github.com/unleash/unleash-client-ruby/compare/v4.4.2...v4.4.3
 [4.4.2]: https://github.com/unleash/unleash-client-ruby/compare/v4.4.1...v4.4.2
 [4.4.1]: https://github.com/unleash/unleash-client-ruby/compare/v4.4.0...v4.4.1

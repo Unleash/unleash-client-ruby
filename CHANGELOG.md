@@ -13,6 +13,11 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [4.4.3] - 2023-06-14
+
+### Fixed
+- Variant metrics are now sent correctly to Unleash. Fixed a typo in the payload name. (#145)
+
 ## [4.4.3] - 2023-05-23
 ### Added
 - Add Context#to_h method (#136)

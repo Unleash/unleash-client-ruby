@@ -26,9 +26,9 @@ module Unleash
       self.features_lock.synchronize do
         self.features[feature] = { yes: 0, no: 0 } unless self.features.include? feature
         self.features[feature][choice] += 1
-        self.features[feature]['variant'] = {}     unless self.features[feature].include? 'variant'
-        self.features[feature]['variant'][variant] = 0 unless self.features[feature]['variant'].include? variant
-        self.features[feature]['variant'][variant] += 1
+        self.features[feature]['variants'] = {}     unless self.features[feature].include? 'variants'
+        self.features[feature]['variants'][variant] = 0 unless self.features[feature]['variants'].include? variant
+        self.features[feature]['variants'][variant] += 1
       end
     end
 

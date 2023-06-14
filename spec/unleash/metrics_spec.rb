@@ -58,8 +58,8 @@ RSpec.describe Unleash::Metrics do
 
       expect(metrics.features['featureA'][:yes]).to eq(3)
       expect(metrics.features['featureA'][:no]).to eq(0)
-      expect(metrics.features['featureA']['variant']['variantA']).to eq(2)
-      expect(metrics.features['featureA']['variant']['variantB']).to eq(1)
+      expect(metrics.features['featureA']['variants']['variantA']).to eq(2)
+      expect(metrics.features['featureA']['variants']['variantB']).to eq(1)
     end
   end
 

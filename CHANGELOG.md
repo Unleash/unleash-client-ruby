@@ -56,7 +56,7 @@ Note: These changes are not considered notable:
 
 ## [4.2.1] - 2022-03-29
 ### Fixed
-- correct logic for default values on feature toggles so toggle value respected when toggle exists and default is true (#93
+- correct logic for default values on feature toggles so toggle value respected when toggle exists and default is true (#93)
 
 ## [4.2.0] - 2022-03-18
 ### Added
@@ -71,7 +71,7 @@ Note: These changes are not considered notable:
 - feat: add support for cidr in `RemoteAddress` strategy (#77)
 
 ### Changed
-- default values for `metrics_interval` to `60s` and `retry_limit` to `5`
+- default values for `metrics_interval` to `60s` and `retry_limit` to `5` (#78)
 
 ## [4.0.0] - 2021-12-16
 ### Added
@@ -82,13 +82,12 @@ Note: These changes are not considered notable:
 
 ### Fixed
 - Allow context to correctly resolve camelCase property values (#74)
-- Avoid unlikely situation of config changing under the read operation
-- backup path file being incorrectly set (#63)
+- Avoid unlikely situation of config changing under the read operation due to backup path file being incorrectly set (#63)
 
 ### Changed
 - change how we handle the server api url (avoid double slashes in urls used for API calls.)
 - default values: refresh_interval => 10, metrics_interval=> 30 (#59)
-- changed metrics reporting behavior
+- changed metrics reporting behavior (#66)
 - only send metrics if there is data to send. (#58)
 - in Client#get_variant() allow context and fallback_variant as nil (#51)
 

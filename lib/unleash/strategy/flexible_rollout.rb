@@ -12,7 +12,7 @@ module Unleash
         return false unless params.is_a?(Hash)
 
         stickiness = params.fetch('stickiness', 'default')
-        return false unless context.instance_of?(Unleash::Context) || ['random', 'default'].include?(stickiness)
+        return false unless context_is_sufficient?(stickiness, context)
 
         stickiness_id = resolve_stickiness(stickiness, context)
 
@@ -32,6 +32,12 @@ module Unleash
       end
 
       private
+
+      def context_is_sufficient?(stickiness, context)
+        return true if ['random', 'default'].include?(stickiness)
+
+        context.instance_of?(Unleash::Context)
+      end
 
       def random
         Random.rand(0..100)

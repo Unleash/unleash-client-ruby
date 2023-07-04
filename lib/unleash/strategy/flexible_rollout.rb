@@ -43,7 +43,7 @@ module Unleash
           random
         when 'default'
           return random unless context.instance_of?(Unleash::Context)
-          
+
           context.user_id || context.session_id || random
         else
           begin

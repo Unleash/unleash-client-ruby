@@ -16,7 +16,6 @@ RSpec.describe Unleash::Strategy::FlexibleRollout do
       expect(strategy.is_enabled?(params, nil)).to be_truthy
       expect(strategy.is_enabled?(params.merge({ 'rollout' => 0 }), unleash_context)).to be_falsey
       expect(strategy.is_enabled?(params.merge({ 'rollout' => 0 }), nil)).to be_falsey
-
     end
 
     it 'should behave predictably when based on the normalized_number' do

@@ -13,6 +13,11 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [4.4.4] - 2023-07-05
+### Fixed
+- flexible rollout strategy without context (#146)
+  - The flexible rollout strategy should evaluate default and random stickiness even if context is not provided.
+
 ## [4.4.3] - 2023-06-14
 ### Added
 - Add Context#to_h method (#136)

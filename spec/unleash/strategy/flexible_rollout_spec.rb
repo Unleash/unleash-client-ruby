@@ -13,6 +13,7 @@ RSpec.describe Unleash::Strategy::FlexibleRollout do
       }
 
       expect(strategy.is_enabled?(params, unleash_context)).to be_truthy
+      expect(strategy.is_enabled?(params, "invalid context")).to be_truthy
       expect(strategy.is_enabled?(params, nil)).to be_truthy
     end
 
@@ -24,6 +25,7 @@ RSpec.describe Unleash::Strategy::FlexibleRollout do
       }
 
       expect(strategy.is_enabled?(params, unleash_context)).to be_falsey
+      expect(strategy.is_enabled?(params, "invalid context")).to be_falsey
       expect(strategy.is_enabled?(params, nil)).to be_falsey
     end
 
@@ -35,6 +37,7 @@ RSpec.describe Unleash::Strategy::FlexibleRollout do
       }
 
       expect(strategy.is_enabled?(params, unleash_context)).to be_truthy
+      expect(strategy.is_enabled?(params, "invalid context")).to be_truthy
       expect(strategy.is_enabled?(params, nil)).to be_truthy
     end
 
@@ -46,6 +49,7 @@ RSpec.describe Unleash::Strategy::FlexibleRollout do
       }
 
       expect(strategy.is_enabled?(params, unleash_context)).to be_falsey
+      expect(strategy.is_enabled?(params, "invalid context")).to be_falsey
       expect(strategy.is_enabled?(params, nil)).to be_falsey
     end
 

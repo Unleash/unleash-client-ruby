@@ -10,9 +10,10 @@ module Unleash
       # need: params['percentage']
       def is_enabled?(params = {}, context = nil)
         return false unless params.is_a?(Hash)
-        return false unless context.instance_of?(Unleash::Context)
 
         stickiness = params.fetch('stickiness', 'default')
+        return false if context_invalid?(stickiness, context)
+
         stickiness_id = resolve_stickiness(stickiness, context)
 
         begin
@@ -32,6 +33,12 @@ module Unleash
 
       private
 
+      def context_invalid?(stickiness, context)
+        return false if ['random', 'default'].include?(stickiness)
+
+        !context.instance_of?(Unleash::Context)
+      end
+
       def random
         Random.rand(0..100)
       end
@@ -41,7 +48,9 @@ module Unleash
         when 'random'
           random
         when 'default'
-          context.user_id || context.session_id || random
+          return random unless context.instance_of?(Unleash::Context)
+
+          context&.user_id || context&.session_id || random
         else
           begin
             context.get_by_name(stickiness)

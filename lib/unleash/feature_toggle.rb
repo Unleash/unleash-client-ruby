@@ -37,16 +37,14 @@ module Unleash
 
       context = ensure_valid_context(context)
 
-      toggle_enabled = am_enabled?(context)
+      evaluation_result = evaluate(context)
 
-      strategy = evaluate(context)[:strategy]
+      group_id = evaluation_result[:strategy]&.params&.fetch('groupId', self.name) || self.name
+      variants = evaluation_result[:strategy]&.variants || self.variant_definitions
 
-      group_id = strategy&.params&.fetch('groupId', self.name) || self.name
-      variants = strategy&.variants || self.variant_definitions
+      variant = resolve_variant(context, evaluation_result[:is_enabled], variants, group_id)
 
-      variant = resolve_variant(context, toggle_enabled, variants, group_id)
-
-      choice = toggle_enabled ? :yes : :no
+      choice = evaluation_result[:is_enabled] ? :yes : :no
       Unleash.toggle_metrics.increment_variant(self.name, choice, variant.name) unless Unleash.configuration.disable_metrics
       variant
     end
@@ -74,25 +72,25 @@ module Unleash
     end
 
     def evaluate(context)
-      returnable = {
+      evaluation_result = {
         is_enabled: false,
         strategy: nil
       }
-      return returnable unless self.enabled
+      return evaluation_result unless self.enabled
 
       if self.strategies.empty?
-        returnable[:is_enabled] = true
+        evaluation_result[:is_enabled] = true
       else
-        returnable[:strategy] = self.strategies.find(proc{ nil }) do |s|
+        evaluation_result[:strategy] = self.strategies.find(proc{ nil }) do |s|
           (strategy_enabled?(s, context) && strategy_constraint_matches?(s, context))
         end
-        returnable[:is_enabled] = true if returnable[:strategy]
+        evaluation_result[:is_enabled] = true if evaluation_result[:strategy]
       end
 
       Unleash.logger.debug "Unleash::FeatureToggle (enabled:#{self.enabled} " \
-        "and Strategies combined with contraints returned #{returnable[:result]})"
+        "and Strategies combined with contraints returned #{evaluation_result[:result]})"
 
-      returnable
+      evaluation_result
     end
 
     def strategy_enabled?(strategy, context)

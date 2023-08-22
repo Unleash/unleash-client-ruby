@@ -1,4 +1,5 @@
 require 'unleash/constraint'
+require 'unleash/variant_definition'
 
 RSpec.describe Unleash::ActivationStrategy do
   before do
@@ -12,15 +13,17 @@ RSpec.describe Unleash::ActivationStrategy do
     context 'with correct payload' do
       let(:params) { Hash.new(test: true) }
       let(:constraints) { [Unleash::Constraint.new("constraint_name", "IN", ["value"])] }
+      let(:variants) { [Unleash::VariantDefinition.new("variant_name")] }
 
       it 'initializes with correct attributes' do
         expect(Unleash.logger).to_not receive(:warn)
 
-        strategy = Unleash::ActivationStrategy.new(name, params, constraints)
+        strategy = Unleash::ActivationStrategy.new(name, params, constraints, [{ "name" => "variant_name" }])
 
         expect(strategy.name).to eq name
         expect(strategy.params).to eq params
         expect(strategy.constraints).to eq constraints
+        expect(strategy.variants).to eq variants
       end
     end
 

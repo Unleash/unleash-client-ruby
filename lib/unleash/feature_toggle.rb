@@ -39,9 +39,12 @@ module Unleash
 
       toggle_enabled = am_enabled?(context)
 
-      variants = am_enabled(context)[:variants]
+      strategy = am_enabled(context)[:strategy]
 
-      variant = resolve_variant(context, toggle_enabled, variants)
+      group_id = strategy&.params&.fetch('groupId', self.name) || self.name
+      variants = strategy&.variants || self.variant_definitions
+
+      variant = resolve_variant(context, toggle_enabled, variants, group_id)
 
       choice = toggle_enabled ? :yes : :no
       Unleash.toggle_metrics.increment_variant(self.name, choice, variant.name) unless Unleash.configuration.disable_metrics
@@ -54,11 +57,11 @@ module Unleash
 
     private
 
-    def resolve_variant(context, toggle_enabled, variants)
+    def resolve_variant(context, toggle_enabled, variants, group_id)
       return Unleash::FeatureToggle.disabled_variant unless toggle_enabled
       return Unleash::FeatureToggle.disabled_variant if sum_variant_defs_weights(variants) <= 0
 
-      variant_from_override_match(context, variants) || variant_from_weights(context, resolve_stickiness(variants), variants)
+      variant_from_override_match(context, variants) || variant_from_weights(context, resolve_stickiness(variants), variants, group_id)
     end
 
     def resolve_stickiness(variants)
@@ -71,27 +74,25 @@ module Unleash
     end
 
     def am_enabled(context)
-      result = false
-      variants = self.variant_definitions
-      if self.enabled
-        if self.strategies.empty?
-          result = true
-        else
-          strategy = self.strategies.find(proc {false}){|s| (strategy_enabled?(s, context) && strategy_constraint_matches?(s, context))}
-          if strategy
-            variants = strategy.variants if strategy.variants
-            result = true
-          end
+      returnable = {
+        result: false,
+        strategy: nil
+      }
+      return returnable unless self.enabled
+
+      if self.strategies.empty?
+        returnable[:result] = true
+      else
+        returnable[:strategy] = self.strategies.find(proc{ nil }) do |s|
+          (strategy_enabled?(s, context) && strategy_constraint_matches?(s, context))
         end
+        returnable[:result] = true if returnable[:strategy]
       end
 
       Unleash.logger.debug "Unleash::FeatureToggle (enabled:#{self.enabled} " \
-        "and Strategies combined with contraints returned #{result})"
+        "and Strategies combined with contraints returned #{returnable[:result]})"
 
-      {
-        result: result,
-        variants: variants
-      }
+      returnable
     end
 
     def strategy_enabled?(strategy, context)
@@ -131,8 +132,11 @@ module Unleash
       Unleash::Variant.new(name: variant.name, enabled: true, payload: variant.payload)
     end
 
-    def variant_from_weights(context, stickiness, variants)
-      variant_weight = Unleash::Strategy::Util.get_normalized_number(variant_salt(context, stickiness), self.name, sum_variant_defs_weights(variants))
+    def variant_from_weights(context, stickiness, variants, group_id)
+      variant_weight = Unleash::Strategy::Util.get_normalized_number(
+        variant_salt(context, stickiness), group_id,
+        sum_variant_defs_weights(variants)
+      )
       prev_weights = 0
 
       variant_definition = variants

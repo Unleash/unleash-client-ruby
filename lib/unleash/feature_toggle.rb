@@ -39,7 +39,7 @@ module Unleash
 
       toggle_enabled = am_enabled?(context)
 
-      strategy = am_enabled(context)[:strategy]
+      strategy = evaluate(context)[:strategy]
 
       group_id = strategy&.params&.fetch('groupId', self.name) || self.name
       variants = strategy&.variants || self.variant_definitions
@@ -70,23 +70,23 @@ module Unleash
 
     # only check if it is enabled, do not do metrics
     def am_enabled?(context)
-      am_enabled(context)[:result]
+      evaluate(context)[:is_enabled]
     end
 
-    def am_enabled(context)
+    def evaluate(context)
       returnable = {
-        result: false,
+        is_enabled: false,
         strategy: nil
       }
       return returnable unless self.enabled
 
       if self.strategies.empty?
-        returnable[:result] = true
+        returnable[:is_enabled] = true
       else
         returnable[:strategy] = self.strategies.find(proc{ nil }) do |s|
           (strategy_enabled?(s, context) && strategy_constraint_matches?(s, context))
         end
-        returnable[:result] = true if returnable[:strategy]
+        returnable[:is_enabled] = true if returnable[:strategy]
       end
 
       Unleash.logger.debug "Unleash::FeatureToggle (enabled:#{self.enabled} " \

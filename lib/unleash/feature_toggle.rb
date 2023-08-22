@@ -38,7 +38,10 @@ module Unleash
       context = ensure_valid_context(context)
 
       toggle_enabled = am_enabled?(context)
-      variant = resolve_variant(context, toggle_enabled)
+
+      variants = am_enabled(context)[:variants]
+
+      variant = resolve_variant(context, toggle_enabled, variants)
 
       choice = toggle_enabled ? :yes : :no
       Unleash.toggle_metrics.increment_variant(self.name, choice, variant.name) unless Unleash.configuration.disable_metrics
@@ -51,33 +54,44 @@ module Unleash
 
     private
 
-    def resolve_variant(context, toggle_enabled)
+    def resolve_variant(context, toggle_enabled, variants)
       return Unleash::FeatureToggle.disabled_variant unless toggle_enabled
-      return Unleash::FeatureToggle.disabled_variant if sum_variant_defs_weights <= 0
+      return Unleash::FeatureToggle.disabled_variant if sum_variant_defs_weights(variants) <= 0
 
-      variant_from_override_match(context) || variant_from_weights(context, resolve_stickiness)
+      variant_from_override_match(context, variants) || variant_from_weights(context, resolve_stickiness(variants), variants)
     end
 
-    def resolve_stickiness
-      self.variant_definitions&.map(&:stickiness)&.compact&.first || "default"
+    def resolve_stickiness(variants)
+      variants&.map(&:stickiness)&.compact&.first || "default"
     end
 
     # only check if it is enabled, do not do metrics
     def am_enabled?(context)
-      result =
-        if self.enabled
-          self.strategies.empty? ||
-            self.strategies.any? do |s|
-              strategy_enabled?(s, context) && strategy_constraint_matches?(s, context)
-            end
+      am_enabled(context)[:result]
+    end
+
+    def am_enabled(context)
+      result = false
+      variants = self.variant_definitions
+      if self.enabled
+        if self.strategies.empty?
+          result = true
         else
-          false
+          strategy = self.strategies.find(proc {false}){|s| (strategy_enabled?(s, context) && strategy_constraint_matches?(s, context))}
+          if strategy
+            variants = strategy.variants if strategy.variants
+            result = true
+          end
         end
+      end
 
       Unleash.logger.debug "Unleash::FeatureToggle (enabled:#{self.enabled} " \
         "and Strategies combined with contraints returned #{result})"
 
-      result
+      {
+        result: result,
+        variants: variants
+      }
     end
 
     def strategy_enabled?(strategy, context)
@@ -92,8 +106,8 @@ module Unleash
       strategy.constraints.empty? || strategy.constraints.all?{ |c| c.matches_context?(context) }
     end
 
-    def sum_variant_defs_weights
-      self.variant_definitions.map(&:weight).reduce(0, :+)
+    def sum_variant_defs_weights(variants)
+      variants.map(&:weight).reduce(0, :+)
     end
 
     def variant_salt(context, stickiness = "default")
@@ -110,18 +124,18 @@ module Unleash
       SecureRandom.random_number
     end
 
-    def variant_from_override_match(context)
-      variant = self.variant_definitions.find{ |vd| vd.override_matches_context?(context) }
+    def variant_from_override_match(context, variants)
+      variant = variants.find{ |vd| vd.override_matches_context?(context) }
       return nil if variant.nil?
 
       Unleash::Variant.new(name: variant.name, enabled: true, payload: variant.payload)
     end
 
-    def variant_from_weights(context, stickiness)
-      variant_weight = Unleash::Strategy::Util.get_normalized_number(variant_salt(context, stickiness), self.name, sum_variant_defs_weights)
+    def variant_from_weights(context, stickiness, variants)
+      variant_weight = Unleash::Strategy::Util.get_normalized_number(variant_salt(context, stickiness), self.name, sum_variant_defs_weights(variants))
       prev_weights = 0
 
-      variant_definition = self.variant_definitions
+      variant_definition = variants
         .find do |v|
           res = (prev_weights + v.weight >= variant_weight)
           prev_weights += v.weight
@@ -148,7 +162,8 @@ module Unleash
           ActivationStrategy.new(
             s['name'],
             s['parameters'],
-            resolve_constraints(s, segment_map)
+            resolve_constraints(s, segment_map),
+            s['variants']
           )
         end || []
     end

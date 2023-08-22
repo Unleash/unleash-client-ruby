@@ -332,7 +332,7 @@ RSpec.describe Unleash::FeatureToggle do
     it 'get_variant_with_matching_override should for user_id:61' do
       # NOTE: Use send method, as we are testing a private method
       context = Unleash::Context.new(user_id: 61)
-      expect(feature_toggle.send(:variant_from_override_match, context)).to have_attributes(
+      expect(feature_toggle.send(:variant_from_override_match, context, feature_toggle.variant_definitions)).to have_attributes(
         name: "variant1",
         payload: { "type" => "string", "value" => "val1" }
       )

@@ -660,4 +660,69 @@ RSpec.describe Unleash::FeatureToggle do
       end
     end
   end
+
+  describe 'FeatureToggle strategy variant overrides feature variant' do
+    let(:feature_toggle) do
+      Unleash::FeatureToggle.new(
+        "name" => "Feature.strategy.variant.overrides.feature.variant",
+        "description" => "Strategy variants with feature variants",
+        "enabled" => true,
+        "strategies" => [
+          {
+            "name" => "flexibleRollout",
+            "parameters" => {
+              "rollout" => "100",
+              "stickiness" => "default",
+              "groupId" => "a"
+            },
+            "variants" => [
+              {
+                "name" => "variantName",
+                "weight" => 1,
+                "payload" => {
+                  "type" => "string",
+                  "value" => "variantValue"
+                }
+              }
+            ],
+            "constraints" => [
+              {
+                "contextName" => "environment",
+                "operator" => "IN",
+                "values" => [
+                  "dev"
+                ]
+              }
+            ]
+          }
+        ],
+        "variants" => [
+          {
+            "name" => "featureVariant",
+            "weight" => 1,
+            "payload" => {
+              "type" => "string",
+              "value" => "willBeIgnored"
+            }
+          }
+        ]
+      )
+    end
+
+    let(:expected_variant) do
+      {
+        name: "variantName",
+        enabled: true,
+        payload: {
+          "type" => "string",
+          "value" => "variantValue"
+        }
+      }
+    end
+
+    it 'should return the variant from the strategy' do
+      context = Unleash::Context.new({ environment: 'dev' })
+      expect(feature_toggle.get_variant(context)).to have_attributes(expected_variant)
+    end
+  end
 end

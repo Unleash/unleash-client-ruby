@@ -18,12 +18,11 @@ RSpec.describe Unleash::ActivationStrategy do
       it 'initializes with correct attributes' do
         expect(Unleash.logger).to_not receive(:warn)
 
-        strategy = Unleash::ActivationStrategy.new(name, params, constraints, variant_definitions)
+        strategy = Unleash::ActivationStrategy.new(name, params, constraints)
 
         expect(strategy.name).to eq name
         expect(strategy.params).to eq params
         expect(strategy.constraints).to eq constraints
-        expect(strategy.variant_definitions).to eq variant_definitions
       end
 
       it 'fallbacks to empty array if variant definitions are invalid' do
@@ -50,6 +49,17 @@ RSpec.describe Unleash::ActivationStrategy do
         )
 
         expect(strategy.constraints).to eq []
+      end
+
+      it 'initializes with variant definitions as well' do
+        expect(Unleash.logger).to_not receive(:warn)
+
+        strategy = Unleash::ActivationStrategy.new(name, params, constraints, variant_definitions)
+
+        expect(strategy.name).to eq name
+        expect(strategy.params).to eq params
+        expect(strategy.constraints).to eq constraints
+        expect(strategy.variant_definitions).to eq variant_definitions
       end
     end
 

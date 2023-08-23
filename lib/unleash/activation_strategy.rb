@@ -18,12 +18,12 @@ module Unleash
       if constraints.is_a?(Array) && constraints.each{ |c| c.is_a?(Constraint) }
         self.constraints = constraints
       else
-        Unleash.logger.warn "Invalid constraints provided for ActivationStrategy (contraints: #{constraints})"
+        Unleash.logger.warn "Invalid constraints provided for ActivationStrategy (constraints: #{constraints})"
         self.disabled = true
         self.constraints = []
       end
 
-      self.variants = initialize_variant_definitions(variants) if variants.is_a?(Array)
+      self.variants = valid_variants(variants)
     end
 
     def matches_context?(context)
@@ -32,17 +32,12 @@ module Unleash
 
     private
 
-    def initialize_variant_definitions(variants)
-      variants
-        .select{ |v| v.is_a?(Hash) && v.has_key?("name") }
-        .map do |v|
-        VariantDefinition.new(
-          v.fetch("name", ""),
-          v.fetch("weight", 0),
-          v.fetch("payload", nil),
-          v.fetch("stickiness", nil),
-          v.fetch("overrides", [])
-        )
+    def valid_variants(variants)
+      if variants.is_a?(Array) && variants.each{ |variant| variant.is_a?(VariantDefinition) }
+        variants
+      else
+        Unleash.logger.warn "Invalid variants provided for ActivationStrategy (variants: #{variants})"
+        []
       end
     end
   end

@@ -2,7 +2,6 @@ require 'unleash/variant_override'
 
 module Unleash
   class VariantDefinition
-    include Comparable
     attr_accessor :name, :weight, :payload, :overrides, :stickiness
 
     def ==(other)

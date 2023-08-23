@@ -40,9 +40,8 @@ module Unleash
       evaluation_result = evaluate(context)
 
       group_id = evaluation_result[:strategy]&.params&.fetch('groupId', self.name) || self.name
-      variants = evaluation_result[:strategy]&.variants || self.variant_definitions
 
-      variant = resolve_variant(context, evaluation_result[:is_enabled], variants, group_id)
+      variant = resolve_variant(context, evaluation_result, group_id)
 
       choice = evaluation_result[:is_enabled] ? :yes : :no
       Unleash.toggle_metrics.increment_variant(self.name, choice, variant.name) unless Unleash.configuration.disable_metrics
@@ -55,8 +54,10 @@ module Unleash
 
     private
 
-    def resolve_variant(context, toggle_enabled, variants, group_id)
-      return Unleash::FeatureToggle.disabled_variant unless toggle_enabled
+    def resolve_variant(context, evaluation_result, group_id)
+      variants = evaluation_result[:strategy]&.variants || self.variant_definitions
+      variants = self.variant_definitions if variants.empty?
+      return Unleash::FeatureToggle.disabled_variant unless evaluation_result[:is_enabled]
       return Unleash::FeatureToggle.disabled_variant if sum_variant_defs_weights(variants) <= 0
 
       variant_from_override_match(context, variants) || variant_from_weights(context, resolve_stickiness(variants), variants, group_id)
@@ -165,9 +166,23 @@ module Unleash
             s['name'],
             s['parameters'],
             resolve_constraints(s, segment_map),
-            s['variants']
+            resolve_variants(s)
           )
         end || []
+    end
+
+    def resolve_variants(strategy)
+      strategy.fetch("variants", [])
+        .select{ |variant| variant.is_a?(Hash) && variant.has_key?("name") }
+        .map do |variant|
+          VariantDefinition.new(
+            variant.fetch("name", ""),
+            variant.fetch("weight", 0),
+            variant.fetch("payload", nil),
+            variant.fetch("stickiness", nil),
+            variant.fetch("overrides", [])
+          )
+        end
     end
 
     def resolve_constraints(strategy, segment_map)

@@ -18,7 +18,7 @@ RSpec.describe Unleash::ActivationStrategy do
       it 'initializes with correct attributes' do
         expect(Unleash.logger).to_not receive(:warn)
 
-        strategy = Unleash::ActivationStrategy.new(name, params, constraints, [{ "name" => "variant_name" }])
+        strategy = Unleash::ActivationStrategy.new(name, params, constraints, variants)
 
         expect(strategy.name).to eq name
         expect(strategy.params).to eq params

@@ -25,6 +25,22 @@ RSpec.describe Unleash::ActivationStrategy do
         expect(strategy.constraints).to eq constraints
         expect(strategy.variant_definitions).to eq variant_definitions
       end
+
+      it 'fallbacks to empty array if variant definitions are invalid' do
+        expect(Unleash.logger).to receive(:warn)
+
+        strategy = Unleash::ActivationStrategy.new(name, params, constraints, [variant_definitions.first, "I am not a valid variant definition" ])
+
+        expect(strategy.variant_definitions).to eq []
+      end
+
+      it 'fallbacks to empty array if constraint definitions are invalid' do
+        expect(Unleash.logger).to receive(:warn)
+
+        strategy = Unleash::ActivationStrategy.new(name, params, [ constraints.first, "I am not a valid variant definition" ], variant_definitions)
+
+        expect(strategy.constraints).to eq []
+      end
     end
 
     context 'with incorrect payload' do

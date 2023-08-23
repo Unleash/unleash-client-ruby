@@ -15,7 +15,7 @@ module Unleash
         self.params = {}
       end
 
-      if constraints.is_a?(Array) && constraints.each{ |c| c.is_a?(Constraint) }
+      if constraints.is_a?(Array) && constraints.all?{ |c| c.is_a?(Constraint) }
         self.constraints = constraints
       else
         Unleash.logger.warn "Invalid constraints provided for ActivationStrategy (constraints: #{constraints})"
@@ -33,7 +33,7 @@ module Unleash
     private
 
     def valid_variant_definitions(variant_definitions)
-      if variant_definitions.is_a?(Array) && variant_definitions.each{ |variant_definition| variant_definition.is_a?(VariantDefinition) }
+      if variant_definitions.is_a?(Array) && variant_definitions.all?{ |variant_definition| variant_definition.is_a?(VariantDefinition) }
         variant_definitions
       else
         Unleash.logger.warn "Invalid variant_definitions provided for ActivationStrategy (variant_definitions: #{variant_definitions})"

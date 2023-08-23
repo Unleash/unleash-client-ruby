@@ -55,16 +55,17 @@ module Unleash
     private
 
     def resolve_variant(context, evaluation_result, group_id)
-      variants = evaluation_result[:strategy]&.variants || self.variant_definitions
-      variants = self.variant_definitions if variants.empty?
+      variant_definitions = evaluation_result[:strategy]&.variant_definitions || self.variant_definitions
+      variant_definitions = self.variant_definitions if variant_definitions.empty?
       return Unleash::FeatureToggle.disabled_variant unless evaluation_result[:is_enabled]
-      return Unleash::FeatureToggle.disabled_variant if sum_variant_defs_weights(variants) <= 0
+      return Unleash::FeatureToggle.disabled_variant if sum_variant_defs_weights(variant_definitions) <= 0
 
-      variant_from_override_match(context, variants) || variant_from_weights(context, resolve_stickiness(variants), variants, group_id)
+      variant_from_override_match(context, variant_definitions) ||
+        variant_from_weights(context, resolve_stickiness(variant_definitions), variant_definitions, group_id)
     end
 
-    def resolve_stickiness(variants)
-      variants&.map(&:stickiness)&.compact&.first || "default"
+    def resolve_stickiness(variant_definitions)
+      variant_definitions&.map(&:stickiness)&.compact&.first || "default"
     end
 
     # only check if it is enabled, do not do metrics
@@ -106,8 +107,8 @@ module Unleash
       strategy.constraints.empty? || strategy.constraints.all?{ |c| c.matches_context?(context) }
     end
 
-    def sum_variant_defs_weights(variants)
-      variants.map(&:weight).reduce(0, :+)
+    def sum_variant_defs_weights(variant_definitions)
+      variant_definitions.map(&:weight).reduce(0, :+)
     end
 
     def variant_salt(context, stickiness = "default")
@@ -124,21 +125,21 @@ module Unleash
       SecureRandom.random_number
     end
 
-    def variant_from_override_match(context, variants)
-      variant = variants.find{ |vd| vd.override_matches_context?(context) }
-      return nil if variant.nil?
+    def variant_from_override_match(context, variant_definitions)
+      variant_definition = variant_definitions.find{ |vd| vd.override_matches_context?(context) }
+      return nil if variant_definition.nil?
 
-      Unleash::Variant.new(name: variant.name, enabled: true, payload: variant.payload)
+      Unleash::Variant.new(name: variant_definition.name, enabled: true, payload: variant_definition.payload)
     end
 
-    def variant_from_weights(context, stickiness, variants, group_id)
+    def variant_from_weights(context, stickiness, variant_definitions, group_id)
       variant_weight = Unleash::Strategy::Util.get_normalized_number(
         variant_salt(context, stickiness), group_id,
-        sum_variant_defs_weights(variants)
+        sum_variant_defs_weights(variant_definitions)
       )
       prev_weights = 0
 
-      variant_definition = variants
+      variant_definition = variant_definitions
         .find do |v|
           res = (prev_weights + v.weight >= variant_weight)
           prev_weights += v.weight

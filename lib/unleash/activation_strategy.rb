@@ -1,8 +1,8 @@
 module Unleash
   class ActivationStrategy
-    attr_accessor :name, :params, :constraints, :disabled, :variants
+    attr_accessor :name, :params, :constraints, :disabled, :variant_definitions
 
-    def initialize(name, params, constraints = [], variants = [])
+    def initialize(name, params, constraints = [], variant_definitions = [])
       self.name = name
       self.disabled = false
 
@@ -23,7 +23,7 @@ module Unleash
         self.constraints = []
       end
 
-      self.variants = valid_variants(variants)
+      self.variant_definitions = valid_variant_definitions(variant_definitions)
     end
 
     def matches_context?(context)
@@ -32,11 +32,11 @@ module Unleash
 
     private
 
-    def valid_variants(variants)
-      if variants.is_a?(Array) && variants.each{ |variant| variant.is_a?(VariantDefinition) }
-        variants
+    def valid_variant_definitions(variant_definitions)
+      if variant_definitions.is_a?(Array) && variant_definitions.each{ |variant_definition| variant_definition.is_a?(VariantDefinition) }
+        variant_definitions
       else
-        Unleash.logger.warn "Invalid variants provided for ActivationStrategy (variants: #{variants})"
+        Unleash.logger.warn "Invalid variant_definitions provided for ActivationStrategy (variant_definitions: #{variant_definitions})"
         []
       end
     end

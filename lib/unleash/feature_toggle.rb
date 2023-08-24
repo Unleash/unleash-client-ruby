@@ -41,11 +41,11 @@ module Unleash
 
       evaluation_result = evaluate(context)
 
-      group_id = evaluation_result[:strategy]&.params.to_h['groupId'] || self.name
+      group_id = evaluation_result.strategy&.params.to_h['groupId'] || self.name
 
       variant = resolve_variant(context, evaluation_result, group_id)
 
-      choice = evaluation_result[:enabled?] ? :yes : :no
+      choice = evaluation_result.enabled? ? :yes : :no
       Unleash.toggle_metrics.increment_variant(self.name, choice, variant.name) unless Unleash.configuration.disable_metrics
       variant
     end
@@ -57,9 +57,9 @@ module Unleash
     private
 
     def resolve_variant(context, evaluation_result, group_id)
-      variant_definitions = evaluation_result[:strategy]&.variant_definitions
+      variant_definitions = evaluation_result.strategy&.variant_definitions
       variant_definitions = self.variant_definitions if variant_definitions.nil? || variant_definitions.empty?
-      return Unleash::FeatureToggle.disabled_variant unless evaluation_result[:enabled?]
+      return Unleash::FeatureToggle.disabled_variant unless evaluation_result.enabled?
       return Unleash::FeatureToggle.disabled_variant if sum_variant_defs_weights(variant_definitions) <= 0
 
       variant_from_override_match(context, variant_definitions) ||
@@ -72,7 +72,7 @@ module Unleash
 
     # only check if it is enabled, do not do metrics
     def am_enabled?(context)
-      evaluate(context)[:enabled?]
+      evaluate(context).enabled?
     end
 
     def evaluate(context)
@@ -86,8 +86,8 @@ module Unleash
           FeatureEvaluationResult.new(!strategy.nil?, strategy)
         end
 
-      Unleash.logger.debug "Unleash::FeatureToggle (enabled:#{self.enabled} " \
-        "and Strategies combined with contraints returned #{evaluation_result})"
+      Unleash.logger.debug "Unleash::FeatureToggle (enabled:#{self.enabled}) " \
+        "and Strategies combined with constraints returned #{evaluation_result})"
 
       evaluation_result
     end

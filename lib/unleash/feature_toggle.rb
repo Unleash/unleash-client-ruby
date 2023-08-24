@@ -9,6 +9,8 @@ module Unleash
   class FeatureToggle
     attr_accessor :name, :enabled, :strategies, :variant_definitions
 
+    FeatureEvaluationResult = Struct.new(:enabled?, :strategy)
+
     def initialize(params = {}, segment_map = {})
       params = {} if params.nil?
 
@@ -74,20 +76,15 @@ module Unleash
     end
 
     def evaluate(context)
-      evaluation_result = {
-        enabled?: false,
-        strategy: nil
-      }
-      return evaluation_result unless self.enabled
-
-      if self.strategies.empty?
-        evaluation_result[:enabled?] = true
-      else
-        evaluation_result[:strategy] = self.strategies.find do |s|
-          (strategy_enabled?(s, context) && strategy_constraint_matches?(s, context))
+      evaluation_result =
+        if !self.enabled
+          FeatureEvaluationResult.new(false, nil)
+        elsif self.strategies.empty?
+          FeatureEvaluationResult.new(true, nil)
+        else
+          strategy = self.strategies.find{ |s| strategy_enabled?(s, context) && strategy_constraint_matches?(s, context) }
+          FeatureEvaluationResult.new(!strategy.nil?, strategy)
         end
-        evaluation_result[:enabled?] = true if evaluation_result[:strategy]
-      end
 
       Unleash.logger.debug "Unleash::FeatureToggle (enabled:#{self.enabled} " \
         "and Strategies combined with contraints returned #{evaluation_result[:enabled?]})"

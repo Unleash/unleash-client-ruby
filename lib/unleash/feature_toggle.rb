@@ -9,6 +9,8 @@ module Unleash
   class FeatureToggle
     attr_accessor :name, :enabled, :strategies, :variant_definitions
 
+    FeatureEvaluationResult = Struct.new(:enabled?, :strategy)
+
     def initialize(params = {}, segment_map = {})
       params = {} if params.nil?
 
@@ -37,10 +39,13 @@ module Unleash
 
       context = ensure_valid_context(context)
 
-      toggle_enabled = am_enabled?(context)
-      variant = resolve_variant(context, toggle_enabled)
+      evaluation_result = evaluate(context)
 
-      choice = toggle_enabled ? :yes : :no
+      group_id = evaluation_result[:strategy]&.params.to_h['groupId'] || self.name
+
+      variant = resolve_variant(context, evaluation_result, group_id)
+
+      choice = evaluation_result[:enabled?] ? :yes : :no
       Unleash.toggle_metrics.increment_variant(self.name, choice, variant.name) unless Unleash.configuration.disable_metrics
       variant
     end
@@ -51,33 +56,40 @@ module Unleash
 
     private
 
-    def resolve_variant(context, toggle_enabled)
-      return Unleash::FeatureToggle.disabled_variant unless toggle_enabled
-      return Unleash::FeatureToggle.disabled_variant if sum_variant_defs_weights <= 0
+    def resolve_variant(context, evaluation_result, group_id)
+      variant_definitions = evaluation_result[:strategy]&.variant_definitions
+      variant_definitions = self.variant_definitions if variant_definitions.nil? || variant_definitions.empty?
+      return Unleash::FeatureToggle.disabled_variant unless evaluation_result[:enabled?]
+      return Unleash::FeatureToggle.disabled_variant if sum_variant_defs_weights(variant_definitions) <= 0
 
-      variant_from_override_match(context) || variant_from_weights(context, resolve_stickiness)
+      variant_from_override_match(context, variant_definitions) ||
+        variant_from_weights(context, resolve_stickiness(variant_definitions), variant_definitions, group_id)
     end
 
-    def resolve_stickiness
-      self.variant_definitions&.map(&:stickiness)&.compact&.first || "default"
+    def resolve_stickiness(variant_definitions)
+      variant_definitions&.map(&:stickiness)&.compact&.first || "default"
     end
 
     # only check if it is enabled, do not do metrics
     def am_enabled?(context)
-      result =
-        if self.enabled
-          self.strategies.empty? ||
-            self.strategies.any? do |s|
-              strategy_enabled?(s, context) && strategy_constraint_matches?(s, context)
-            end
+      evaluate(context)[:enabled?]
+    end
+
+    def evaluate(context)
+      evaluation_result =
+        if !self.enabled
+          FeatureEvaluationResult.new(false, nil)
+        elsif self.strategies.empty?
+          FeatureEvaluationResult.new(true, nil)
         else
-          false
+          strategy = self.strategies.find{ |s| strategy_enabled?(s, context) && strategy_constraint_matches?(s, context) }
+          FeatureEvaluationResult.new(!strategy.nil?, strategy)
         end
 
       Unleash.logger.debug "Unleash::FeatureToggle (enabled:#{self.enabled} " \
-        "and Strategies combined with contraints returned #{result})"
+        "and Strategies combined with contraints returned #{evaluation_result})"
 
-      result
+      evaluation_result
     end
 
     def strategy_enabled?(strategy, context)
@@ -92,8 +104,8 @@ module Unleash
       strategy.constraints.empty? || strategy.constraints.all?{ |c| c.matches_context?(context) }
     end
 
-    def sum_variant_defs_weights
-      self.variant_definitions.map(&:weight).reduce(0, :+)
+    def sum_variant_defs_weights(variant_definitions)
+      variant_definitions.map(&:weight).reduce(0, :+)
     end
 
     def variant_salt(context, stickiness = "default")
@@ -110,18 +122,22 @@ module Unleash
       SecureRandom.random_number
     end
 
-    def variant_from_override_match(context)
-      variant = self.variant_definitions.find{ |vd| vd.override_matches_context?(context) }
-      return nil if variant.nil?
+    def variant_from_override_match(context, variant_definitions)
+      variant_definition = variant_definitions.find{ |vd| vd.override_matches_context?(context) }
+      return nil if variant_definition.nil?
 
-      Unleash::Variant.new(name: variant.name, enabled: true, payload: variant.payload)
+      Unleash::Variant.new(name: variant_definition.name, enabled: true, payload: variant_definition.payload)
     end
 
-    def variant_from_weights(context, stickiness)
-      variant_weight = Unleash::Strategy::Util.get_normalized_number(variant_salt(context, stickiness), self.name, sum_variant_defs_weights)
+    def variant_from_weights(context, stickiness, variant_definitions, group_id)
+      variant_weight = Unleash::Strategy::Util.get_normalized_number(
+        variant_salt(context, stickiness),
+        group_id,
+        sum_variant_defs_weights(variant_definitions)
+      )
       prev_weights = 0
 
-      variant_definition = self.variant_definitions
+      variant_definition = variant_definitions
         .find do |v|
           res = (prev_weights + v.weight >= variant_weight)
           prev_weights += v.weight
@@ -148,9 +164,24 @@ module Unleash
           ActivationStrategy.new(
             s['name'],
             s['parameters'],
-            resolve_constraints(s, segment_map)
+            resolve_constraints(s, segment_map),
+            resolve_variants(s)
           )
         end || []
+    end
+
+    def resolve_variants(strategy)
+      strategy.fetch("variants", [])
+        .select{ |variant| variant.is_a?(Hash) && variant.has_key?("name") }
+        .map do |variant|
+          VariantDefinition.new(
+            variant.fetch("name", ""),
+            variant.fetch("weight", 0),
+            variant.fetch("payload", nil),
+            variant.fetch("stickiness", nil),
+            variant.fetch("overrides", [])
+          )
+        end
     end
 
     def resolve_constraints(strategy, segment_map)

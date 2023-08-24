@@ -13,6 +13,14 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [4.5.0] - 2023-07-05
+### Added
+- variants in strategies (#148)
+  - issue described here (#147)
+
+### Fixed
+- groupId override for variants
+
 ## [4.4.4] - 2023-07-05
 ### Fixed
 - flexible rollout strategy without context (#146)

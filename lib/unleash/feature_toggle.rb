@@ -57,8 +57,8 @@ module Unleash
     private
 
     def resolve_variant(context, evaluation_result, group_id)
-      variant_definitions = evaluation_result[:strategy]&.variant_definitions || self.variant_definitions
-      variant_definitions = self.variant_definitions if variant_definitions.empty?
+      variant_definitions = evaluation_result[:strategy]&.variant_definitions
+      variant_definitions = self.variant_definitions if variant_definitions.nil? || variant_definitions.empty?
       return Unleash::FeatureToggle.disabled_variant unless evaluation_result[:enabled?]
       return Unleash::FeatureToggle.disabled_variant if sum_variant_defs_weights(variant_definitions) <= 0
 
@@ -131,7 +131,8 @@ module Unleash
 
     def variant_from_weights(context, stickiness, variant_definitions, group_id)
       variant_weight = Unleash::Strategy::Util.get_normalized_number(
-        variant_salt(context, stickiness), group_id,
+        variant_salt(context, stickiness),
+        group_id,
         sum_variant_defs_weights(variant_definitions)
       )
       prev_weights = 0

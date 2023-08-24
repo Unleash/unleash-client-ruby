@@ -4,14 +4,6 @@ module Unleash
   class VariantDefinition
     attr_accessor :name, :weight, :payload, :overrides, :stickiness
 
-    def ==(other)
-      self.name == other.name &&
-        self.weight == other.weight &&
-        self.payload == other.payload &&
-        self.stickiness == other.stickiness &&
-        self.overrides == other.overrides
-    end
-
     def initialize(name, weight = 0, payload = nil, stickiness = nil, overrides = []) # rubocop:disable Metrics/ParameterLists
       self.name = name
       self.weight = weight

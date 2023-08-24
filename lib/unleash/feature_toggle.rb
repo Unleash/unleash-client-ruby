@@ -39,11 +39,11 @@ module Unleash
 
       evaluation_result = evaluate(context)
 
-      group_id = evaluation_result[:strategy]&.params&.fetch('groupId', self.name) || self.name
+      group_id = evaluation_result[:strategy]&.params.to_h['groupId'] || self.name
 
       variant = resolve_variant(context, evaluation_result, group_id)
 
-      choice = evaluation_result[:is_enabled] ? :yes : :no
+      choice = evaluation_result[:enabled?] ? :yes : :no
       Unleash.toggle_metrics.increment_variant(self.name, choice, variant.name) unless Unleash.configuration.disable_metrics
       variant
     end
@@ -57,7 +57,7 @@ module Unleash
     def resolve_variant(context, evaluation_result, group_id)
       variant_definitions = evaluation_result[:strategy]&.variant_definitions || self.variant_definitions
       variant_definitions = self.variant_definitions if variant_definitions.empty?
-      return Unleash::FeatureToggle.disabled_variant unless evaluation_result[:is_enabled]
+      return Unleash::FeatureToggle.disabled_variant unless evaluation_result[:enabled?]
       return Unleash::FeatureToggle.disabled_variant if sum_variant_defs_weights(variant_definitions) <= 0
 
       variant_from_override_match(context, variant_definitions) ||
@@ -70,27 +70,27 @@ module Unleash
 
     # only check if it is enabled, do not do metrics
     def am_enabled?(context)
-      evaluate(context)[:is_enabled]
+      evaluate(context)[:enabled?]
     end
 
     def evaluate(context)
       evaluation_result = {
-        is_enabled: false,
+        enabled?: false,
         strategy: nil
       }
       return evaluation_result unless self.enabled
 
       if self.strategies.empty?
-        evaluation_result[:is_enabled] = true
+        evaluation_result[:enabled?] = true
       else
-        evaluation_result[:strategy] = self.strategies.find(proc{ nil }) do |s|
+        evaluation_result[:strategy] = self.strategies.find do |s|
           (strategy_enabled?(s, context) && strategy_constraint_matches?(s, context))
         end
-        evaluation_result[:is_enabled] = true if evaluation_result[:strategy]
+        evaluation_result[:enabled?] = true if evaluation_result[:strategy]
       end
 
       Unleash.logger.debug "Unleash::FeatureToggle (enabled:#{self.enabled} " \
-        "and Strategies combined with contraints returned #{evaluation_result[:result]})"
+        "and Strategies combined with contraints returned #{evaluation_result[:enabled?]})"
 
       evaluation_result
     end

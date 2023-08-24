@@ -87,7 +87,7 @@ module Unleash
         end
 
       Unleash.logger.debug "Unleash::FeatureToggle (enabled:#{self.enabled} " \
-        "and Strategies combined with contraints returned #{evaluation_result[:enabled?]})"
+        "and Strategies combined with contraints returned #{evaluation_result})"
 
       evaluation_result
     end

@@ -1,5 +1,6 @@
 require 'unleash/configuration'
 require 'unleash/metrics'
+require 'unleash/util/open_telemetry'
 require 'net/http'
 require 'json'
 require 'time'
@@ -36,20 +37,22 @@ module Unleash
     end
 
     def post
-      Unleash.logger.debug "post() Report"
+      Unleash::Util::Tracer.in_span('Unleash::MetricsReporter#post') do |_span|
+        Unleash.logger.debug "post() Report"
 
-      if bucket_empty? && (Time.now - self.last_time < LONGEST_WITHOUT_A_REPORT) # and last time is less then 10 minutes...
-        Unleash.logger.debug "Report not posted to server, as it would have been empty. (and has been empty for up to 10 min)"
+        if bucket_empty? && (Time.now - self.last_time < LONGEST_WITHOUT_A_REPORT) # and last time is less then 10 minutes...
+          Unleash.logger.debug "Report not posted to server, as it would have been empty. (and has been empty for up to 10 min)"
 
-        return
-      end
+          return
+        end
 
-      response = Unleash::Util::Http.post(Unleash.configuration.client_metrics_uri, self.generate_report.to_json)
+        response = Unleash::Util::Http.post(Unleash.configuration.client_metrics_uri, self.generate_report.to_json)
 
-      if ['200', '202'].include? response.code
-        Unleash.logger.debug "Report sent to unleash server successfully. Server responded with http code #{response.code}"
-      else
-        Unleash.logger.error "Error when sending report to unleash server. Server responded with http code #{response.code}."
+        if ['200', '202'].include? response.code
+          Unleash.logger.debug "Report sent to unleash server successfully. Server responded with http code #{response.code}"
+        else
+          Unleash.logger.error "Error when sending report to unleash server. Server responded with http code #{response.code}."
+        end
       end
     end
 

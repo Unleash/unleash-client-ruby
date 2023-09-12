@@ -3,6 +3,7 @@ require 'unleash/toggle_fetcher'
 require 'unleash/metrics_reporter'
 require 'unleash/scheduled_executor'
 require 'unleash/feature_toggle'
+require 'unleash/util/open_telemetry'
 require 'unleash/util/http'
 require 'logger'
 require 'time'
@@ -12,23 +13,25 @@ module Unleash
     attr_accessor :fetcher_scheduled_executor, :metrics_scheduled_executor
 
     def initialize(*opts)
-      Unleash.configuration = Unleash::Configuration.new(*opts) unless opts.empty?
-      Unleash.configuration.validate!
+      Unleash::Util::Tracer.in_span('Unleash::Client#initialize') do |_span|
+        Unleash.configuration = Unleash::Configuration.new(*opts) unless opts.empty?
+        Unleash.configuration.validate!
 
-      Unleash.logger = Unleash.configuration.logger.clone
-      Unleash.logger.level = Unleash.configuration.log_level
+        Unleash.logger = Unleash.configuration.logger.clone
+        Unleash.logger.level = Unleash.configuration.log_level
 
-      Unleash.toggle_fetcher = Unleash::ToggleFetcher.new
-      if Unleash.configuration.disable_client
-        Unleash.logger.warn "Unleash::Client is disabled! Will only return default (or bootstrapped if available) results!"
-        Unleash.logger.warn "Unleash::Client is disabled! Metrics and MetricsReporter are also disabled!"
-        Unleash.configuration.disable_metrics = true
-        return
+        Unleash.toggle_fetcher = Unleash::ToggleFetcher.new
+        if Unleash.configuration.disable_client
+          Unleash.logger.warn "Unleash::Client is disabled! Will only return default (or bootstrapped if available) results!"
+          Unleash.logger.warn "Unleash::Client is disabled! Metrics and MetricsReporter are also disabled!"
+          Unleash.configuration.disable_metrics = true
+          return
+        end
+
+        register
+        start_toggle_fetcher
+        start_metrics unless Unleash.configuration.disable_metrics
       end
-
-      register
-      start_toggle_fetcher
-      start_metrics unless Unleash.configuration.disable_metrics
     end
 
     def is_enabled?(feature, context = nil, default_value_param = false, &fallback_blk)
@@ -44,12 +47,19 @@ module Unleash
 
       if toggle_as_hash.nil?
         Unleash.logger.debug "Unleash::Client.is_enabled? feature: #{feature} not found"
+
+        add_trace_attributes(feature, default_value)
+
         return default_value
       end
 
       toggle = Unleash::FeatureToggle.new(toggle_as_hash, Unleash&.segment_cache)
 
-      toggle.is_enabled?(context)
+      result = toggle.is_enabled?(context)
+
+      add_trace_attributes(feature, result)
+
+      result
     end
 
     def is_disabled?(feature, context = nil, default_value_param = true, &fallback_blk)
@@ -168,6 +178,15 @@ module Unleash
 
     def first_fetch_is_eager
       Unleash.configuration.use_bootstrap?
+    end
+
+    def add_trace_attributes(key, variant)
+      # OpenTelemetry::SemanticConventions::Trace::FEATURE_FLAG_* is not in the gem yet
+      OpenTelemetry::Trace::current_span.add_attributes({
+        'feature_flag.provider_name' => 'Unleash',
+        'feature_flag.key' => key,
+        'feature_flag.variant' => variant,
+      })
     end
   end
 end

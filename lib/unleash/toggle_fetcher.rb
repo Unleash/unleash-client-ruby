@@ -1,5 +1,6 @@
 require 'unleash/configuration'
 require 'unleash/bootstrap/handler'
+require 'unleash/util/open_telemetry'
 require 'net/http'
 require 'json'
 
@@ -42,44 +43,48 @@ module Unleash
 
     # rename to refresh_from_server!  ??
     def fetch
-      Unleash.logger.debug "fetch()"
-      return if Unleash.configuration.disable_client
+      Unleash::Util::Tracer.in_span('Unleash::ToggleFetcher#fetch') do |_span|
+        Unleash.logger.debug "fetch()"
+        return if Unleash.configuration.disable_client
 
-      response = Unleash::Util::Http.get(Unleash.configuration.fetch_toggles_uri, etag)
+        response = Unleash::Util::Http.get(Unleash.configuration.fetch_toggles_uri, etag)
 
-      if response.code == '304'
-        Unleash.logger.debug "No changes according to the unleash server, nothing to do."
-        return
-      elsif response.code != '200'
-        raise IOError, "Unleash server returned a non 200/304 HTTP result."
+        if response.code == '304'
+          Unleash.logger.debug "No changes according to the unleash server, nothing to do."
+          return
+        elsif response.code != '200'
+          raise IOError, "Unleash server returned a non 200/304 HTTP result."
+        end
+
+        self.etag = response['ETag']
+        features = get_features(response.body)
+
+        # always synchronize with the local cache when fetching:
+        synchronize_with_local_cache!(features)
+
+        update_running_client!
+        save!
       end
-
-      self.etag = response['ETag']
-      features = get_features(response.body)
-
-      # always synchronize with the local cache when fetching:
-      synchronize_with_local_cache!(features)
-
-      update_running_client!
-      save!
     end
 
     def save!
-      Unleash.logger.debug "Will save toggles to disk now"
+      Unleash::Util::Tracer.in_span('Unleash::ToggleFetcher#save!') do |_span|
+        Unleash.logger.debug "Will save toggles to disk now"
 
-      backup_file = Unleash.configuration.backup_file
-      backup_file_tmp = "#{backup_file}.tmp"
+        backup_file = Unleash.configuration.backup_file
+        backup_file_tmp = "#{backup_file}.tmp"
 
-      self.toggle_lock.synchronize do
-        File.open(backup_file_tmp, "w") do |file|
-          file.write(self.toggle_cache.to_json)
+        self.toggle_lock.synchronize do
+          File.open(backup_file_tmp, "w") do |file|
+            file.write(self.toggle_cache.to_json)
+          end
+          File.rename(backup_file_tmp, backup_file)
         end
-        File.rename(backup_file_tmp, backup_file)
+      rescue StandardError => e
+        # This is not really the end of the world. Swallowing the exception.
+        Unleash.logger.error "Unable to save backup file. Exception thrown #{e.class}:'#{e}'"
+        Unleash.logger.error "stacktrace: #{e.backtrace}"
       end
-    rescue StandardError => e
-      # This is not really the end of the world. Swallowing the exception.
-      Unleash.logger.error "Unable to save backup file. Exception thrown #{e.class}:'#{e}'"
-      Unleash.logger.error "stacktrace: #{e.backtrace}"
     end
 
     private

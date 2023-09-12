@@ -181,12 +181,13 @@ module Unleash
     end
 
     def add_trace_attributes(key, variant)
+      current_span = OpenTelemetry::Trace.current_span
       # OpenTelemetry::SemanticConventions::Trace::FEATURE_FLAG_* is not in the gem yet
-      OpenTelemetry::Trace::current_span.add_attributes({
-        'feature_flag.provider_name' => 'Unleash',
-        'feature_flag.key' => key,
-        'feature_flag.variant' => variant,
-      })
+      current_span.add_attributes({
+                                    'feature_flag.provider_name' => 'Unleash',
+                                    'feature_flag.key' => key,
+                                    'feature_flag.variant' => variant
+                                  })
     end
   end
 end

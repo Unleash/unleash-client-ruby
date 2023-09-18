@@ -2,14 +2,14 @@ require 'unleash/configuration'
 require 'unleash/bootstrap/handler'
 require 'net/http'
 require 'json'
+require 'unleash_engine'
 
 module Unleash
   class ToggleFetcher
-    attr_accessor :toggle_cache, :toggle_lock, :toggle_resource, :etag, :retry_count, :segment_cache
+    attr_accessor :toggle_engine, :toggle_lock, :toggle_resource, :etag, :retry_count, :segment_cache
 
     def initialize
       self.etag = nil
-      self.toggle_cache = nil
       self.segment_cache = nil
       self.toggle_lock = Mutex.new
       self.toggle_resource = ConditionVariable.new
@@ -35,8 +35,8 @@ module Unleash
     def toggles
       self.toggle_lock.synchronize do
         # wait for resource, only if it is null
-        self.toggle_resource.wait(self.toggle_lock) if self.toggle_cache.nil?
-        return self.toggle_cache
+        self.toggle_resource.wait(self.toggle_lock) if self.toggle_engine.nil?
+        return self.toggle_engine
       end
     end
 
@@ -55,16 +55,16 @@ module Unleash
       end
 
       self.etag = response['ETag']
-      features = get_features(response.body)
+      engine = get_engine(response.body)
 
       # always synchronize with the local cache when fetching:
-      synchronize_with_local_cache!(features)
+      synchronize_with_local_cache!(engine)
 
       update_running_client!
-      save!
+      save! response.body
     end
 
-    def save!
+    def save!(toggle_data)
       Unleash.logger.debug "Will save toggles to disk now"
 
       backup_file = Unleash.configuration.backup_file
@@ -72,7 +72,7 @@ module Unleash
 
       self.toggle_lock.synchronize do
         File.open(backup_file_tmp, "w") do |file|
-          file.write(self.toggle_cache.to_json)
+          file.write(toggle_data)
         end
         File.rename(backup_file_tmp, backup_file)
       end
@@ -84,10 +84,10 @@ module Unleash
 
     private
 
-    def synchronize_with_local_cache!(features)
-      if self.toggle_cache != features
+    def synchronize_with_local_cache!(engine)
+      if self.toggle_engine != engine
         self.toggle_lock.synchronize do
-          self.toggle_cache = features
+          self.toggle_engine = engine
         end
 
         # notify all threads waiting for this resource to no longer wait
@@ -96,10 +96,8 @@ module Unleash
     end
 
     def update_running_client!
-      if Unleash.toggles != self.toggles["features"] || Unleash.segment_cache != self.toggles["segments"]
-        Unleash.logger.info "Updating toggles to main client, there has been a change in the server."
-        Unleash.toggles = self.toggles["features"]
-        Unleash.segment_cache = self.toggles["segments"]
+      if Unleash.engine != self.toggle_engine
+        Unleash.engine = self.toggle_engine
       end
     end
 
@@ -121,7 +119,7 @@ module Unleash
 
     def bootstrap
       bootstrap_payload = Unleash::Bootstrap::Handler.new(Unleash.configuration.bootstrap_config).retrieve_toggles
-      synchronize_with_local_cache! get_features bootstrap_payload
+      synchronize_with_local_cache! get_engine bootstrap_payload
       update_running_client!
 
       # reset Unleash.configuration.bootstrap_data to free up memory, as we will never use it again
@@ -134,10 +132,15 @@ module Unleash
       segments_array.map{ |segment| [segment["id"], segment] }.to_h
     end
 
+    def get_engine(response_body)
+      engine = UnleashEngine.new
+      engine.take_state(response_body)
+      engine
+    end
+
     # @param response_body [String]
     def get_features(response_body)
       response_hash = JSON.parse(response_body)
-
       if response_hash['version'] >= 1
         return { "features" => response_hash["features"], "segments" => build_segment_map(response_hash["segments"]) }
       end

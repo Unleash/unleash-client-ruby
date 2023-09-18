@@ -17,6 +17,7 @@ module Unleash
 
       Unleash.logger = Unleash.configuration.logger.clone
       Unleash.logger.level = Unleash.configuration.log_level
+      Unleash.engine = UnleashEngine.new
 
       Unleash.toggle_fetcher = Unleash::ToggleFetcher.new
       if Unleash.configuration.disable_client
@@ -40,16 +41,18 @@ module Unleash
                         default_value_param
                       end
 
-      toggle_as_hash = Unleash&.toggles&.select{ |toggle| toggle['name'] == feature }&.first
+      Unleash.logger.debug "Unleash::Client.is_enabled? feature: #{feature} with context #{context}"
 
-      if toggle_as_hash.nil?
+      toggle_enabled = Unleash&.engine&.enabled?(feature, context)
+      if toggle_enabled.nil?
         Unleash.logger.debug "Unleash::Client.is_enabled? feature: #{feature} not found"
+        Unleash&.engine&.count_toggle(feature, false)
         return default_value
       end
 
-      toggle = Unleash::FeatureToggle.new(toggle_as_hash, Unleash&.segment_cache)
+      Unleash&.engine&.count_toggle(feature, toggle_enabled)
 
-      toggle.is_enabled?(context)
+      toggle_enabled
     end
 
     def is_disabled?(feature, context = nil, default_value_param = true, &fallback_blk)
@@ -74,22 +77,20 @@ module Unleash
     def get_variant(feature, context = Unleash::Context.new, fallback_variant = disabled_variant)
       Unleash.logger.debug "Unleash::Client.get_variant for feature: #{feature} with context #{context}"
 
-      toggle_as_hash = Unleash&.toggles&.select{ |toggle| toggle['name'] == feature }&.first
-
-      if toggle_as_hash.nil?
-        Unleash.logger.debug "Unleash::Client.get_variant feature: #{feature} not found"
-        return fallback_variant
+      toggle_enabled = Unleash&.engine&.enabled?(feature, context)
+      if toggle_enabled.nil?
+        Unleash&.engine&.count_toggle(feature, false)
+      else
+        Unleash&.engine&.count_toggle(feature, toggle_enabled)
       end
 
-      toggle = Unleash::FeatureToggle.new(toggle_as_hash)
-      variant = toggle.get_variant(context, fallback_variant)
-
-      if variant.nil?
-        Unleash.logger.debug "Unleash::Client.get_variant variants for feature: #{feature} not found"
+      variant_response = Unleash&.engine.get_variant(feature, context)
+      if variant_response.code < 0
+        Unleash&.engine&.count_variant(feature, fallback_variant.name)
         return fallback_variant
       end
-
-      # TODO: Add to README: name, payload, enabled (bool)
+      variant = variant_response.variant
+      Unleash&.engine&.count_variant(feature, variant.name)
 
       variant
     end
@@ -118,7 +119,7 @@ module Unleash
         'appName': Unleash.configuration.app_name,
         'instanceId': Unleash.configuration.instance_id,
         'sdkVersion': "unleash-client-ruby:" + Unleash::VERSION,
-        'strategies': Unleash.strategies.keys,
+        'strategies': nil,
         'started': Time.now.iso8601(Unleash::TIME_RESOLUTION),
         'interval': Unleash.configuration.metrics_interval_in_millis
       }
@@ -137,7 +138,6 @@ module Unleash
     end
 
     def start_metrics
-      Unleash.toggle_metrics = Unleash::Metrics.new
       Unleash.reporter = Unleash::MetricsReporter.new
       self.metrics_scheduled_executor = Unleash::ScheduledExecutor.new(
         'MetricsReporter',

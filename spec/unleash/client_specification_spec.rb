@@ -10,37 +10,30 @@ RSpec.describe Unleash::Client do
   DEFAULT_VARIANT = Unleash::Variant.new(name: 'unknown', enabled: false).freeze
 
   before do
-    Unleash.configuration = Unleash::Configuration.new
     Unleash.logger = Unleash.configuration.logger
     Unleash.logger.level = Unleash.configuration.log_level
-    Unleash.toggles = []
-    Unleash.toggle_metrics = {}
-
-    # Do not test metrics:
-    Unleash.configuration.disable_metrics = true
   end
 
   if File.exist?(SPECIFICATION_PATH + '/index.json')
     JSON.parse(File.read(SPECIFICATION_PATH + '/index.json')).each do |test_file|
       describe "for #{test_file}" do
         current_test_set = JSON.parse(File.read(SPECIFICATION_PATH + '/' + test_file))
+
         context "with #{current_test_set.fetch('name')} " do
-          # name = current_test_set.fetch('name', '')
           tests = current_test_set.fetch('tests', [])
           state = current_test_set.fetch('state', {})
-          state_features = state.fetch('features', [])
-          state_segments = state.fetch('segments', []).map{ |segment| [segment["id"], segment] }.to_h
-
-          let(:unleash_toggles) { state_features }
-
           tests.each do |test|
             it "test that #{test['description']}" do
-              test_toggle = unleash_toggles.select{ |t| t.fetch('name', '') == test.fetch('toggleName') }.first
-
-              toggle = Unleash::FeatureToggle.new(test_toggle, state_segments)
               context = Unleash::Context.new(test['context'])
 
-              toggle_result = toggle.is_enabled?(context)
+              unleash = Unleash::Client.new(
+                app_name: 'bootstrap-test',
+                instance_id: 'local-test-cli',
+                disable_client: true,
+                disable_metrics: true,
+                bootstrap_config: Unleash::Bootstrap::Configuration.new(data: current_test_set.fetch('state', {}).to_json)
+              )
+              toggle_result = unleash.is_enabled?(test.fetch('toggleName'), context)
 
               expect(toggle_result).to eq(test['expectedResult'])
             end
@@ -49,14 +42,21 @@ RSpec.describe Unleash::Client do
           variant_tests = current_test_set.fetch('variantTests', [])
           variant_tests.each do |test|
             it "test that #{test['description']}" do
-              test_toggle = unleash_toggles.select{ |t| t.fetch('name', '') == test.fetch('toggleName') }.first
-
-              toggle = Unleash::FeatureToggle.new(test_toggle, state_segments)
               context = Unleash::Context.new(test['context'])
 
-              variant = toggle.get_variant(context, DEFAULT_VARIANT)
+              unleash = Unleash::Client.new(
+                app_name: 'bootstrap-test',
+                instance_id: 'local-test-cli',
+                disable_client: true,
+                disable_metrics: true,
+                bootstrap_config: Unleash::Bootstrap::Configuration.new(data: current_test_set.fetch('state', {}).to_json)
+              )
+              variant = unleash.get_variant(test.fetch('toggleName'), context)
+              expectedResult = test['expectedResult']
 
-              expect(variant).to eq(Unleash::Variant.new(test['expectedResult']))
+              expect(variant.name).to eq(expectedResult['name'])
+              expect(variant.enabled).to eq(expectedResult['enabled'])
+              expect(variant.payload).to eq(expectedResult['payload'])
             end
           end
         end

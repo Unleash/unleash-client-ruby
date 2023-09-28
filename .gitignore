@@ -4,12 +4,14 @@
 /coverage/
 /doc/
 /pkg/
+/*/pkg/
 /spec/reports/
 /tmp/
 /vendor
 
 # IntelliJ
 .idea/
+/*.iml
 
 # rspec failure tracking
 .rspec_status

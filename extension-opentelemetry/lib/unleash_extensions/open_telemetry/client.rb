@@ -4,7 +4,7 @@ module UnleashExtensions
     module Client
     # class Client < Unleash::Client
       def initialize(*opts)
-        UnleashExtensions::OpenTelemetry::TRACER.in_span('Unleash::Client#initialize') do |_span|
+        UnleashExtensions::OpenTelemetry::TRACER.in_span("#{self.class.name}##{__method__}") do |_span|
           super(*opts)
         end
       end

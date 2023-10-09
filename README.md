@@ -539,7 +539,7 @@ To install this gem onto your local machine, run `bundle exec rake install`.
 Choose a new version number following [Semantic Versioning](https://semver.org/spec/v2.0.0.html) semantics and then:
 
 - update the version number in [./lib/unleash/version.rb](./lib/unleash/version.rb),
-- if a major or minor version bump, update the [Installation section](#Installation) in [README.md](README.md)
+- if a major or minor version bump, update the [Installation section](#installation) in [README.md](README.md)
 - update [CHANGELOG.md](CHANGELOG.md) following the format on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - commit with message `chore: bump version to x.y.z`
 - then run `bundle exec rake release`

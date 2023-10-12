@@ -146,7 +146,7 @@ RSpec.describe Unleash do
           'X-API-KEY' => '123',
           'UNLEASH-APPNAME' => 'test-app',
           'UNLEASH-INSTANCEID' => config.instance_id,
-          'Unleash-Client-Spec' => '4.2.2'
+          'Unleash-Client-Spec' => '4.5.1'
         }
       )
       expect(custom_headers_proc).to have_received(:call).exactly(1).times

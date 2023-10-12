@@ -7,7 +7,7 @@ require 'securerandom'
 
 module Unleash
   class FeatureToggle
-    attr_accessor :name, :enabled, :strategies, :variant_definitions
+    attr_accessor :name, :enabled, :dependencies, :strategies, :variant_definitions
 
     FeatureEvaluationResult = Struct.new(:enabled?, :strategy)
 
@@ -16,6 +16,7 @@ module Unleash
 
       self.name       = params.fetch('name', nil)
       self.enabled    = params.fetch('enabled', false)
+      self.dependencies = params.fetch('dependencies', [])
 
       self.strategies = initialize_strategies(params, segment_map)
       self.variant_definitions = initialize_variant_definitions(params)
@@ -75,9 +76,47 @@ module Unleash
       evaluate(context).enabled?
     end
 
+    def parent_dependencies_satisfied?(context)
+      return true if dependencies.empty?
+      return dependencies.all? do |parent|
+        evaluate_parenthood(parent, context)
+      end
+    end
+
+    def evaluate_parenthood(parent, context)
+      parent_toggle = get_parent(parent["feature"])
+      if parent_toggle.nil?
+        return false
+      end
+      return false unless parent_toggle.dependencies.empty?
+      evaluation_result = parent_toggle.is_enabled?(context)
+      if parent["enabled"] == false
+        return !evaluation_result
+      else
+        return false unless evaluation_result
+      end
+
+      unless parent["variants"].nil? || parent["variants"].empty?
+        return parent["variants"].include?(parent_toggle.get_variant(context).name)
+      end
+      return evaluation_result
+    end
+
+    def get_parent(feature)
+      toggle_as_hash = Unleash&.toggles&.select{ |toggle| toggle['name'] == feature }&.first
+      if toggle_as_hash.nil?
+        Unleash.logger.debug "Unleash::Client.is_enabled? feature: #{feature} not found"
+        return nil
+      end
+
+      Unleash::FeatureToggle.new(toggle_as_hash, Unleash&.segment_cache)
+    end
+
     def evaluate(context)
       evaluation_result =
-        if !self.enabled
+        if !parent_dependencies_satisfied?(context)
+          FeatureEvaluationResult.new(false, nil)
+        elsif !self.enabled
           FeatureEvaluationResult.new(false, nil)
         elsif self.strategies.empty?
           FeatureEvaluationResult.new(true, nil)
@@ -88,7 +127,6 @@ module Unleash
 
       Unleash.logger.debug "Unleash::FeatureToggle (enabled:#{self.enabled}) " \
         "and Strategies combined with constraints returned #{evaluation_result})"
-
       evaluation_result
     end
 

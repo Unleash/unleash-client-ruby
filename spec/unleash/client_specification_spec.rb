@@ -13,7 +13,6 @@ RSpec.describe Unleash::Client do
     Unleash.configuration = Unleash::Configuration.new
     Unleash.logger = Unleash.configuration.logger
     Unleash.logger.level = Unleash.configuration.log_level
-    Unleash.toggles = []
     Unleash.toggle_metrics = {}
 
     # Do not test metrics:
@@ -25,22 +24,21 @@ RSpec.describe Unleash::Client do
       describe "for #{test_file}" do
         current_test_set = JSON.parse(File.read(SPECIFICATION_PATH + '/' + test_file))
         context "with #{current_test_set.fetch('name')} " do
-          # name = current_test_set.fetch('name', '')
           tests = current_test_set.fetch('tests', [])
           state = current_test_set.fetch('state', {})
           state_features = state.fetch('features', [])
           state_segments = state.fetch('segments', []).map{ |segment| [segment["id"], segment] }.to_h
-
           let(:unleash_toggles) { state_features }
+          unleash_client = Unleash::Client::new
 
           tests.each do |test|
             it "test that #{test['description']}" do
-              test_toggle = unleash_toggles.select{ |t| t.fetch('name', '') == test.fetch('toggleName') }.first
+              Unleash.toggles = unleash_toggles
+              Unleash.segment_cache = state_segments
 
-              toggle = Unleash::FeatureToggle.new(test_toggle, state_segments)
               context = Unleash::Context.new(test['context'])
 
-              toggle_result = toggle.is_enabled?(context)
+              toggle_result = unleash_client.is_enabled?(test.fetch('toggleName'),context)
 
               expect(toggle_result).to eq(test['expectedResult'])
             end

@@ -29,7 +29,7 @@ RSpec.describe Unleash::Client do
           state_features = state.fetch('features', [])
           state_segments = state.fetch('segments', []).map{ |segment| [segment["id"], segment] }.to_h
           let(:unleash_toggles) { state_features }
-          unleash_client = Unleash::Client::new
+          unleash_client = Unleash::Client.new
 
           tests.each do |test|
             it "test that #{test['description']}" do
@@ -38,7 +38,7 @@ RSpec.describe Unleash::Client do
 
               context = Unleash::Context.new(test['context'])
 
-              toggle_result = unleash_client.is_enabled?(test.fetch('toggleName'),context)
+              toggle_result = unleash_client.is_enabled?(test.fetch('toggleName'), context)
 
               expect(toggle_result).to eq(test['expectedResult'])
             end

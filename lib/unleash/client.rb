@@ -41,7 +41,6 @@ module Unleash
                       end
 
       toggle_as_hash = Unleash&.toggles&.select{ |toggle| toggle['name'] == feature }&.first
-
       if toggle_as_hash.nil?
         Unleash.logger.debug "Unleash::Client.is_enabled? feature: #{feature} not found"
         return default_value

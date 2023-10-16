@@ -47,12 +47,12 @@ RSpec.describe Unleash::Client do
           variant_tests = current_test_set.fetch('variantTests', [])
           variant_tests.each do |test|
             it "test that #{test['description']}" do
-              test_toggle = unleash_toggles.select{ |t| t.fetch('name', '') == test.fetch('toggleName') }.first
+              Unleash.toggles = unleash_toggles
+              Unleash.segment_cache = state_segments
 
-              toggle = Unleash::FeatureToggle.new(test_toggle, state_segments)
               context = Unleash::Context.new(test['context'])
 
-              variant = toggle.get_variant(context, DEFAULT_VARIANT)
+              variant = unleash_client.get_variant(test.fetch('toggleName'), context)
 
               expect(variant).to eq(Unleash::Variant.new(test['expectedResult']))
             end

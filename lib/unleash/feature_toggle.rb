@@ -82,21 +82,16 @@ module Unleash
 
     def evaluate_parent(parent, context)
       parent_toggle = get_parent(parent["feature"])
-
-      return false if parent_toggle.nil?
-
-      return false unless parent_toggle.dependencies.empty?
+      return false if parent_toggle.nil? || !parent_toggle.dependencies.empty?
 
       evaluation_result = parent_toggle.is_enabled?(context)
       return !evaluation_result if parent["enabled"] == false
 
       return false unless evaluation_result
 
-      unless parent["variants"].nil? || parent["variants"].empty?
-        return parent["variants"].include?(parent_toggle.get_variant(context).name)
-      end
+      return evaluation_result if parent["variants"].nil? || parent["variants"].empty?
 
-      evaluation_result
+      parent["variants"].include?(parent_toggle.get_variant(context).name)
     end
 
     def get_parent(feature)

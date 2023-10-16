@@ -13,6 +13,11 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [4.6.0] - 2023-10-16
+### Added
+- dependant toggles (#155)
+  - client specification is [here](https://github.com/Unleash/client-specification/pull/63)
+
 ## [4.5.0] - 2023-07-05
 ### Added
 - variants in strategies (#148)

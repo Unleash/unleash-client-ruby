@@ -25,7 +25,7 @@ Leverage the [Unleash Server](https://github.com/Unleash/unleash) for powerful f
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'unleash', '~> 4.5.0'
+gem 'unleash', '~> 4.6.0'
 ```
 
 And then execute:

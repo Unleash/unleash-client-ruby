@@ -92,15 +92,14 @@ module Unleash
       return false unless parent_toggle.dependencies.empty?
 
       evaluation_result = parent_toggle.is_enabled?(context)
-      if parent["enabled"] == false
-        return !evaluation_result
-      else
-        return false unless evaluation_result
-      end
+      return !evaluation_result if parent["enabled"] == false
+
+      return false unless evaluation_result
 
       unless parent["variants"].nil? || parent["variants"].empty?
         return parent["variants"].include?(parent_toggle.get_variant(context).name)
       end
+
       evaluation_result
     end
 

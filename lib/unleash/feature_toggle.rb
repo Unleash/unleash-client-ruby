@@ -78,17 +78,19 @@ module Unleash
 
     def parent_dependencies_satisfied?(context)
       return true if dependencies.empty?
-      return dependencies.all? do |parent|
+
+      dependencies.all? do |parent|
         evaluate_parenthood(parent, context)
       end
     end
 
     def evaluate_parenthood(parent, context)
       parent_toggle = get_parent(parent["feature"])
-      if parent_toggle.nil?
-        return false
-      end
+
+      return false if parent_toggle.nil?
+
       return false unless parent_toggle.dependencies.empty?
+
       evaluation_result = parent_toggle.is_enabled?(context)
       if parent["enabled"] == false
         return !evaluation_result
@@ -99,7 +101,7 @@ module Unleash
       unless parent["variants"].nil? || parent["variants"].empty?
         return parent["variants"].include?(parent_toggle.get_variant(context).name)
       end
-      return evaluation_result
+      evaluation_result
     end
 
     def get_parent(feature)

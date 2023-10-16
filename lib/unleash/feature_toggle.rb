@@ -104,7 +104,7 @@ module Unleash
     end
 
     def get_parent(feature)
-      toggle_as_hash = Unleash&.toggles&.select{ |toggle| toggle['name'] == feature }&.first
+      toggle_as_hash = Unleash&.toggles&.find{ |toggle| toggle['name'] == feature }
       if toggle_as_hash.nil?
         Unleash.logger.debug "Unleash::Client.is_enabled? feature: #{feature} not found"
         return nil

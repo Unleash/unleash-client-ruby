@@ -13,6 +13,10 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [4.6.1] - 2023-11-19
+### Fixed
+- fixed an issue where frozen string literals would cause constraints to fail (#157)
+
 ## [4.6.0] - 2023-10-16
 ### Added
 - dependant toggles (#155)

@@ -555,3 +555,5 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/unleas
 Be sure to run both `bundle exec rspec` and `bundle exec rubocop` in your branch before creating a pull request.
 
 Please include tests with any pull requests, to avoid regressions.
+
+Check out our guide for more information on how to build and scale [feature flag systems](https://docs.getunleash.io/topics/feature-flags/feature-flag-best-practices)

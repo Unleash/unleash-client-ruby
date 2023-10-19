@@ -107,7 +107,7 @@ module Unleash
       context_value = context.get_by_name(self.context_name)
 
       v.map!(&:upcase) if self.case_insensitive
-      context_value.upcase! if self.case_insensitive
+      context_value = context_value.upcase if self.case_insensitive
 
       OPERATORS[self.operator].call(context_value, v)
     end

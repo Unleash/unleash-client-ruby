@@ -455,4 +455,18 @@ RSpec.describe Unleash::Constraint do
     constraint = Unleash::Constraint.new('anything', 'NUM_GTE', '6.282')
     expect(constraint.matches_context?(nil)).to be false
   end
+
+  it 'should handle constraints comparisons with frozen context string literals without error' do
+    context_params = {
+      user_id: '123',
+      session_id: 'verylongsesssionid',
+      remote_address: '127.0.0.1',
+      properties: {
+        env: 'development'.freeze
+      }
+    }
+    context = Unleash::Context.new(context_params)
+    constraint = Unleash::Constraint.new('env', 'STR_STARTS_WITH', ['DEV'], case_insensitive: true)
+    expect(constraint.matches_context?(context)).to be true
+  end
 end

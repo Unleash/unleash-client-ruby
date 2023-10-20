@@ -106,10 +106,10 @@ module Unleash
       v = self.value.dup
       context_value = context.get_by_name(self.context_name)
 
-      v.map!(&:upcase) if self.case_insensitive
-      context_value.upcase! if self.case_insensitive
-
-      OPERATORS[self.operator].call(context_value, v)
+      OPERATORS[self.operator].call(
+        context_value.then{|c| self.case_insensitive ? c.upcase : c} ,
+        v.then{|v| self.case_insensitive ? v.map(&:upcase) : v}
+      )
     end
   end
 end

@@ -13,6 +13,12 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [5.0.0] - 2023-10-30
+### Added
+- change seed for variantutils to ensure fair distribution (#160)
+  - client specification is [here](https://github.com/Unleash/client-specification/tree/v5.0.2/specifications)
+  - A new seed is introduced to ensure a fair distribution for variants, addressing the issue of skewed variant distribution due to using the same hash string for both gradual rollout and variant allocation.
+
 ## [4.6.0] - 2023-10-16
 ### Added
 - dependant toggles (#155)

@@ -24,7 +24,7 @@ module Unleash
         end
 
         group_id = params.fetch('groupId', '')
-        normalized_number = Util.get_normalized_number(stickiness_id, group_id)
+        normalized_number = Util.get_normalized_number(stickiness_id, group_id, 0)
 
         return false if stickiness_id.nil?
 

@@ -14,7 +14,7 @@ module Unleash
         return false if context.user_id.nil? || context.user_id.empty?
 
         percentage = Integer(params['percentage'] || 0)
-        (percentage.positive? && Util.get_normalized_number(context.user_id, params['groupId'] || "") <= percentage)
+        (percentage.positive? && Util.get_normalized_number(context.user_id, params['groupId'] || "", 0) <= percentage)
       end
     end
   end

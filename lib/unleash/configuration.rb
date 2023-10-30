@@ -53,7 +53,7 @@ module Unleash
       {
         'UNLEASH-INSTANCEID' => self.instance_id,
         'UNLEASH-APPNAME' => self.app_name,
-        'Unleash-Client-Spec' => '4.5.1'
+        'Unleash-Client-Spec' => '5.0.2'
       }.merge!(generate_custom_http_headers)
     end
 

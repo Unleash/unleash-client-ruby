@@ -163,6 +163,7 @@ module Unleash
       variant_weight = Unleash::Strategy::Util.get_normalized_number(
         variant_salt(context, stickiness),
         group_id,
+        Unleash::Strategy::Util::VARIANT_NORMALIZER_SEED,
         sum_variant_defs_weights(variant_definitions)
       )
       prev_weights = 0

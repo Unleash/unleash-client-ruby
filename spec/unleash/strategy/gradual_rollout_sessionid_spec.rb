@@ -5,7 +5,7 @@ RSpec.describe Unleash::Strategy::GradualRolloutSessionId do
   describe '#is_enabled?' do
     let(:strategy) { Unleash::Strategy::GradualRolloutSessionId.new }
     let(:unleash_context) { Unleash::Context.new(session_id: 'secretsessionidhashgoeshere') }
-    let(:percentage) { Unleash::Strategy::Util.get_normalized_number(unleash_context.session_id, "") }
+    let(:percentage) { Unleash::Strategy::Util.get_normalized_number(unleash_context.session_id, "", 0) }
 
     it 'return true when percentage set is gt the number returned by the hash function' do
       expect(strategy.is_enabled?({ 'percentage' => (percentage + 1).to_s }, unleash_context)).to be_truthy

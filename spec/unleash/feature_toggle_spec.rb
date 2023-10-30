@@ -141,19 +141,19 @@ RSpec.describe Unleash::FeatureToggle do
 
     let(:default_variant) { Unleash::Variant.new(name: 'unknown', default: true) }
 
-    it 'should return variant1 for user_id:1' do
+    it 'should return variant2 for user_id:1' do
       context = Unleash::Context.new(user_id: 10)
       expect(feature_toggle.get_variant(context, default_variant)).to have_attributes(
-        name: "variant1",
+        name: "variant2",
         enabled: true,
         payload: nil
       )
     end
 
-    it 'should return variant2 for user_id:2' do
+    it 'should return variant1 for user_id:2' do
       context = Unleash::Context.new(user_id: 2)
       expect(feature_toggle.get_variant(context, default_variant)).to have_attributes(
-        name: "variant2",
+        name: "variant1",
         enabled: true,
         payload: nil
       )
@@ -208,8 +208,8 @@ RSpec.describe Unleash::FeatureToggle do
       )
     end
 
-    it 'should return variantB for user_id:2' do
-      context = Unleash::Context.new(user_id: 2)
+    it 'should return variantB for user_id:5' do
+      context = Unleash::Context.new(user_id: 5)
       expect(feature_toggle.get_variant(context, default_variant)).to have_attributes(
         name: "variantB",
         enabled: true,
@@ -285,7 +285,7 @@ RSpec.describe Unleash::FeatureToggle do
             },
             "overrides" => [{
               "contextName" => "userId",
-              "values" => ["132", "61"]
+              "values" => ["133", "61"]
             }]
           },
           {
@@ -311,8 +311,8 @@ RSpec.describe Unleash::FeatureToggle do
       )
     end
 
-    it 'should return variant1 for user_id:132 from override' do
-      context = Unleash::Context.new("userId" => 132)
+    it 'should return variant1 for user_id:133 from override' do
+      context = Unleash::Context.new("userId" => 133)
       expect(feature_toggle.get_variant(context)).to have_attributes(
         name: "variant1",
         enabled: true,
@@ -320,8 +320,8 @@ RSpec.describe Unleash::FeatureToggle do
       )
     end
 
-    it 'should return variant2 for user_id:60' do
-      context = Unleash::Context.new(user_id: 60)
+    it 'should return variant2 for user_id:856' do
+      context = Unleash::Context.new(user_id: 856)
       expect(feature_toggle.get_variant(context)).to have_attributes(
         name: "variant2",
         enabled: true,
@@ -537,10 +537,10 @@ RSpec.describe Unleash::FeatureToggle do
       )
     end
 
-    it 'should return variant1 organization 726' do
+    it 'should return variant1 organization 222' do
       context = Unleash::Context.new(
         properties: {
-          organization: '726'
+          organization: '222'
         }
       )
 
@@ -553,7 +553,7 @@ RSpec.describe Unleash::FeatureToggle do
     it 'should return variant2 organization 48' do
       context = Unleash::Context.new(
         properties: {
-          organization: '48'
+          organization: '49'
         }
       )
 
@@ -563,10 +563,10 @@ RSpec.describe Unleash::FeatureToggle do
       )
     end
 
-    it 'should return variant3 organization 381' do
+    it 'should return variant3 organization 726' do
       context = Unleash::Context.new(
         properties: {
-          organization: '381'
+          organization: '726'
         }
       )
 
@@ -576,10 +576,10 @@ RSpec.describe Unleash::FeatureToggle do
       )
     end
 
-    it 'should return variant4 organization 222' do
+    it 'should return variant4 organization 381' do
       context = Unleash::Context.new(
         properties: {
-          organization: '222'
+          organization: '381'
         }
       )
 

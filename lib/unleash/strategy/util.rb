@@ -6,7 +6,7 @@ module Unleash
       module_function
 
       NORMALIZER = 100
-      VARIANT_NORMALIZER_SEED = 86028157;
+      VARIANT_NORMALIZER_SEED = 86_028_157
 
       # convert the two strings () into a number between 1 and base (100 by default)
       def get_normalized_number(identifier, group_id, seed, base = NORMALIZER)

@@ -96,7 +96,7 @@ module Unleash
       self.backup_file      = nil
       self.log_level        = Logger::WARN
       self.bootstrap_config = nil
-      self.strategies       = nil
+      self.strategies       = Unleash::Strategies.new
 
       self.custom_http_headers = {}
     end

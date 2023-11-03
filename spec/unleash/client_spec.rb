@@ -628,4 +628,50 @@ RSpec.describe Unleash::Client do
       end
     end
   end
+
+  it "should use custom strategies during evaluation" do
+    bootstrap_values = '{
+      "version": 1,
+      "features": [
+        {
+          "name": "featureX",
+          "enabled": true,
+          "strategies": [{ "name": "customStrategy" }]
+        }
+      ]
+    }'
+
+    class TestStrategy
+      attr_reader :name
+
+      def initialize(name)
+        @name = name
+      end
+
+      def enabled?(params, context)
+        puts "OKAY I'm CALLING THE HOOK"
+        context[:userId] == "123"
+      end
+    end
+
+    Unleash.configure do |config|
+      config.app_name = 'my-test-app'
+      config.instance_id = 'rspec/test'
+      config.disable_client = true
+      config.disable_metrics = true
+      config.bootstrap_config = Unleash::Bootstrap::Configuration.new({ 'data' => bootstrap_values })
+      config.strategies.register(TestStrategy.new('customStrategy'))
+    end
+
+    context_params = {
+      user_id: '123',
+    }
+    unleash_context = Unleash::Context.new(context_params)
+
+    unleash_client = Unleash::Client.new
+    expect(
+      unleash_client.is_enabled?('featureX', unleash_context)
+    ).to be false
+
+  end
 end

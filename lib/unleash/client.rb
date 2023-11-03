@@ -18,6 +18,7 @@ module Unleash
       Unleash.logger = Unleash.configuration.logger.clone
       Unleash.logger.level = Unleash.configuration.log_level
       Unleash.engine = UnleashEngine.new
+      Unleash.engine.register_custom_strategies(Unleash.configuration.strategies.strategies)
 
       Unleash.toggle_fetcher = Unleash::ToggleFetcher.new
       if Unleash.configuration.disable_client
@@ -84,12 +85,14 @@ module Unleash
         Unleash&.engine&.count_toggle(feature, toggle_enabled)
       end
 
-      variant_response = Unleash&.engine.get_variant(feature, context)
-      if variant_response.code < 0
-        Unleash&.engine&.count_variant(feature, fallback_variant.name)
-        return fallback_variant
+      resolved_variant = Unleash&.engine.get_variant(feature, context)
+      puts "Got my variant #{resolved_variant}"
+      if !resolved_variant.nil?
+        resolved_variant = Variant.new(resolved_variant)
       end
-      variant = variant_response.variant
+
+      variant = resolved_variant || fallback_variant
+
       Unleash&.engine&.count_variant(feature, variant.name)
 
       variant

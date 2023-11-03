@@ -52,11 +52,8 @@ RSpec.describe Unleash::Client do
                 bootstrap_config: Unleash::Bootstrap::Configuration.new(data: current_test_set.fetch('state', {}).to_json)
               )
               variant = unleash.get_variant(test.fetch('toggleName'), context)
-              expectedResult = test['expectedResult']
 
-              expect(variant.name).to eq(expectedResult['name'])
-              expect(variant.enabled).to eq(expectedResult['enabled'])
-              expect(variant.payload).to eq(expectedResult['payload'])
+              expect(variant).to eq(Unleash::Variant.new(test['expectedResult']))
             end
           end
         end

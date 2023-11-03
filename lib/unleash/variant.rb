@@ -8,7 +8,7 @@ module Unleash
       self.name = params.values_at('name', :name).compact.first
       self.enabled = params.values_at('enabled', :enabled).compact.first || false
       self.payload = params.values_at('payload', :payload).compact.first
-
+      puts "I HATE YOU RUBY #{params[:payload]}"
       raise ArgumentError, "Variant requires a name." if self.name.nil?
     end
 

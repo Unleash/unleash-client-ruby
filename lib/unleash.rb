@@ -1,5 +1,6 @@
 require 'unleash/version'
 require 'unleash/configuration'
+require 'unleash/strategies'
 require 'unleash/context'
 require 'unleash/client'
 require 'logger'
@@ -25,6 +26,6 @@ module Unleash
   end
 
   def self.strategies
-    nil
+    self.configuration.strategies
   end
 end

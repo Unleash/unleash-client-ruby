@@ -127,6 +127,8 @@ Layout/BeginEndAlignment:
   Enabled: true
 Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: true
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: consistent
 Layout/SpaceAroundMethodCallOperator:
   Enabled: true
 Layout/MultilineMethodCallIndentation:

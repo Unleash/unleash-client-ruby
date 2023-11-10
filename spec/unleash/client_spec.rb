@@ -648,9 +648,8 @@ RSpec.describe Unleash::Client do
         @name = name
       end
 
-      def enabled?(params, context)
-        puts "OKAY I'm CALLING THE HOOK"
-        context[:userId] == "123"
+      def enabled?(_params, context)
+        context.user_id == "123"
       end
     end
 
@@ -664,14 +663,17 @@ RSpec.describe Unleash::Client do
     end
 
     context_params = {
-      user_id: '123',
+      user_id: '123'
     }
     unleash_context = Unleash::Context.new(context_params)
 
     unleash_client = Unleash::Client.new
     expect(
       unleash_client.is_enabled?('featureX', unleash_context)
-    ).to be false
+    ).to be true
 
+    expect(
+      unleash_client.is_enabled?('featureX', Unleash::Context.new({}))
+    ).to be false
   end
 end

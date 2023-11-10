@@ -1,5 +1,5 @@
 RSpec.describe Unleash::ToggleFetcher do
-  subject(:toggle_fetcher) { Unleash::ToggleFetcher.new }
+  subject(:toggle_fetcher) { Unleash::ToggleFetcher.new UnleashEngine.new }
 
   before do
     Unleash.configure do |config|
@@ -65,9 +65,9 @@ RSpec.describe Unleash::ToggleFetcher do
               description: "Enabled toggle",
               enabled: true,
               strategies: [{
-                  "name": "default"
+                "name": "default"
               }]
-            },
+            }
           ]
         }
         toggle_fetcher.save! toggles.to_json
@@ -78,10 +78,11 @@ RSpec.describe Unleash::ToggleFetcher do
   end
 
   describe '.new' do
+    let(:engine) { UnleashEngine.new }
     context 'when there are problems fetching toggles' do
       before do
-        # manually create a stub cache on disk, so we can test that we read it correctly later.
-        cache_creator = described_class.new
+        backup_file = Unleash.configuration.backup_file
+
         toggles = {
           version: 2,
           features: [
@@ -90,19 +91,23 @@ RSpec.describe Unleash::ToggleFetcher do
               description: "Enabled toggle",
               enabled: true,
               strategies: [{
-                  "name": "default"
+                "name": "default"
               }]
-            },
+            }
           ]
         }
 
-        cache_creator.save! toggles.to_json
+        # manually create a stub cache on disk, so we can test that we read it correctly later.
+        File.open(backup_file, "w") do |file|
+          file.write(toggles.to_json)
+        end
 
         WebMock.stub_request(:get, "http://toggle-fetcher-test-url/client/features").to_return(status: 500)
+        _toggle_fetcher = described_class.new engine # we new up a new toggle fetcher so that engine is synced
       end
 
       it 'reads the backup file for values' do
-        enabled = Unleash.engine.enabled?('Feature.A', {})
+        enabled = engine.enabled?('Feature.A', {})
         expect(enabled).to eq(true)
       end
     end

@@ -24,7 +24,7 @@ RSpec.describe Unleash do
     end
   end
 
-  it "mount custom strategies correctly" do
+  it "should mount custom strategies correctly" do
     class TestStrategy
       attr_reader :name
 
@@ -32,18 +32,18 @@ RSpec.describe Unleash do
         @name = name
       end
 
-      def enabled?(params, context)
+      def enabled?(params, _context)
         params["gerkhins"] == "yes"
       end
     end
 
     Unleash.configure do |config|
       config.app_name = 'rspec_test'
-      config.strategies.register(TestStrategy.new)
+      config.strategies.register(TestStrategy.new("customStrategy"))
     end
 
     custom_strategy = Unleash.configuration.strategies.strategies.find { |strategy| strategy.name == 'customStrategy' }
 
-    expect(custom_strategy).to be_instance_of(CustomStrategy)
+    expect(custom_strategy).to be_instance_of(TestStrategy)
   end
 end

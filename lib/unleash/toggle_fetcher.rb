@@ -8,7 +8,8 @@ module Unleash
   class ToggleFetcher
     attr_accessor :toggle_engine, :toggle_lock, :toggle_resource, :etag, :retry_count, :segment_cache
 
-    def initialize
+    def initialize(engine)
+      self.toggle_engine = engine
       self.etag = nil
       self.segment_cache = nil
       self.toggle_lock = Mutex.new
@@ -55,10 +56,9 @@ module Unleash
       end
 
       self.etag = response['ETag']
-      engine = get_engine(response.body)
 
       # always synchronize with the local cache when fetching:
-      synchronize_with_local_cache!(engine)
+      synchronize_with_local_cache!(response.body)
 
       update_running_client!
       save! response.body
@@ -84,15 +84,13 @@ module Unleash
 
     private
 
-    def synchronize_with_local_cache!(engine)
-      if self.toggle_engine != engine
-        self.toggle_lock.synchronize do
-          self.toggle_engine = engine
-        end
-
-        # notify all threads waiting for this resource to no longer wait
-        self.toggle_resource.broadcast
+    def synchronize_with_local_cache!(toggle_data)
+      self.toggle_lock.synchronize do
+        self.toggle_engine.take_state(toggle_data)
       end
+
+      # notify all threads waiting for this resource to no longer wait
+      self.toggle_resource.broadcast
     end
 
     def update_running_client!
@@ -105,9 +103,8 @@ module Unleash
       Unleash.logger.debug "read!()"
       backup_file = Unleash.configuration.backup_file
       return nil unless File.exist?(backup_file)
-
-      backup_as_hash = JSON.parse(File.read(backup_file))
-      synchronize_with_local_cache!(backup_as_hash)
+      backup_data = File.read(backup_file)
+      synchronize_with_local_cache!(backup_data)
       update_running_client!
     rescue IOError => e
       Unleash.logger.error "Unable to read the backup_file: #{e}"
@@ -119,7 +116,7 @@ module Unleash
 
     def bootstrap
       bootstrap_payload = Unleash::Bootstrap::Handler.new(Unleash.configuration.bootstrap_config).retrieve_toggles
-      synchronize_with_local_cache! get_engine bootstrap_payload
+      synchronize_with_local_cache! bootstrap_payload
       update_running_client!
 
       # reset Unleash.configuration.bootstrap_data to free up memory, as we will never use it again
@@ -130,23 +127,6 @@ module Unleash
       return {} if segments_array.nil?
 
       segments_array.map{ |segment| [segment["id"], segment] }.to_h
-    end
-
-    def get_engine(response_body)
-      engine = UnleashEngine.new
-      engine.take_state(response_body)
-      engine
-    end
-
-    # @param response_body [String]
-    def get_features(response_body)
-      response_hash = JSON.parse(response_body)
-      if response_hash['version'] >= 1
-        return { "features" => response_hash["features"], "segments" => build_segment_map(response_hash["segments"]) }
-      end
-
-      raise NotImplemented, "Version of features provided by unleash server" \
-        " is unsupported by this client."
     end
   end
 end

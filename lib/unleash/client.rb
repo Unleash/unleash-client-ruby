@@ -51,7 +51,7 @@ module Unleash
         return default_value
       end
 
-      Unleash.engine&.count_toggle(feature, toggle_enabled)
+      Unleash.engine.count_toggle(feature, toggle_enabled)
 
       toggle_enabled
     end
@@ -78,21 +78,21 @@ module Unleash
     def get_variant(feature, context = Unleash::Context.new, fallback_variant = disabled_variant)
       Unleash.logger.debug "Unleash::Client.get_variant for feature: #{feature} with context #{context}"
 
-      toggle_enabled = Unleash&.engine&.enabled?(feature, context)
+      toggle_enabled = Unleash.engine.enabled?(feature, context)
       if toggle_enabled.nil?
-        Unleash&.engine&.count_toggle(feature, false)
+        Unleash.engine.count_toggle(feature, false)
       else
-        Unleash&.engine&.count_toggle(feature, toggle_enabled)
+        Unleash.engine.count_toggle(feature, toggle_enabled)
       end
 
-      resolved_variant = Unleash&.engine.get_variant(feature, context)
+      resolved_variant = Unleash.engine.get_variant(feature, context)
       if !resolved_variant.nil?
         resolved_variant = Variant.new(resolved_variant)
       end
 
       variant = resolved_variant || fallback_variant
 
-      Unleash&.engine&.count_variant(feature, variant.name)
+      Unleash.engine.count_variant(feature, variant.name)
 
       # TODO: Add to README: name, payload, enabled (bool)
 

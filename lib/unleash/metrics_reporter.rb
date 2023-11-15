@@ -14,12 +14,11 @@ module Unleash
     end
 
     def generate_report
-      puts "Making report"
       metrics = Unleash&.engine&.get_metrics()
       if metrics.nil? || metrics.empty?
-        puts "nothing here"
         return nil
       end
+
       report = {
         'appName': Unleash.configuration.app_name,
         'instanceId': Unleash.configuration.instance_id,

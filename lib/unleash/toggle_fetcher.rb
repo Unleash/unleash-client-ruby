@@ -103,6 +103,7 @@ module Unleash
       Unleash.logger.debug "read!()"
       backup_file = Unleash.configuration.backup_file
       return nil unless File.exist?(backup_file)
+
       backup_data = File.read(backup_file)
       synchronize_with_local_cache!(backup_data)
       update_running_client!

@@ -86,7 +86,6 @@ module Unleash
       end
 
       resolved_variant = Unleash&.engine.get_variant(feature, context)
-      puts "Got my variant #{resolved_variant}"
       if !resolved_variant.nil?
         resolved_variant = Variant.new(resolved_variant)
       end
@@ -94,6 +93,8 @@ module Unleash
       variant = resolved_variant || fallback_variant
 
       Unleash&.engine&.count_variant(feature, variant.name)
+
+      # TODO: Add to README: name, payload, enabled (bool)
 
       variant
     end

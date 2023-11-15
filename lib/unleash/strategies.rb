@@ -6,7 +6,7 @@ module Unleash
       @strategies = []
     end
 
-    def register(strategy)
+    def add(strategy)
       @strategies << strategy
     end
   end

@@ -39,7 +39,7 @@ RSpec.describe Unleash do
 
     Unleash.configure do |config|
       config.app_name = 'rspec_test'
-      config.strategies.register(TestStrategy.new("customStrategy"))
+      config.strategies.add(TestStrategy.new("customStrategy"))
     end
 
     custom_strategy = Unleash.configuration.strategies.strategies.find { |strategy| strategy.name == 'customStrategy' }

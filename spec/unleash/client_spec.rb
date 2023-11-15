@@ -659,7 +659,7 @@ RSpec.describe Unleash::Client do
       config.disable_client = true
       config.disable_metrics = true
       config.bootstrap_config = Unleash::Bootstrap::Configuration.new({ 'data' => bootstrap_values })
-      config.strategies.register(TestStrategy.new('customStrategy'))
+      config.strategies.add(TestStrategy.new('customStrategy'))
     end
 
     context_params = {

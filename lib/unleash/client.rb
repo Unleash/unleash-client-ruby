@@ -2,7 +2,8 @@ require 'unleash/configuration'
 require 'unleash/toggle_fetcher'
 require 'unleash/metrics_reporter'
 require 'unleash/scheduled_executor'
-require 'unleash/feature_toggle'
+require 'unleash/variant'
+require 'unleash/variant_definition'
 require 'unleash/util/http'
 require 'logger'
 require 'time'
@@ -167,7 +168,7 @@ module Unleash
     end
 
     def disabled_variant
-      @disabled_variant ||= Unleash::FeatureToggle.disabled_variant
+      @disabled_variant ||= Unleash::Variant.disabled_variant
     end
 
     def first_fetch_is_eager

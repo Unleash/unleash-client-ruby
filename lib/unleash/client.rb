@@ -12,6 +12,7 @@ module Unleash
   class Client
     attr_accessor :fetcher_scheduled_executor, :metrics_scheduled_executor
 
+    # rubocop:disable Metrics/AbcSize
     def initialize(*opts)
       Unleash.configuration = Unleash::Configuration.new(*opts) unless opts.empty?
       Unleash.configuration.validate!
@@ -33,6 +34,7 @@ module Unleash
       start_toggle_fetcher
       start_metrics unless Unleash.configuration.disable_metrics
     end
+    # rubocop:enable Metrics/AbcSize
 
     def is_enabled?(feature, context = nil, default_value_param = false, &fallback_blk)
       Unleash.logger.debug "Unleash::Client.is_enabled? feature: #{feature} with context #{context}"

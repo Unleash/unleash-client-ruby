@@ -36,12 +36,12 @@ RSpec.describe Unleash::MetricsReporter do
 
     report = metrics_reporter.generate_report
     expect(report[:bucket][:toggles]).to include(
-      :featureA => {
+      featureA: {
         no: 2,
         yes: 3,
         variants: {}
       },
-      :featureB => {
+      featureB: {
         no: 0,
         yes: 1,
         variants: {}

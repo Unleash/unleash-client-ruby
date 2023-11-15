@@ -15,17 +15,13 @@ module Unleash
 
     def generate_report
       metrics = Unleash&.engine&.get_metrics()
-      if metrics.nil? || metrics.empty?
-        return nil
-      end
+      return nil if metrics.nil? || metrics.empty?
 
-      report = {
+      {
         'appName': Unleash.configuration.app_name,
         'instanceId': Unleash.configuration.instance_id,
         'bucket': metrics
       }
-
-      report
     end
 
     def post
@@ -46,7 +42,5 @@ module Unleash
         Unleash.logger.error "Error when sending report to unleash server. Server responded with http code #{response.code}."
       end
     end
-
-    private
   end
 end

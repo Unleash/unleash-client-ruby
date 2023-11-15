@@ -43,8 +43,6 @@ module Unleash
                         default_value_param
                       end
 
-      Unleash.logger.debug "Unleash::Client.is_enabled? feature: #{feature} with context #{context}"
-
       toggle_enabled = Unleash.engine.enabled?(feature, context)
       if toggle_enabled.nil?
         Unleash.logger.debug "Unleash::Client.is_enabled? feature: #{feature} not found"

@@ -27,7 +27,7 @@ RSpec.describe Unleash::MetricsReporter do
       config.instance_id = 'rspec/test'
       config.disable_client = true
     end
-    Unleash.engine = UnleashEngine.new
+    Unleash.engine = YggdrasilEngine.new
 
     Unleash.engine.count_toggle('featureA', true)
     Unleash.engine.count_toggle('featureA', true)
@@ -76,7 +76,7 @@ RSpec.describe Unleash::MetricsReporter do
       )
       .to_return(status: 200, body: "", headers: {})
 
-    Unleash.engine = UnleashEngine.new
+    Unleash.engine = YggdrasilEngine.new
 
     Unleash.engine.count_toggle('featureA', true)
     Unleash.engine.count_toggle('featureA', true)
@@ -107,7 +107,7 @@ RSpec.describe Unleash::MetricsReporter do
   end
 
   it "does not send a report, if there were no metrics registered/evaluated" do
-    Unleash.engine = UnleashEngine.new
+    Unleash.engine = YggdrasilEngine.new
 
     metrics_reporter.post
 

@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'unleash-engine', path: '../../yggdrasil/ruby-engine'
+gem 'yggdrasil-engine', '~> 0.0.2'
 
 # Specify your gem's dependencies in unleash-client.gemspec
 gemspec

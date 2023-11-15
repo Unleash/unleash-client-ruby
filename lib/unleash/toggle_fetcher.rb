@@ -2,7 +2,7 @@ require 'unleash/configuration'
 require 'unleash/bootstrap/handler'
 require 'net/http'
 require 'json'
-require 'unleash_engine'
+require 'yggdrasil_engine'
 
 module Unleash
   class ToggleFetcher

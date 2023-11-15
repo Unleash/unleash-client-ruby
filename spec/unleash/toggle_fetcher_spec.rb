@@ -1,5 +1,5 @@
 RSpec.describe Unleash::ToggleFetcher do
-  subject(:toggle_fetcher) { Unleash::ToggleFetcher.new UnleashEngine.new }
+  subject(:toggle_fetcher) { Unleash::ToggleFetcher.new YggdrasilEngine.new }
 
   before do
     Unleash.configure do |config|
@@ -78,7 +78,7 @@ RSpec.describe Unleash::ToggleFetcher do
   end
 
   describe '.new' do
-    let(:engine) { UnleashEngine.new }
+    let(:engine) { YggdrasilEngine.new }
     context 'when there are problems fetching toggles' do
       before do
         backup_file = Unleash.configuration.backup_file

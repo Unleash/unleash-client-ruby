@@ -570,7 +570,6 @@ RSpec.describe Unleash::Client do
         )
         .to_return(status: 200, body: body, headers: {})
 
-      Unleash.toggles = []
       Unleash.configure do |config|
         config.url      = 'http://test-url/'
         config.app_name = 'my-test-app'

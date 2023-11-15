@@ -8,8 +8,6 @@ RSpec.describe Unleash::MetricsReporter do
     Unleash.logger = Unleash.configuration.logger
     Unleash.logger.level = Unleash.configuration.log_level
     # Unleash.logger.level = Logger::DEBUG
-    Unleash.toggles = []
-    Unleash.toggle_metrics = {}
 
     Unleash.configuration.url         = 'http://test-url/'
     Unleash.configuration.app_name    = 'my-test-app'

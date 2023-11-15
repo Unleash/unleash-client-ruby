@@ -44,14 +44,14 @@ module Unleash
 
       Unleash.logger.debug "Unleash::Client.is_enabled? feature: #{feature} with context #{context}"
 
-      toggle_enabled = Unleash&.engine&.enabled?(feature, context)
+      toggle_enabled = Unleash.engine.enabled?(feature, context)
       if toggle_enabled.nil?
         Unleash.logger.debug "Unleash::Client.is_enabled? feature: #{feature} not found"
-        Unleash&.engine&.count_toggle(feature, false)
+        Unleash.engine.count_toggle(feature, false)
         return default_value
       end
 
-      Unleash&.engine&.count_toggle(feature, toggle_enabled)
+      Unleash.engine&.count_toggle(feature, toggle_enabled)
 
       toggle_enabled
     end

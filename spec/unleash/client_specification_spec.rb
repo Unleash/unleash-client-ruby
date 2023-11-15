@@ -21,14 +21,11 @@ RSpec.describe Unleash::Client do
 
         context "with #{current_test_set.fetch('name')} " do
           tests = current_test_set.fetch('tests', [])
-          state = current_test_set.fetch('state', {})
           tests.each do |test|
             it "test that #{test['description']}" do
               context = Unleash::Context.new(test['context'])
 
               unleash = Unleash::Client.new(
-                app_name: 'bootstrap-test',
-                instance_id: 'local-test-cli',
                 disable_client: true,
                 disable_metrics: true,
                 bootstrap_config: Unleash::Bootstrap::Configuration.new(data: current_test_set.fetch('state', {}).to_json)
@@ -45,8 +42,6 @@ RSpec.describe Unleash::Client do
               context = Unleash::Context.new(test['context'])
 
               unleash = Unleash::Client.new(
-                app_name: 'bootstrap-test',
-                instance_id: 'local-test-cli',
                 disable_client: true,
                 disable_metrics: true,
                 bootstrap_config: Unleash::Bootstrap::Configuration.new(data: current_test_set.fetch('state', {}).to_json)

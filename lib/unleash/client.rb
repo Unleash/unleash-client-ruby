@@ -85,9 +85,7 @@ module Unleash
       end
 
       resolved_variant = Unleash.engine.get_variant(feature, context)
-      if !resolved_variant.nil?
-        resolved_variant = Variant.new(resolved_variant)
-      end
+      resolved_variant = Variant.new(resolved_variant) unless resolved_variant.nil?
 
       variant = resolved_variant || fallback_variant
 

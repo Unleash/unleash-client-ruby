@@ -79,15 +79,22 @@ module Unleash
 
       toggle_enabled = Unleash.engine.enabled?(feature, context)
       if toggle_enabled.nil?
+        Unleash.logger.debug "Unleash::Client.get_variant feature: #{feature} not found"
         Unleash.engine.count_toggle(feature, false)
-      else
-        Unleash.engine.count_toggle(feature, toggle_enabled)
+        return fallback_variant
       end
 
-      resolved_variant = Unleash.engine.get_variant(feature, context)
-      resolved_variant = Variant.new(resolved_variant) unless resolved_variant.nil?
+      Unleash.engine.count_toggle(feature, toggle_enabled)
 
-      variant = resolved_variant || fallback_variant
+      variant = Unleash.engine.get_variant(feature, context)
+
+      if variant.nil?
+        Unleash.logger.debug "Unleash::Client.get_variant variants for feature: #{feature} not found"
+        Unleash.engine.count_variant(feature, "disabled")
+        return fallback_variant
+      end
+
+      variant = Variant.new(variant)
 
       Unleash.engine.count_variant(feature, variant.name)
 

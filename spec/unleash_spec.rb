@@ -26,10 +26,8 @@ RSpec.describe Unleash do
 
   it "should mount custom strategies correctly" do
     class TestStrategy
-      attr_reader :name
-
-      def initialize(name)
-        @name = name
+      def name
+        'customStrategy'
       end
 
       def enabled?(params, _context)
@@ -42,8 +40,7 @@ RSpec.describe Unleash do
       config.strategies.add(TestStrategy.new("customStrategy"))
     end
 
-    custom_strategy = Unleash.configuration.strategies.strategies.find { |strategy| strategy.name == 'customStrategy' }
-
-    expect(custom_strategy).to be_instance_of(TestStrategy)
+    expect(Unleash.configuration.strategies.includes?('customStrategy')).to eq(true)
+    expect(Unleash.configuration.strategies.includes?('nonExistingStrategy')).to eq(false)
   end
 end

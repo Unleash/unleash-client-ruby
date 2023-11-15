@@ -19,7 +19,7 @@ module Unleash
       Unleash.logger = Unleash.configuration.logger.clone
       Unleash.logger.level = Unleash.configuration.log_level
       Unleash.engine = YggdrasilEngine.new
-      Unleash.engine.register_custom_strategies(Unleash.configuration.strategies.strategies)
+      Unleash.engine.register_custom_strategies(Unleash.configuration.strategies.custom_strategies)
 
       Unleash.toggle_fetcher = Unleash::ToggleFetcher.new Unleash.engine
       if Unleash.configuration.disable_client

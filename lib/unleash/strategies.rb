@@ -1,13 +1,29 @@
 module Unleash
+  class DefaultOverrideError < RuntimeError
+  end
+
   class Strategies
     attr_accessor :strategies
 
     def initialize
-      @strategies = []
+      @strategies = {}
+    end
+
+    def includes?(name)
+      @strategies.has_key?(name.to_s) || DEFAULT_STRATEGIES.include?(name.to_s)
     end
 
     def add(strategy)
-      @strategies << strategy
+      raise DefaultOverrideError, "Cannot override a default strategy" if DEFAULT_STRATEGIES.include?(strategy.name)
+
+      @strategies[strategy.name] = strategy
     end
+
+    def custom_strategies
+      @strategies.values
+    end
+
+    DEFAULT_STRATEGIES = ['applicationHostname', 'default', 'flexibleRollout', 'gradualRolloutRandom', 'gradualRolloutSessionId',
+                          'gradualRolloutUserId', 'remoteAddress', 'userWithId'].freeze
   end
 end

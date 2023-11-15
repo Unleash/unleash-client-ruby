@@ -13,6 +13,30 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [5.0.0] - 2023-10-30
+### Added
+- change seed for variantutils to ensure fair distribution (#160)
+  - client specification is [here](https://github.com/Unleash/client-specification/tree/v5.0.2/specifications)
+  - A new seed is introduced to ensure a fair distribution for variants, addressing the issue of skewed variant distribution due to using the same hash string for both gradual rollout and variant allocation.
+
+## [4.6.0] - 2023-10-16
+### Added
+- dependant toggles (#155)
+  - client specification is [here](https://github.com/Unleash/client-specification/pull/63)
+
+## [4.5.0] - 2023-07-05
+### Added
+- variants in strategies (#148)
+  - issue described here (#147)
+
+### Fixed
+- groupId override for variants
+
+## [4.4.4] - 2023-07-05
+### Fixed
+- flexible rollout strategy without context (#146)
+  - The flexible rollout strategy should evaluate default and random stickiness even if context is not provided.
+
 ## [4.4.3] - 2023-06-14
 ### Added
 - Add Context#to_h method (#136)

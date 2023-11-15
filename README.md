@@ -25,7 +25,7 @@ Leverage the [Unleash Server](https://github.com/Unleash/unleash) for powerful f
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'unleash', '~> 4.4.0'
+gem 'unleash', '~> 5.0.0'
 ```
 
 And then execute:
@@ -528,7 +528,7 @@ You can also run `bin/console` for an interactive prompt that will allow you to 
 This SDK is also built against the Unleash Client Specification tests.
 To run the Ruby SDK against this test suite, you'll need to have a copy on your machine, you can clone the repository directly using:
 
-`git clone --depth 5 --branch v4.2.2 https://github.com/Unleash/client-specification.git client-specification`
+`git clone --depth 5 --branch v5.0.2 https://github.com/Unleash/client-specification.git client-specification`
 
 After doing this, `rake spec` will also run the client specification tests.
 
@@ -539,7 +539,7 @@ To install this gem onto your local machine, run `bundle exec rake install`.
 Choose a new version number following [Semantic Versioning](https://semver.org/spec/v2.0.0.html) semantics and then:
 
 - update the version number in [./lib/unleash/version.rb](./lib/unleash/version.rb),
-- if a major or minor version bump, update the [Installation section](#Installation) in [README.md](README.md)
+- if a major or minor version bump, update the [Installation section](#installation) in [README.md](README.md)
 - update [CHANGELOG.md](CHANGELOG.md) following the format on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - commit with message `chore: bump version to x.y.z`
 - then run `bundle exec rake release`
@@ -555,3 +555,5 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/unleas
 Be sure to run both `bundle exec rspec` and `bundle exec rubocop` in your branch before creating a pull request.
 
 Please include tests with any pull requests, to avoid regressions.
+
+Check out our guide for more information on how to build and scale [feature flag systems](https://docs.getunleash.io/topics/feature-flags/feature-flag-best-practices)

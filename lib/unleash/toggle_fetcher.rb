@@ -6,12 +6,11 @@ require 'yggdrasil_engine'
 
 module Unleash
   class ToggleFetcher
-    attr_accessor :toggle_engine, :toggle_lock, :toggle_resource, :etag, :retry_count, :segment_cache
+    attr_accessor :toggle_engine, :toggle_lock, :toggle_resource, :etag, :retry_count
 
     def initialize(engine)
       self.toggle_engine = engine
       self.etag = nil
-      self.segment_cache = nil
       self.toggle_lock = Mutex.new
       self.toggle_resource = ConditionVariable.new
       self.retry_count = 0
@@ -33,14 +32,6 @@ module Unleash
       # once initialized, somewhere else you will want to start a loop with fetch()
     end
 
-    def toggles
-      self.toggle_lock.synchronize do
-        # wait for resource, only if it is null
-        self.toggle_resource.wait(self.toggle_lock) if self.toggle_engine.nil?
-        return self.toggle_engine
-      end
-    end
-
     # rename to refresh_from_server!  ??
     def fetch
       Unleash.logger.debug "fetch()"
@@ -58,9 +49,8 @@ module Unleash
       self.etag = response['ETag']
 
       # always synchronize with the local cache when fetching:
-      synchronize_with_local_cache!(response.body)
+      update_engine_state!(response.body)
 
-      update_running_client!
       save! response.body
     end
 
@@ -84,7 +74,7 @@ module Unleash
 
     private
 
-    def synchronize_with_local_cache!(toggle_data)
+    def update_engine_state!(toggle_data)
       self.toggle_lock.synchronize do
         self.toggle_engine.take_state(toggle_data)
       end
@@ -93,20 +83,13 @@ module Unleash
       self.toggle_resource.broadcast
     end
 
-    def update_running_client!
-      if Unleash.engine != self.toggle_engine
-        Unleash.engine = self.toggle_engine
-      end
-    end
-
     def read!
       Unleash.logger.debug "read!()"
       backup_file = Unleash.configuration.backup_file
       return nil unless File.exist?(backup_file)
 
       backup_data = File.read(backup_file)
-      synchronize_with_local_cache!(backup_data)
-      update_running_client!
+      update_engine_state!(backup_data)
     rescue IOError => e
       Unleash.logger.error "Unable to read the backup_file: #{e}"
     rescue JSON::ParserError => e
@@ -117,17 +100,10 @@ module Unleash
 
     def bootstrap
       bootstrap_payload = Unleash::Bootstrap::Handler.new(Unleash.configuration.bootstrap_config).retrieve_toggles
-      synchronize_with_local_cache! bootstrap_payload
-      update_running_client!
+      update_engine_state! bootstrap_payload
 
       # reset Unleash.configuration.bootstrap_data to free up memory, as we will never use it again
       Unleash.configuration.bootstrap_config = nil
-    end
-
-    def build_segment_map(segments_array)
-      return {} if segments_array.nil?
-
-      segments_array.map{ |segment| [segment["id"], segment] }.to_h
     end
   end
 end

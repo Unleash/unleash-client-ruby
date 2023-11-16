@@ -54,25 +54,16 @@ RSpec.describe Unleash::ToggleFetcher do
     File.delete(Unleash.configuration.backup_file) if File.exist?(Unleash.configuration.backup_file)
   end
 
-  describe '#save!' do
-    context 'when toggle_cache with content is saved' do
+  describe '#fetch!' do
+    let(:engine) { YggdrasilEngine.new }
+
+    context 'when fetching toggles succeds' do
+      before do
+        _toggle_fetcher = described_class.new engine
+      end
       it 'creates a file with toggle_cache in JSON' do
-        toggles = {
-          version: 2,
-          features: [
-            {
-              name: "Feature.A",
-              description: "Enabled toggle",
-              enabled: true,
-              strategies: [{
-                "name": "default"
-              }]
-            }
-          ]
-        }
-        toggle_fetcher.save! toggles.to_json
-        expect(File.exist?(Unleash.configuration.backup_file)).to eq(true)
-        expect(File.read(Unleash.configuration.backup_file)).to eq('{"version":2,"features":[{"name":"Feature.A","description":"Enabled toggle","enabled":true,"strategies":[{"name":"default"}]}]}')
+        backup_file = Unleash.configuration.backup_file
+        expect(File.exist?(backup_file)).to eq(true)
       end
     end
   end

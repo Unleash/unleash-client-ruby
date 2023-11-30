@@ -189,7 +189,7 @@ module Unleash
     end
 
     def initialize_strategies(params, segment_map)
-      params.fetch('strategies', [])
+      (params.fetch('strategies', []) || [])
         .select{ |s| s.has_key?('name') && Unleash.strategies.includes?(s['name']) }
         .map do |s|
           ActivationStrategy.new(
@@ -202,7 +202,7 @@ module Unleash
     end
 
     def resolve_variants(strategy)
-      strategy.fetch("variants", [])
+      (strategy.fetch("variants", []) || [])
         .select{ |variant| variant.is_a?(Hash) && variant.has_key?("name") }
         .map do |variant|
           VariantDefinition.new(

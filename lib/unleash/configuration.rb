@@ -51,6 +51,7 @@ module Unleash
 
     def http_headers
       {
+        'User-Agent' => "UnleashClientRuby/#{Unleash::VERSION} #{RUBY_ENGINE}/#{RUBY_VERSION} [#{RUBY_PLATFORM}]",
         'UNLEASH-INSTANCEID' => self.instance_id,
         'UNLEASH-APPNAME' => self.app_name,
         'Unleash-Client-Spec' => '5.0.2'

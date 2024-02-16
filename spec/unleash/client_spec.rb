@@ -297,6 +297,62 @@ RSpec.describe Unleash::Client do
     expect(WebMock).not_to have_requested(:post, 'http://test-url/client/metrics')
   end
 
+  it "should not fail if we are provided no variants from the unleash server" do
+    WebMock.stub_request(:post, "http://test-url/client/register")
+      .with(
+        headers: {
+          'Accept' => '*/*',
+          'Content-Type' => 'application/json',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'User-Agent' => 'Ruby',
+          'X-Api-Key' => '123'
+        }
+      )
+      .to_return(status: 200, body: "", headers: {})
+
+    features_response_body = '{
+      "version": 1,
+      "features": [{
+        "name": "toggleName",
+        "enabled": true,
+        "strategies": [{ "name": "default", "constraints": [], "parameters": {}, "variants": null }],
+        "variants": []
+      }]
+    }'
+
+    WebMock.stub_request(:get, "http://test-url/client/features")
+      .with(
+        headers: {
+          'Accept' => '*/*',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Type' => 'application/json',
+          'Unleash-Appname' => 'my-test-app',
+          'Unleash-Instanceid' => 'rspec/test',
+          'User-Agent' => 'Ruby',
+          'X-Api-Key' => '123'
+        }
+      )
+      .to_return(status: 200, body: features_response_body, headers: {})
+
+    Unleash.configure do |config|
+      config.url      = 'http://test-url/'
+      config.app_name = 'my-test-app'
+      config.instance_id = 'rspec/test'
+      config.disable_client = false
+      config.disable_metrics = true
+      config.custom_http_headers = { 'X-API-KEY' => '123' }
+    end
+
+    unleash_client = Unleash::Client.new
+
+    expect(unleash_client.is_enabled?('toggleName', {})).to be true
+
+    expect(WebMock).not_to have_requested(:get, 'http://test-url/')
+    expect(WebMock).to have_requested(:get, 'http://test-url/client/features')
+    expect(WebMock).to have_requested(:post, 'http://test-url/client/register')
+    expect(WebMock).not_to have_requested(:post, 'http://test-url/client/metrics')
+  end
+
   it "should forcefully disable metrics if the client is disabled" do
     Unleash.configure do |config|
       config.url      = 'http://test-url/'

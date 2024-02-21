@@ -12,7 +12,9 @@ module Unleash
     end
 
     def to_s
+      # :nocov:
       "<Variant: name=#{self.name},enabled=#{self.enabled},payload=#{self.payload}>"
+      # :nocov:
     end
 
     def ==(other)

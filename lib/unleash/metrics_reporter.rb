@@ -39,7 +39,9 @@ module Unleash
       if ['200', '202'].include? response.code
         Unleash.logger.debug "Report sent to unleash server successfully. Server responded with http code #{response.code}"
       else
+        # :nocov:
         Unleash.logger.error "Error when sending report to unleash server. Server responded with http code #{response.code}."
+        # :nocov:
       end
     end
   end

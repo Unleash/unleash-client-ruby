@@ -91,11 +91,17 @@ module Unleash
       backup_data = File.read(backup_file)
       update_engine_state!(backup_data)
     rescue IOError => e
+      # :nocov:
       Unleash.logger.error "Unable to read the backup_file: #{e}"
+      # :nocov:
     rescue JSON::ParserError => e
+      # :nocov:
       Unleash.logger.error "Unable to parse JSON from existing backup_file: #{e}"
+      # :nocov:
     rescue StandardError => e
+      # :nocov:
       Unleash.logger.error "Unable to extract valid data from backup_file. Exception thrown: #{e}"
+      # :nocov:
     end
 
     def bootstrap

@@ -24,10 +24,8 @@ module Unleash
     end
 
     def known_strategies
-      @strategies.keys.map { |key| { name: key } }
+      @strategies.keys.map{ |key| { name: key } }
     end
-
-    private
 
     DEFAULT_STRATEGIES = ['applicationHostname', 'default', 'flexibleRollout', 'gradualRolloutRandom', 'gradualRolloutSessionId',
                           'gradualRolloutUserId', 'remoteAddress', 'userWithId'].freeze

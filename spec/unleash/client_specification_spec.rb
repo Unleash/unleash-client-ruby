@@ -18,7 +18,6 @@ RSpec.describe Unleash::Client do
     JSON.parse(File.read(SPECIFICATION_PATH + '/index.json')).each do |test_file|
       describe "for #{test_file}" do
         current_test_set = JSON.parse(File.read(SPECIFICATION_PATH + '/' + test_file))
-
         context "with #{current_test_set.fetch('name')} " do
           tests = current_test_set.fetch('tests', [])
           tests.each do |test|

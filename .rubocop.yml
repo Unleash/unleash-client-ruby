@@ -13,6 +13,8 @@ Metrics/ClassLength:
   Max: 135
   CountAsOne:
     - 'method_call'
+  Exclude:
+    - 'lib/unleash/feature_toggle.rb'
 Layout/LineLength:
   Max: 140
 Metrics/MethodLength:
@@ -125,6 +127,8 @@ Layout/BeginEndAlignment:
   Enabled: true
 Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: true
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: consistent
 Layout/SpaceAroundMethodCallOperator:
   Enabled: true
 Layout/MultilineMethodCallIndentation:

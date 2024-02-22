@@ -53,7 +53,7 @@ module Unleash
       {
         'UNLEASH-INSTANCEID' => self.instance_id,
         'UNLEASH-APPNAME' => self.app_name,
-        'Unleash-Client-Spec' => '4.2.2'
+        'Unleash-Client-Spec' => '5.0.2'
       }.merge!(generate_custom_http_headers)
     end
 
@@ -96,7 +96,7 @@ module Unleash
       self.backup_file      = nil
       self.log_level        = Logger::WARN
       self.bootstrap_config = nil
-      self.strategies       = nil
+      self.strategies       = Unleash::Strategies.new
 
       self.custom_http_headers = {}
     end

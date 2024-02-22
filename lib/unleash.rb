@@ -1,5 +1,6 @@
 require 'unleash/version'
 require 'unleash/configuration'
+require 'unleash/strategies'
 require 'unleash/context'
 require 'unleash/client'
 require 'logger'
@@ -8,7 +9,7 @@ module Unleash
   TIME_RESOLUTION = 3
 
   class << self
-    attr_accessor :configuration, :toggle_fetcher, :toggles, :toggle_metrics, :reporter, :segment_cache, :logger, :engine
+    attr_accessor :configuration, :toggle_fetcher, :reporter, :logger, :engine
   end
 
   self.configuration = Unleash::Configuration.new
@@ -25,6 +26,6 @@ module Unleash
   end
 
   def self.strategies
-    nil
+    self.configuration.strategies
   end
 end

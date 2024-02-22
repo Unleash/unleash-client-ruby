@@ -14,19 +14,14 @@ module Unleash
     end
 
     def generate_report
-      puts "Making report"
       metrics = Unleash&.engine&.get_metrics()
-      if metrics.nil? || metrics.empty?
-        puts "nothing here"
-        return nil
-      end
-      report = {
+      return nil if metrics.nil? || metrics.empty?
+
+      {
         'appName': Unleash.configuration.app_name,
         'instanceId': Unleash.configuration.instance_id,
         'bucket': metrics
       }
-
-      report
     end
 
     def post
@@ -44,10 +39,10 @@ module Unleash
       if ['200', '202'].include? response.code
         Unleash.logger.debug "Report sent to unleash server successfully. Server responded with http code #{response.code}"
       else
+        # :nocov:
         Unleash.logger.error "Error when sending report to unleash server. Server responded with http code #{response.code}."
+        # :nocov:
       end
     end
-
-    private
   end
 end

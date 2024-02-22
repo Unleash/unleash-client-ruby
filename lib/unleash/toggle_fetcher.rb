@@ -2,15 +2,15 @@ require 'unleash/configuration'
 require 'unleash/bootstrap/handler'
 require 'net/http'
 require 'json'
-require 'unleash_engine'
+require 'yggdrasil_engine'
 
 module Unleash
   class ToggleFetcher
-    attr_accessor :toggle_engine, :toggle_lock, :toggle_resource, :etag, :retry_count, :segment_cache
+    attr_accessor :toggle_engine, :toggle_lock, :toggle_resource, :etag, :retry_count
 
-    def initialize
+    def initialize(engine)
+      self.toggle_engine = engine
       self.etag = nil
-      self.segment_cache = nil
       self.toggle_lock = Mutex.new
       self.toggle_resource = ConditionVariable.new
       self.retry_count = 0
@@ -32,14 +32,6 @@ module Unleash
       # once initialized, somewhere else you will want to start a loop with fetch()
     end
 
-    def toggles
-      self.toggle_lock.synchronize do
-        # wait for resource, only if it is null
-        self.toggle_resource.wait(self.toggle_lock) if self.toggle_engine.nil?
-        return self.toggle_engine
-      end
-    end
-
     # rename to refresh_from_server!  ??
     def fetch
       Unleash.logger.debug "fetch()"
@@ -55,12 +47,10 @@ module Unleash
       end
 
       self.etag = response['ETag']
-      engine = get_engine(response.body)
 
       # always synchronize with the local cache when fetching:
-      synchronize_with_local_cache!(engine)
+      update_engine_state!(response.body)
 
-      update_running_client!
       save! response.body
     end
 
@@ -84,21 +74,13 @@ module Unleash
 
     private
 
-    def synchronize_with_local_cache!(engine)
-      if self.toggle_engine != engine
-        self.toggle_lock.synchronize do
-          self.toggle_engine = engine
-        end
-
-        # notify all threads waiting for this resource to no longer wait
-        self.toggle_resource.broadcast
+    def update_engine_state!(toggle_data)
+      self.toggle_lock.synchronize do
+        self.toggle_engine.take_state(toggle_data)
       end
-    end
 
-    def update_running_client!
-      if Unleash.engine != self.toggle_engine
-        Unleash.engine = self.toggle_engine
-      end
+      # notify all threads waiting for this resource to no longer wait
+      self.toggle_resource.broadcast
     end
 
     def read!
@@ -106,47 +88,28 @@ module Unleash
       backup_file = Unleash.configuration.backup_file
       return nil unless File.exist?(backup_file)
 
-      backup_as_hash = JSON.parse(File.read(backup_file))
-      synchronize_with_local_cache!(backup_as_hash)
-      update_running_client!
+      backup_data = File.read(backup_file)
+      update_engine_state!(backup_data)
     rescue IOError => e
+      # :nocov:
       Unleash.logger.error "Unable to read the backup_file: #{e}"
+      # :nocov:
     rescue JSON::ParserError => e
+      # :nocov:
       Unleash.logger.error "Unable to parse JSON from existing backup_file: #{e}"
+      # :nocov:
     rescue StandardError => e
+      # :nocov:
       Unleash.logger.error "Unable to extract valid data from backup_file. Exception thrown: #{e}"
+      # :nocov:
     end
 
     def bootstrap
       bootstrap_payload = Unleash::Bootstrap::Handler.new(Unleash.configuration.bootstrap_config).retrieve_toggles
-      synchronize_with_local_cache! get_engine bootstrap_payload
-      update_running_client!
+      update_engine_state! bootstrap_payload
 
       # reset Unleash.configuration.bootstrap_data to free up memory, as we will never use it again
       Unleash.configuration.bootstrap_config = nil
-    end
-
-    def build_segment_map(segments_array)
-      return {} if segments_array.nil?
-
-      segments_array.map{ |segment| [segment["id"], segment] }.to_h
-    end
-
-    def get_engine(response_body)
-      engine = UnleashEngine.new
-      engine.take_state(response_body)
-      engine
-    end
-
-    # @param response_body [String]
-    def get_features(response_body)
-      response_hash = JSON.parse(response_body)
-      if response_hash['version'] >= 1
-        return { "features" => response_hash["features"], "segments" => build_segment_map(response_hash["segments"]) }
-      end
-
-      raise NotImplemented, "Version of features provided by unleash server" \
-        " is unsupported by this client."
     end
   end
 end

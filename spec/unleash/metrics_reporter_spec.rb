@@ -8,8 +8,6 @@ RSpec.describe Unleash::MetricsReporter do
     Unleash.logger = Unleash.configuration.logger
     Unleash.logger.level = Unleash.configuration.log_level
     # Unleash.logger.level = Logger::DEBUG
-    Unleash.toggles = []
-    Unleash.toggle_metrics = {}
 
     Unleash.configuration.url         = 'http://test-url/'
     Unleash.configuration.app_name    = 'my-test-app'
@@ -27,24 +25,26 @@ RSpec.describe Unleash::MetricsReporter do
       config.instance_id = 'rspec/test'
       config.disable_client = true
     end
-    Unleash.toggle_metrics = Unleash::Metrics.new
+    Unleash.engine = YggdrasilEngine.new
 
-    Unleash.toggle_metrics.increment('featureA', :yes)
-    Unleash.toggle_metrics.increment('featureA', :yes)
-    Unleash.toggle_metrics.increment('featureA', :yes)
-    Unleash.toggle_metrics.increment('featureA', :no)
-    Unleash.toggle_metrics.increment('featureA', :no)
-    Unleash.toggle_metrics.increment('featureB', :yes)
+    Unleash.engine.count_toggle('featureA', true)
+    Unleash.engine.count_toggle('featureA', true)
+    Unleash.engine.count_toggle('featureA', true)
+    Unleash.engine.count_toggle('featureA', false)
+    Unleash.engine.count_toggle('featureA', false)
+    Unleash.engine.count_toggle('featureB', true)
 
     report = metrics_reporter.generate_report
     expect(report[:bucket][:toggles]).to include(
-      "featureA" => {
+      featureA: {
         no: 2,
-        yes: 3
+        yes: 3,
+        variants: {}
       },
-      "featureB" => {
+      featureB: {
         no: 0,
-        yes: 1
+        yes: 1,
+        variants: {}
       }
     )
 
@@ -74,14 +74,14 @@ RSpec.describe Unleash::MetricsReporter do
       )
       .to_return(status: 200, body: "", headers: {})
 
-    Unleash.toggle_metrics = Unleash::Metrics.new
+    Unleash.engine = YggdrasilEngine.new
 
-    Unleash.toggle_metrics.increment('featureA', :yes)
-    Unleash.toggle_metrics.increment('featureA', :yes)
-    Unleash.toggle_metrics.increment('featureA', :yes)
-    Unleash.toggle_metrics.increment('featureA', :no)
-    Unleash.toggle_metrics.increment('featureA', :no)
-    Unleash.toggle_metrics.increment('featureB', :yes)
+    Unleash.engine.count_toggle('featureA', true)
+    Unleash.engine.count_toggle('featureA', true)
+    Unleash.engine.count_toggle('featureA', true)
+    Unleash.engine.count_toggle('featureA', false)
+    Unleash.engine.count_toggle('featureA', false)
+    Unleash.engine.count_toggle('featureB', true)
 
     metrics_reporter.post
 
@@ -105,7 +105,7 @@ RSpec.describe Unleash::MetricsReporter do
   end
 
   it "does not send a report, if there were no metrics registered/evaluated" do
-    Unleash.toggle_metrics = Unleash::Metrics.new
+    Unleash.engine = YggdrasilEngine.new
 
     metrics_reporter.post
 

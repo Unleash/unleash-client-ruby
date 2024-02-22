@@ -23,4 +23,24 @@ RSpec.describe Unleash do
       expect(described_class.strategies).to eq(Unleash.configuration.strategies)
     end
   end
+
+  it "should mount custom strategies correctly" do
+    class TestStrategy
+      def name
+        'customStrategy'
+      end
+
+      def enabled?(params, _context)
+        params["gerkhins"] == "yes"
+      end
+    end
+
+    Unleash.configure do |config|
+      config.app_name = 'rspec_test'
+      config.strategies.add(TestStrategy.new("customStrategy"))
+    end
+
+    expect(Unleash.configuration.strategies.includes?('customStrategy')).to eq(true)
+    expect(Unleash.configuration.strategies.includes?('nonExistingStrategy')).to eq(false)
+  end
 end

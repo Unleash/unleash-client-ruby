@@ -1,3 +1,6 @@
+require 'stringio'
+require 'zlib'
+
 RSpec.describe Unleash::Client do
   after do
     WebMock.reset!
@@ -105,6 +108,107 @@ RSpec.describe Unleash::Client do
       .with(headers: { 'UNLEASH-APPNAME': 'my-test-app' })
       .with(headers: { 'UNLEASH-INSTANCEID': 'rspec/test' })
       .with{ |request| JSON.parse(request.body)['bucket']['toggles']['Feature.A']['yes'] == 2 }
+    ).to have_been_made.once
+  end
+
+  it "The compress http header compresses post requests when initializing client" do
+    WebMock.stub_request(:post, "http://test-url/client/register")
+      .with(
+        headers: {
+          'Accept' => '*/*',
+          'Content-Type' => 'application/json',
+          'Content-Encoding' => 'gzip',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'User-Agent' => 'Ruby',
+          'X-Api-Key' => '123'
+        }
+      )
+      .to_return(status: 200, body: "", headers: {})
+    WebMock.stub_request(:post, "http://test-url/client/metrics")
+      .with(
+        headers: {
+          'Accept' => '*/*',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Type' => 'application/json',
+          'Content-Encoding' => 'gzip',
+          'User-Agent' => 'Ruby'
+        }
+      )
+      .to_return(status: 200, body: "", headers: {})
+
+    simple_features = {
+      "version": 1,
+      "features": [
+        {
+          "name": "Feature.A",
+          "description": "Enabled toggle",
+          "enabled": true,
+          "strategies": [{ "name": "default" }]
+        }
+      ]
+    }
+    WebMock.stub_request(:get, "http://test-url/client/features")
+      .with(
+        headers: {
+          'Accept' => '*/*',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Type' => 'application/json',
+          'Unleash-Appname' => 'my-test-app',
+          'Unleash-Instanceid' => 'rspec/test',
+          'User-Agent' => 'Ruby',
+          'X-Api-Key' => '123'
+        }
+      )
+      .to_return(status: 200, body: simple_features.to_json, headers: {})
+
+    unleash_client = Unleash::Client.new(
+      url: 'http://test-url/',
+      app_name: 'my-test-app',
+      instance_id: 'rspec/test',
+      custom_http_headers: { 'X-API-KEY' => '123', 'Content-Encoding' => 'gzip' }
+    )
+
+    expect(unleash_client).to be_a(Unleash::Client)
+
+    expect(
+      a_request(:post, "http://test-url/client/register")
+        .with(headers: {
+          'Content-Type': 'application/json',
+          'Content-Encoding': 'gzip',
+          'X-API-KEY': '123',
+          'UNLEASH-APPNAME': 'my-test-app',
+          'UNLEASH-INSTANCEID': 'rspec/test'
+        })
+    ).to have_been_made.once
+
+    expect(
+      a_request(:get, "http://test-url/client/features")
+        .with(headers: {
+          'Content-Type': 'application/json',
+          'X-API-KEY': '123',
+          'UNLEASH-APPNAME': 'my-test-app',
+          'UNLEASH-INSTANCEID': 'rspec/test'
+        })
+    ).to have_been_made.once
+
+    # Test now sending of metrics
+    # Sending metrics, if they have been evaluated:
+    unleash_client.is_enabled?("Feature.A")
+    unleash_client.get_variant("Feature.A")
+    Unleash.reporter.post
+    expect(
+      a_request(:post, "http://test-url/client/metrics")
+        .with(headers: {
+          'Content-Type': 'application/json',
+          'Content-Encoding': 'gzip',
+          'X-API-KEY': '123',
+          'UNLEASH-APPNAME': 'my-test-app',
+          'UNLEASH-INSTANCEID': 'rspec/test'
+        })
+        .with do |request|
+          uncompressed_request_body = Zlib::GzipReader.wrap(StringIO.new(request.body), &:read)
+          JSON.parse(uncompressed_request_body)['bucket']['toggles']['Feature.A']['yes'] == 2
+        end
     ).to have_been_made.once
   end
 

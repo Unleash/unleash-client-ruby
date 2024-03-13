@@ -103,13 +103,13 @@ module Unleash
       # when the operator is NOT_IN and there is no data, return true. In all other cases the operator doesn't match.
       return self.operator == :NOT_IN unless context.include?(self.context_name)
 
-      v = self.value.dup
+      value = self.value.dup
       context_value = context.get_by_name(self.context_name)
 
-      v.map!(&:upcase) if self.case_insensitive
-      context_value = context_value.upcase if self.case_insensitive
-
-      OPERATORS[self.operator].call(context_value, v)
+      OPERATORS[self.operator].call(
+        context_value.then{ |c| self.case_insensitive ? c.upcase : c },
+        value.then{ |v| self.case_insensitive ? v.map(&:upcase) : v }
+      )
     end
   end
 end

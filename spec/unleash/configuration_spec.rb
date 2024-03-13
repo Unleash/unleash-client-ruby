@@ -146,7 +146,8 @@ RSpec.describe Unleash do
           'X-API-KEY' => '123',
           'UNLEASH-APPNAME' => 'test-app',
           'UNLEASH-INSTANCEID' => config.instance_id,
-          'Unleash-Client-Spec' => '5.0.2'
+          'Unleash-Client-Spec' => '5.0.2',
+          'User-Agent' => "UnleashClientRuby/#{Unleash::VERSION} #{RUBY_ENGINE}/#{RUBY_VERSION} [#{RUBY_PLATFORM}]"
         }
       )
       expect(custom_headers_proc).to have_received(:call).exactly(1).times

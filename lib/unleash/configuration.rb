@@ -40,9 +40,9 @@ module Unleash
     def validate!
       return if self.disable_client
 
-      raise ArgumentError, "URL and app_name are required parameters." if self.app_name.nil? || self.url.nil?
+      raise ArgumentError, "app_name is a required parameter." if self.app_name.nil?
 
-      validate_custom_http_headers!(self.custom_http_headers)
+      validate_custom_http_headers!(self.custom_http_headers) unless self.url.nil?
     end
 
     def refresh_backup_file!

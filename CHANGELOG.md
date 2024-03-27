@@ -13,6 +13,15 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [5.0.1] - 2024-03-27
+### Changed
+- make user-agent headers more descriptive (#168)
+
+### Fixed
+- make client more resilient to non-conforming responses from `unleash-edge` (#162)
+  - while the unleash server provides always valid responses, (at least some versions of) unleash-edge can provide an unexpected JSON response (null instead of empty array).
+  - fixed the handling of the response, so we do not throw exceptions in this situation.
+
 ## [5.0.0] - 2023-10-30
 ### Added
 - change seed for variantutils to ensure fair distribution (#160)

@@ -1,3 +1,5 @@
+require 'unleash/util/executor_result'
+
 module Unleash
   class ScheduledExecutor
     attr_accessor :name, :interval, :max_exceptions, :retry_count, :thread, :immediate_execution
@@ -53,8 +55,18 @@ module Unleash
     def run_blk(&blk)
       Unleash.logger.debug "thread #{name} starting execution"
 
-      yield(blk)
-      self.retry_count = 0
+      case yield(blk)
+      when Unleash::Util::ExecutorResult::SUCCESS
+        self.retry_count = 0
+      when Unleash::Util::ExecutorResult::TEMPORARY_FAILURE
+        Unleash.logger.warn "thread #{name} ended with temporary failure"
+      when Unleash::Util::ExecutorResult::PERMANENT_FAILURE
+        self.retry_count += 1
+        Unleash.logger.error "thread #{name} ended with permanent failure " \
+                               " (#{self.retry_count}/#{self.max_exceptions}): '#{e}'"
+      else
+        Unleash.logger.warn "thread #{name} ended with unknown status, assuming temporary"
+      end
     rescue StandardError => e
       self.retry_count += 1
       Unleash.logger.error "thread #{name} threw exception #{e.class} " \

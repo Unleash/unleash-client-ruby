@@ -1,5 +1,6 @@
 require 'unleash/configuration'
 require 'unleash/metrics'
+require 'unleash/util/executor_result'
 require 'net/http'
 require 'json'
 require 'time'
@@ -35,6 +36,7 @@ module Unleash
       report
     end
 
+    # @return [integer]
     def post
       Unleash.logger.debug "post() Report"
 
@@ -48,8 +50,10 @@ module Unleash
 
       if ['200', '202'].include? response.code
         Unleash.logger.debug "Report sent to unleash server successfully. Server responded with http code #{response.code}"
+        Unleash::Util::ExecutorResult::SUCCESS
       else
         Unleash.logger.error "Error when sending report to unleash server. Server responded with http code #{response.code}."
+        Unleash::Util::ExecutorResult::TEMPORARY_FAILURE
       end
     end
 

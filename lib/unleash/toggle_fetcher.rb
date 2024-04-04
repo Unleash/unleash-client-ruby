@@ -1,5 +1,6 @@
 require 'unleash/configuration'
 require 'unleash/bootstrap/handler'
+require 'unleash/util/executor_result'
 require 'net/http'
 require 'json'
 
@@ -20,7 +21,9 @@ module Unleash
         if Unleash.configuration.use_bootstrap?
           bootstrap
         else
-          fetch
+          ret = fetch
+          # https://docs.ruby-lang.org/en/3.2/Exception.html#class-Exception-label-Custom+Exceptions
+          raise StandardError "Unable to fetch toggles from the server" unless ret == Unleash::Util::ExecutorResult::SUCCESS
         end
       rescue StandardError => e
         # fail back to reading the backup file
@@ -32,6 +35,7 @@ module Unleash
       # once initialized, somewhere else you will want to start a loop with fetch()
     end
 
+    # @return [Hash]
     def toggles
       self.toggle_lock.synchronize do
         # wait for resource, only if it is null
@@ -41,17 +45,32 @@ module Unleash
     end
 
     # rename to refresh_from_server!  ??
+    # @return [integer]
     def fetch
       Unleash.logger.debug "fetch()"
-      return if Unleash.configuration.disable_client
+      return Unleash::Util::ExecutorResult::SUCCESS if Unleash.configuration.disable_client
 
       response = Unleash::Util::Http.get(Unleash.configuration.fetch_toggles_uri, etag)
 
-      if response.code == '304'
+      # to be extracted:
+      case response.code
+      when '200' # Net::HTTPOK
+        Unleash.logger.debug "Received 200 OK from unleash server, will update local cache."
+      when '304' # Net::HTTPNotModified
         Unleash.logger.debug "No changes according to the unleash server, nothing to do."
-        return
-      elsif response.code != '200'
-        raise IOError, "Unleash server returned a non 200/304 HTTP result."
+        return Unleash::Util::ExecutorResult::SUCCESS
+      when '429' # Net::HTTPTooManyRequests
+        Unleash.logger.warn "Unleash server requested via HTTP result that we retry later. HTTP code: #{response.code}"
+        return Unleash::Util::ExecutorResult::TEMPORARY_FAILURE
+      when '500'..'599' # Net::HTTPServerError
+        Unleash.logger.warn "Unleash server returned a server error. Consider it a permanent failure. HTTP code: #{response.code}"
+        return Unleash::Util::ExecutorResult::TEMPORARY_FAILURE
+      when '401', '403', '404' # Net::HTTPUnauthorized, Net::HTTPForbidden, Net::HTTPNotFound
+        Unleash.logger.error "Unleash server returned invalid code. Consider it a permanent failure. HTTP code: #{response.code}"
+        return Unleash::Util::ExecutorResult::PERMANENT_FAILURE
+      else
+        Unleash.logger.error "Unleash server returned unexpected result. Consider it a permanent failure. HTTP code: #{response.code}"
+        return Unleash::Util::ExecutorResult::PERMANENT_FAILURE
       end
 
       self.etag = response['ETag']
@@ -62,6 +81,8 @@ module Unleash
 
       update_running_client!
       save!
+
+      Unleash::Util::ExecutorResult::SUCCESS
     end
 
     def save!

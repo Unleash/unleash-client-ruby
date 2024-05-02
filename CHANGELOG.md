@@ -124,7 +124,12 @@ Note: These changes are not considered notable:
 - only send metrics if there is data to send. (#58)
 - in Client#get_variant() allow context and fallback_variant as nil (#51)
 
-[unreleased]: https://git1hub.com/unleash/unleash-client-ruby/compare/v4.4.3...HEAD
+[unreleased]: https://github.com/unleash/unleash-client-ruby/compare/v5.0.1...HEAD
+[5.0.1]: https://github.com/unleash/unleash-client-ruby/compare/v5.0.0...v5.0.1
+[5.0.0]: https://github.com/unleash/unleash-client-ruby/compare/v4.6.0...v5.0.0
+[4.6.0]: https://github.com/unleash/unleash-client-ruby/compare/v4.5.0...v4.6.0
+[4.5.0]: https://github.com/unleash/unleash-client-ruby/compare/v4.4.4...v4.5.0
+[4.4.4]: https://github.com/unleash/unleash-client-ruby/compare/v4.4.3...v4.4.4
 [4.4.3]: https://github.com/unleash/unleash-client-ruby/compare/v4.4.2...v4.4.3
 [4.4.2]: https://github.com/unleash/unleash-client-ruby/compare/v4.4.1...v4.4.2
 [4.4.1]: https://github.com/unleash/unleash-client-ruby/compare/v4.4.0...v4.4.1

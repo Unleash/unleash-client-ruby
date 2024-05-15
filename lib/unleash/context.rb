@@ -23,6 +23,22 @@ module Unleash
         ",app_name=#{@app_name},environment=#{@environment}>"
     end
 
+    def as_json
+      {
+        appName: self.app_name,
+        environment: self.environment,
+        userId: self.user_id,
+        sessionId: self.session_id,
+        remoteAddress: self.remote_address,
+        currentTime: self.current_time,
+        properties: self.properties
+      }
+    end
+
+    def to_json(*options)
+      as_json(*options).to_json(*options)
+    end
+
     def to_h
       ATTRS.map{ |attr| [attr, self.send(attr)] }.to_h.merge(properties: @properties)
     end

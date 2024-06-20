@@ -19,8 +19,11 @@ module Unleash
     end
 
     def to_s
-      "<Context: user_id=#{@user_id},session_id=#{@session_id},remote_address=#{@remote_address},properties=#{@properties}" \
-        ",app_name=#{@app_name},environment=#{@environment}>"
+      formatted_attributes = instance_variables.map do |var|
+        "#{var.to_s.delete('@')}=#{instance_variable_get(var)}"
+      end
+
+      "<Context: #{formatted_attributes.join(', ')}>"
     end
 
     def to_h

@@ -334,6 +334,7 @@ RSpec.describe Unleash::Constraint do
       constraint = Unleash::Constraint.new('currentTime', 'DATE_AFTER', '2022-01-31T13:00:00.000Z')
       expect(constraint.matches_context?(context)).to be false
 
+    it 'matches based on property DATE_AFTER value using DateTime object in current_time' do
       context_params = {
         user_id: '123',
         session_id: 'verylongsesssionid',

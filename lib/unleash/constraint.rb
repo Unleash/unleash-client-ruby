@@ -55,9 +55,9 @@ module Unleash
 
     def self.on_valid_date(val1, val2)
       val1 = DateTime.parse(val1)
-      val2 = DateTime.parse(val2)
+      val2 = val2.is_a?(DateTime) ? val2 : DateTime.parse(val2)
       yield(val1, val2)
-    rescue ArgumentError
+    rescue ArgumentError, TypeError
       Unleash.logger.warn "Unleash::ConstraintMatcher unable to parse either context_value (#{val1}) \
       or constraint_value (#{val2}) into a date. Returning false!"
       false

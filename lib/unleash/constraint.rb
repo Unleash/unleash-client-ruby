@@ -57,7 +57,7 @@ module Unleash
       val1 = DateTime.parse(val1)
       val2 = val2.is_a?(DateTime) ? val2 : DateTime.parse(val2)
       yield(val1, val2)
-    rescue ArgumentError, TypeError, Date::Error
+    rescue ArgumentError, TypeError
       Unleash.logger.warn "Unleash::ConstraintMatcher unable to parse either context_value (#{val1}) \
       or constraint_value (#{val2}) into a date. Returning false!"
       false

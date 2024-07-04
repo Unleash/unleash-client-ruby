@@ -123,7 +123,7 @@ module Unleash
         'platformName': RUBY_ENGINE,
         'platformVersion': RUBY_VERSION,
         'yggdrasilVersion': nil,
-        'specVersion': Unleash::CLIENT_SPECIFICATION_VERSION,
+        'specVersion': Unleash::CLIENT_SPECIFICATION_VERSION
       }
     end
 

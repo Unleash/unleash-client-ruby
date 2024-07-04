@@ -54,7 +54,7 @@ jobs:
           semver=$(ruby echo_semver.rb)
           echo "::set-output name=semver::$semver"
       - name: Download test cases
-        run: git clone --depth 5 --branch --branch ${{ steps.get_semver.outputs.semver }} https://github.com/Unleash/client-specification.git client-specification
+        run: git clone --depth 5 --branch v${{ steps.get_semver.outputs.semver }} https://github.com/Unleash/client-specification.git client-specification
       - name: Run tests
         run: bundle exec rake
         env:

@@ -111,4 +111,24 @@ RSpec.describe Unleash::MetricsReporter do
 
     expect(WebMock).to_not have_requested(:post, 'http://test-url/client/metrics')
   end
+
+  it "includes metadata in the report" do
+    WebMock.stub_request(:post, "http://test-url/client/metrics")
+      .to_return(status: 200, body: "", headers: {})
+
+    Unleash.toggle_metrics = Unleash::Metrics.new
+    Unleash.toggle_metrics.increment('featureA', :yes)
+
+    metrics_reporter.post
+
+    expect(WebMock).to have_requested(:post, 'http://test-url/client/metrics')
+      .with(
+        body: hash_including(
+          yggdrasilVersion: nil,
+          specVersion: anything,
+          platformName: anything,
+          platformVersion: anything
+        )
+      )
+  end
 end

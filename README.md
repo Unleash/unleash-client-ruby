@@ -527,7 +527,7 @@ You can also run `bin/console` for an interactive prompt that will allow you to 
 This SDK is also built against the Unleash Client Specification tests.
 To run the Ruby SDK against this test suite, you'll need to have a copy on your machine, you can clone the repository directly using:
 
-`git clone --depth 5 --branch v5.0.2 https://github.com/Unleash/client-specification.git client-specification`
+`git clone --branch v$(ruby echo_client_spec_version.rb) https://github.com/Unleash/client-specification.git`
 
 After doing this, `rake spec` will also run the client specification tests.
 

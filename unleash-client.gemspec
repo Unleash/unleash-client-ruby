@@ -31,6 +31,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec-json_expectations", "~> 2.2"
   spec.add_development_dependency "webmock", "~> 3.18.1"
 
+  spec.metadata["client-specification-version"] = "5.0.2"
+
   # rubocop:disable Gemspec/RubyVersionGlobalsUsage, Style/IfUnlessModifier
   if Gem::Version.new(RUBY_VERSION) > Gem::Version.new('3.0')
     spec.add_development_dependency "rubocop", "~> 1.51.0"

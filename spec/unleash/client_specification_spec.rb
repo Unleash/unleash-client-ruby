@@ -61,9 +61,6 @@ RSpec.describe Unleash::Client do
       end
     end
   else
-    xit "Skipped client-specification tests. #{SPECIFICATION_PATH} not found." do
-      # If you want to run the client-specification tests locally, run from the root path of the repo:
-      # git clone --depth 5 https://github.com/Unleash/client-specification.git client-specification
-    end
+    raise "Client specification tests not found, these are mandatory for a successful test run"
   end
 end

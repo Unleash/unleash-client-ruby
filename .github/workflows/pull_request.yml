@@ -51,7 +51,7 @@ jobs:
       - name: Get test project semver
         id: get_semver
         run: |
-          semver=$(ruby echo_semver.rb)
+          semver=$(ruby echo_client_spec_version.rb)
           echo "::set-output name=semver::$semver"
       - name: Download test cases
         run: git clone --depth 5 --branch v${{ steps.get_semver.outputs.semver }} https://github.com/Unleash/client-specification.git client-specification

@@ -19,7 +19,7 @@ RSpec.describe Unleash::Client do
     Unleash.configuration.disable_metrics = true
   end
 
-  if File.exist?(SPECIFICATION_PATH + '/index.json')
+  if !File.exist?(SPECIFICATION_PATH + '/index.json')
     raise "Client specification tests not found, these are mandatory for a successful test run"
   end
 

@@ -3,6 +3,10 @@ require 'tmpdir'
 require 'unleash/bootstrap/configuration'
 
 module Unleash
+
+  gemspec = Gem::Specification.load('unleash-client.gemspec')
+  CLIENT_SPECIFICATION_VERSION = gemspec.metadata['client-specification-version'].freeze
+
   class Configuration
     attr_accessor \
       :url,
@@ -54,7 +58,7 @@ module Unleash
         'User-Agent' => "UnleashClientRuby/#{Unleash::VERSION} #{RUBY_ENGINE}/#{RUBY_VERSION} [#{RUBY_PLATFORM}]",
         'UNLEASH-INSTANCEID' => self.instance_id,
         'UNLEASH-APPNAME' => self.app_name,
-        'Unleash-Client-Spec' => '5.0.2'
+        'Unleash-Client-Spec' => CLIENT_SPECIFICATION_VERSION
       }.merge!(generate_custom_http_headers)
     end
 

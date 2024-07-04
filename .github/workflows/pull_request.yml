@@ -50,7 +50,7 @@ jobs:
         run: bundle install
       - name: Get test project semver
         id: get_semver
-        run: echo "::set-output name=semver::$(ruby -e \"require 'rubygems'; gemspec = Gem::Specification.load('unleash-client.gemspec'); puts gemspec.metadata['client-specification-version']\")"
+        run: echo "::set-output name=semver::$(ruby -e \"require 'rubygems'; gemspec = Gem::Specification.load('unleash-client.gemspec'); puts gemspec.metadata['client-specification-version'];\")"
       - name: Download test cases
         run: git clone --depth 5 --branch --branch ${{ steps.get_semver.outputs.semver }} https://github.com/Unleash/client-specification.git client-specification
       - name: Run tests

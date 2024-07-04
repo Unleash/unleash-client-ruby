@@ -119,7 +119,11 @@ module Unleash
         'sdkVersion': "unleash-client-ruby:" + Unleash::VERSION,
         'strategies': Unleash.strategies.keys,
         'started': Time.now.iso8601(Unleash::TIME_RESOLUTION),
-        'interval': Unleash.configuration.metrics_interval_in_millis
+        'interval': Unleash.configuration.metrics_interval_in_millis,
+        'platformName': RUBY_ENGINE,
+        'platformVersion': RUBY_VERSION,
+        'yggdrasilVersion': nil,
+        'specVersion': Unleash::CLIENT_SPECIFICATION_VERSION,
       }
     end
 

@@ -24,6 +24,10 @@ module Unleash
       report = {
         'appName': Unleash.configuration.app_name,
         'instanceId': Unleash.configuration.instance_id,
+        'platformName': RUBY_ENGINE,
+        'platformVersion': RUBY_VERSION,
+        'yggdrasilVersion': nil,
+        'specVersion': Unleash::CLIENT_SPECIFICATION_VERSION,
         'bucket': {
           'start': start.iso8601(Unleash::TIME_RESOLUTION),
           'stop': stop.iso8601(Unleash::TIME_RESOLUTION),

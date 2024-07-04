@@ -19,8 +19,8 @@ RSpec.describe Unleash::Client do
     Unleash.configuration.disable_metrics = true
   end
 
-  if !File.exist?(SPECIFICATION_PATH + '/index.json')
-    raise "Client specification tests not found, these are mandatory for a successful test run"
+  unless File.exist?(SPECIFICATION_PATH + '/index.json')
+    raise "Client specification tests not found, these are mandatory for a successful test run. You can download the client specification by running the following command:\n `git clone --branch v$(ruby echo_client_spec_version.rb) https://github.com/Unleash/client-specification.git`"
   end
 
   JSON.parse(File.read(SPECIFICATION_PATH + '/index.json')).each do |test_file|

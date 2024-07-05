@@ -13,6 +13,13 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [5.0.2] - 2024-07-05
+### Changed
+- metrics data now includes information about the core engine (#178)
+- to_s method on the context object now includes current time (#175)
+- drop support for MRI 2.5 and JRuby 9.2 (#174)
+- current_time property on the context now handles DateTimes as well as strings (#173)
+
 ## [5.0.1] - 2024-03-27
 ### Changed
 - make user-agent headers more descriptive (#168)

@@ -44,9 +44,9 @@ It is **required** to configure:
 
 Please substitute the example `'https://unleash.herokuapp.com/api'` for the url of your own instance.
 
-It is **highly recommended** to configure:
-- `instance_id` parameter with a unique identifier for the running instance.
+### instance_id
 
+As of version 6.0.0, `instance_id` is now an automatically generated read-only property.
 
 ```ruby
 Unleash.configure do |config|
@@ -84,7 +84,6 @@ Argument | Description | Required? |  Type |  Default Value|
 ---------|-------------|-----------|-------|---------------|
 `url`      | Unleash server URL. | Y | String | N/A |
 `app_name` | Name of your program. | Y | String | N/A |
-`instance_id` | Identifier for the running instance of program. Important so you can trace back to where metrics are being collected from. **Highly recommended be be set.** | N | String | random UUID |
 `environment` | Unleash context option. Could be for example `prod` or `dev`. Not yet in use. **Not** the same as the SDK's [Unleash environment](https://docs.getunleash.io/reference/environments). | N | String | `default` |
 `project_name` | Name of the project to retrieve features from. If not set, all feature flags will be retrieved. | N | String | nil |
 `refresh_interval` | How often the unleash client should check with the server for configuration changes. | N | Integer |  15 |
@@ -142,7 +141,6 @@ Put in `config/initializers/unleash.rb`:
 Unleash.configure do |config|
   config.app_name = Rails.application.class.parent.to_s
   config.url      = 'https://unleash.herokuapp.com/api'
-  # config.instance_id = "#{Socket.gethostname}"
   config.logger   = Rails.logger
 end
 
@@ -151,10 +149,6 @@ UNLEASH = Unleash::Client.new
 # Or if preferred:
 # Rails.configuration.unleash = Unleash::Client.new
 ```
-For `config.instance_id` use a string with a unique identification for the running instance.
-For example: it could be the hostname, if you only run one App per host.
-Or the docker container id, if you are running in docker.
-If it is not set the client will generate an unique UUID for each execution.
 
 To have it available in the `rails console` command as well, also add to the file above:
 ```ruby
@@ -248,7 +242,6 @@ PhusionPassenger.on_event(:starting_worker_process) do |forked|
   if forked
     Unleash.configure do |config|
       config.app_name    = Rails.application.class.parent.to_s
-      # config.instance_id = "#{Socket.gethostname}"
       config.logger      = Rails.logger
       config.url                 = 'https://unleash.herokuapp.com/api'
       config.custom_http_headers = {'Authorization': '<API token>'}

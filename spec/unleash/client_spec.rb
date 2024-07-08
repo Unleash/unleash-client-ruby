@@ -45,7 +45,6 @@ RSpec.describe Unleash::Client do
           'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
           'Content-Type' => 'application/json',
           'Unleash-Appname' => 'my-test-app',
-          'Unleash-Instanceid' => 'rspec/test',
           'User-Agent' => "UnleashClientRuby/#{Unleash::VERSION} #{RUBY_ENGINE}/#{RUBY_VERSION} [#{RUBY_PLATFORM}]",
           'X-Api-Key' => '123'
         }
@@ -55,14 +54,12 @@ RSpec.describe Unleash::Client do
     Unleash.configure do |config|
       config.url      = 'http://test-url/'
       config.app_name = 'my-test-app'
-      config.instance_id = 'rspec/test'
       config.custom_http_headers = { 'X-API-KEY' => '123' }
     end
 
     unleash_client = Unleash::Client.new(
       url: 'http://test-url/',
       app_name: 'my-test-app',
-      instance_id: 'rspec/test',
       custom_http_headers: { 'X-API-KEY' => '123' }
     )
 
@@ -73,14 +70,14 @@ RSpec.describe Unleash::Client do
       .with(headers: { 'Content-Type': 'application/json' })
       .with(headers: { 'X-API-KEY': '123', 'Content-Type': 'application/json' })
       .with(headers: { 'UNLEASH-APPNAME': 'my-test-app' })
-      .with(headers: { 'UNLEASH-INSTANCEID': 'rspec/test' })
+      .with(headers: { 'UNLEASH-INSTANCEID': Unleash.configuration.instance_id })
     ).to have_been_made.once
 
     expect(
       a_request(:get, "http://test-url/client/features")
       .with(headers: { 'X-API-KEY': '123' })
       .with(headers: { 'UNLEASH-APPNAME': 'my-test-app' })
-      .with(headers: { 'UNLEASH-INSTANCEID': 'rspec/test' })
+      .with(headers: { 'UNLEASH-INSTANCEID': Unleash.configuration.instance_id })
     ).to have_been_made.once
 
     # Test now sending of metrics
@@ -91,7 +88,7 @@ RSpec.describe Unleash::Client do
         .with(headers: { 'Content-Type': 'application/json' })
         .with(headers: { 'X-API-KEY': '123', 'Content-Type': 'application/json' })
         .with(headers: { 'UNLEASH-APPNAME': 'my-test-app' })
-        .with(headers: { 'UNLEASH-INSTANCEID': 'rspec/test' })
+        .with(headers: { 'UNLEASH-INSTANCEID': Unleash.configuration.instance_id })
     ).not_to have_been_made
 
     # Sending metrics, if they have been evaluated:
@@ -103,7 +100,7 @@ RSpec.describe Unleash::Client do
       .with(headers: { 'Content-Type': 'application/json' })
       .with(headers: { 'X-API-KEY': '123', 'Content-Type': 'application/json' })
       .with(headers: { 'UNLEASH-APPNAME': 'my-test-app' })
-      .with(headers: { 'UNLEASH-INSTANCEID': 'rspec/test' })
+      .with(headers: { 'UNLEASH-INSTANCEID': Unleash.configuration.instance_id })
       .with{ |request| JSON.parse(request.body)['bucket']['toggles']['Feature.A']['yes'] == 2 }
     ).to have_been_made.once
   end
@@ -116,7 +113,7 @@ RSpec.describe Unleash::Client do
           'Content-Type' => 'application/json',
           'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
           'Unleash-Appname' => 'my-test-app',
-          'Unleash-Instanceid' => 'rspec/test',
+          'Unleash-Instanceid' => Unleash.configuration.instance_id,
           'User-Agent' => "UnleashClientRuby/#{Unleash::VERSION} #{RUBY_ENGINE}/#{RUBY_VERSION} [#{RUBY_PLATFORM}]",
           'X-Api-Key' => '123'
         }
@@ -157,7 +154,7 @@ RSpec.describe Unleash::Client do
           'Content-Type' => 'application/json',
           'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
           'Unleash-Appname' => 'my-test-app',
-          'Unleash-Instanceid' => 'rspec/test',
+          'Unleash-Instanceid' => Unleash.configuration.instance_id,
           'User-Agent' => "UnleashClientRuby/#{Unleash::VERSION} #{RUBY_ENGINE}/#{RUBY_VERSION} [#{RUBY_PLATFORM}]",
           'X-Api-Key' => '123'
         }
@@ -167,7 +164,6 @@ RSpec.describe Unleash::Client do
     Unleash.configure do |config|
       config.url      = 'http://test-url/'
       config.app_name = 'my-test-app'
-      config.instance_id = 'rspec/test'
       config.disable_metrics = true
       config.custom_http_headers = { 'X-API-KEY' => '123' }
       config.log_level = Logger::DEBUG
@@ -216,7 +212,6 @@ RSpec.describe Unleash::Client do
     Unleash.configure do |config|
       config.url      = 'http://test-url/'
       config.app_name = 'my-test-app'
-      config.instance_id = 'rspec/test'
       config.disable_client = true
       config.disable_metrics = true
       config.custom_http_headers = { 'X-API-KEY' => '123' }
@@ -269,7 +264,7 @@ RSpec.describe Unleash::Client do
           'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
           'Content-Type' => 'application/json',
           'Unleash-Appname' => 'my-test-app',
-          'Unleash-Instanceid' => 'rspec/test',
+          'Unleash-Instanceid' => Unleash.configuration.instance_id,
           'User-Agent' => "UnleashClientRuby/#{Unleash::VERSION} #{RUBY_ENGINE}/#{RUBY_VERSION} [#{RUBY_PLATFORM}]",
           'X-Api-Key' => '123'
         }
@@ -279,7 +274,6 @@ RSpec.describe Unleash::Client do
     Unleash.configure do |config|
       config.url      = 'http://test-url/'
       config.app_name = 'my-test-app'
-      config.instance_id = 'rspec/test'
       config.disable_client = false
       config.disable_metrics = true
       config.custom_http_headers = { 'X-API-KEY' => '123' }
@@ -327,7 +321,7 @@ RSpec.describe Unleash::Client do
           'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
           'Content-Type' => 'application/json',
           'Unleash-Appname' => 'my-test-app',
-          'Unleash-Instanceid' => 'rspec/test',
+          'Unleash-Instanceid' => Unleash.configuration.instance_id,
           'User-Agent' => "UnleashClientRuby/#{Unleash::VERSION} #{RUBY_ENGINE}/#{RUBY_VERSION} [#{RUBY_PLATFORM}]",
           'X-Api-Key' => '123'
         }
@@ -337,7 +331,6 @@ RSpec.describe Unleash::Client do
     Unleash.configure do |config|
       config.url      = 'http://test-url/'
       config.app_name = 'my-test-app'
-      config.instance_id = 'rspec/test'
       config.disable_client = false
       config.disable_metrics = true
       config.custom_http_headers = { 'X-API-KEY' => '123' }
@@ -357,7 +350,6 @@ RSpec.describe Unleash::Client do
     Unleash.configure do |config|
       config.url      = 'http://test-url/'
       config.app_name = 'my-test-app'
-      config.instance_id = 'rspec/test'
       config.disable_client = true
       config.disable_metrics = false
       config.custom_http_headers = { 'X-API-KEY' => '123' }
@@ -605,7 +597,7 @@ RSpec.describe Unleash::Client do
             'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
             'Content-Type' => 'application/json',
             'Unleash-Appname' => 'my-test-app',
-            'Unleash-Instanceid' => 'rspec/test',
+            'Unleash-Instanceid' => Unleash.configuration.instance_id,
             'User-Agent' => "UnleashClientRuby/#{Unleash::VERSION} #{RUBY_ENGINE}/#{RUBY_VERSION} [#{RUBY_PLATFORM}]",
             'X-Api-Key' => '123'
           }
@@ -619,7 +611,7 @@ RSpec.describe Unleash::Client do
             'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
             'Content-Type' => 'application/json',
             'Unleash-Appname' => 'my-test-app',
-            'Unleash-Instanceid' => 'rspec/test',
+            'Unleash-Instanceid' => Unleash.configuration.instance_id,
             'User-Agent' => "UnleashClientRuby/#{Unleash::VERSION} #{RUBY_ENGINE}/#{RUBY_VERSION} [#{RUBY_PLATFORM}]",
             'X-Api-Key' => '123'
           }

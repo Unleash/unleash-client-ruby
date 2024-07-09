@@ -13,7 +13,6 @@ RSpec.describe Unleash::MetricsReporter do
 
     Unleash.configuration.url         = 'http://test-url/'
     Unleash.configuration.app_name    = 'my-test-app'
-    Unleash.configuration.instance_id = 'rspec/test'
 
     # Do not test the scheduled calls from client/metrics:
     Unleash.configuration.disable_client = true
@@ -24,7 +23,6 @@ RSpec.describe Unleash::MetricsReporter do
     Unleash.configure do |config|
       config.url      = 'http://test-url/'
       config.app_name = 'my-test-app'
-      config.instance_id = 'rspec/test'
       config.disable_client = true
     end
     Unleash.toggle_metrics = Unleash::Metrics.new
@@ -68,7 +66,7 @@ RSpec.describe Unleash::MetricsReporter do
           'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
           'Content-Type' => 'application/json',
           'Unleash-Appname' => 'my-test-app',
-          'Unleash-Instanceid' => 'rspec/test',
+          'Unleash-Instanceid' => Unleash.configuration.instance_id,
           'User-Agent' => "UnleashClientRuby/#{Unleash::VERSION} #{RUBY_ENGINE}/#{RUBY_VERSION} [#{RUBY_PLATFORM}]"
         }
       )
@@ -99,7 +97,7 @@ RSpec.describe Unleash::MetricsReporter do
       .with(
         body: hash_including(
           appName: "my-test-app",
-          instanceId: "rspec/test"
+          instanceId: Unleash.configuration.instance_id
         )
       )
   end

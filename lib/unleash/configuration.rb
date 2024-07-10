@@ -3,9 +3,6 @@ require 'tmpdir'
 require 'unleash/bootstrap/configuration'
 
 module Unleash
-  gemspec = Gem::Specification.load('unleash-client.gemspec')
-  CLIENT_SPECIFICATION_VERSION = gemspec.metadata['client-specification-version'].freeze
-
   class Configuration
     attr_accessor \
       :url,

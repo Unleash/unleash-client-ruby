@@ -13,6 +13,10 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [5.0.3] - 2024-07-10
+### Fixed
+- Client spec version should be loaded without touching the gemspec
+
 ## [5.0.2] - 2024-07-05
 ### Changed
 - metrics data now includes information about the core engine (#178)

@@ -24,7 +24,7 @@ Leverage the [Unleash Server](https://github.com/Unleash/unleash) for powerful f
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'unleash', '~> 5.0.0'
+gem 'unleash', '~> 5.0.3'
 ```
 
 And then execute:
@@ -46,7 +46,7 @@ Please substitute the example `'https://unleash.herokuapp.com/api'` for the url 
 
 ### instance_id
 
-As of version 6.0.0, `instance_id` is now an automatically generated read-only property.
+As of version 5.0.3, `instance_id` is now an automatically generated read-only property.
 
 ```ruby
 Unleash.configure do |config|

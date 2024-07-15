@@ -5,6 +5,7 @@ RSpec.describe Unleash::Bootstrap::Handler do
   Unleash.configure do |config|
     config.url      = 'http://unleash-url/'
     config.app_name = 'my-test-app'
+    config.instance_id = 'rspec/test'
     config.custom_http_headers = { 'X-API-KEY' => '123' }
   end
 

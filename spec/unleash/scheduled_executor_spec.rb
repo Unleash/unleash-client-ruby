@@ -35,18 +35,18 @@ RSpec.describe Unleash::ScheduledExecutor do
     max_exceptions = 1
 
     scheduled_executor = Unleash::ScheduledExecutor.new('TesterLoop', 0, max_exceptions)
-    new_app_name = SecureRandom.uuid
-    original_app_name = Unleash.configuration.app_name
+    new_instance_id = SecureRandom.uuid
+    original_instance_id = Unleash.configuration.instance_id
 
     scheduled_executor.run do
-      Unleash.configuration.app_name = new_app_name
+      Unleash.configuration.instance_id = new_instance_id
       raise StopIteration
     end
 
     scheduled_executor.thread.join
-    expect(Unleash.configuration.app_name).to eq(new_app_name)
+    expect(Unleash.configuration.instance_id).to eq(new_instance_id)
 
-    Unleash.configuration.app_name = original_app_name
+    Unleash.configuration.instance_id = original_instance_id
   end
 
   # These two tests are super flaky because they're checking if threading works
@@ -55,39 +55,39 @@ RSpec.describe Unleash::ScheduledExecutor do
     max_exceptions = 1
 
     scheduled_executor = Unleash::ScheduledExecutor.new('TesterLoop', 0.02, max_exceptions, true)
-    new_app_name = SecureRandom.uuid
-    original_app_name = Unleash.configuration.app_name
+    new_instance_id = SecureRandom.uuid
+    original_instance_id = Unleash.configuration.instance_id
 
     scheduled_executor.run do
-      Unleash.configuration.app_name = new_app_name
+      Unleash.configuration.instance_id = new_instance_id
       raise StopIteration
     end
 
     sleep 0.01
 
-    expect(Unleash.configuration.app_name).to eq(new_app_name)
+    expect(Unleash.configuration.instance_id).to eq(new_instance_id)
     scheduled_executor.thread.join
 
-    Unleash.configuration.app_name = original_app_name
+    Unleash.configuration.instance_id = original_instance_id
   end
 
   xit "will not trigger immediate exection when not set" do
     max_exceptions = 1
 
     scheduled_executor = Unleash::ScheduledExecutor.new('TesterLoop', 0.02, max_exceptions, false)
-    new_app_name = SecureRandom.uuid
-    original_app_name = Unleash.configuration.app_name
+    new_instance_id = SecureRandom.uuid
+    original_instance_id = Unleash.configuration.instance_id
 
     scheduled_executor.run do
-      Unleash.configuration.app_name = new_app_name
+      Unleash.configuration.instance_id = new_instance_id
       raise StopIteration
     end
 
     sleep 0.01
 
-    expect(Unleash.configuration.app_name).to eq(original_app_name)
+    expect(Unleash.configuration.instance_id).to eq(original_instance_id)
     scheduled_executor.thread.join
 
-    Unleash.configuration.app_name = original_app_name
+    Unleash.configuration.instance_id = original_instance_id
   end
 end

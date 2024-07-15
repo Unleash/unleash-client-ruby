@@ -10,6 +10,7 @@ puts ">> START bootstrap.rb"
   url: 'https://unleash.herokuapp.com/api',
   custom_http_headers: { 'Authorization': '943ca9171e2c884c545c5d82417a655fb77cec970cc3b78a8ff87f4406b495d0' },
   app_name: 'bootstrap-test',
+  instance_id: 'local-test-cli',
   refresh_interval: 2,
   disable_client: true,
   disable_metrics: true,

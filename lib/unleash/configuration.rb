@@ -8,6 +8,7 @@ module Unleash
       :url,
       :app_name,
       :environment,
+      :instance_id,
       :project_name,
       :custom_http_headers,
       :disable_client,
@@ -22,14 +23,9 @@ module Unleash
       :bootstrap_config,
       :strategies
 
-    attr_reader \
-      :instance_id
-
     def initialize(opts = {})
       validate_custom_http_headers!(opts[:custom_http_headers]) if opts.has_key?(:custom_http_headers)
       set_defaults
-
-      @instance_id = SecureRandom.uuid
 
       initialize_default_logger if opts[:logger].nil?
 
@@ -90,6 +86,7 @@ module Unleash
       self.app_name         = nil
       self.environment      = 'default'
       self.url              = nil
+      self.instance_id      = SecureRandom.uuid
       self.project_name     = nil
       self.disable_client   = false
       self.disable_metrics  = false

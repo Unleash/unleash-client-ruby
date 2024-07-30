@@ -107,7 +107,6 @@ module Unleash
     # safe shutdown: also flush metrics to server and toggles to disk
     def shutdown
       unless Unleash.configuration.disable_client
-        Unleash.toggle_fetcher.save!
         Unleash.reporter.post unless Unleash.configuration.disable_metrics
         shutdown!
       end

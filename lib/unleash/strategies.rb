@@ -23,7 +23,11 @@ module Unleash
     end
 
     def add(strategy)
-      @strategies[strategy.name] = strategy
+      if default_strategy_names.include?(strategy.name)
+        Unleash.logger.error "WARNING: Overriding built in strategy '#{strategy.name}'. OVERIDING BUILT IN STRATEGIES IS \
+DEPRECATED AND WILL BE REMOVED IN A FUTURE RELEASE."
+      end
+      self.internal_add(strategy)
     end
 
     def []=(key, strategy)
@@ -52,12 +56,20 @@ module Unleash
         .each do |c|
         strategy = c.new
         warn_deprecated_registration(strategy, 'adding custom class into Unleash::Strategy namespace')
-        self.add(strategy)
+        self.internal_add(strategy)
       end
     end
 
     def register_base_strategies
-      DEFAULT_STRATEGIES.each{ |c| self.add(c.new) }
+      DEFAULT_STRATEGIES.each{ |c| self.internal_add(c.new) }
+    end
+
+    def internal_add(strategy)
+      @strategies[strategy.name] = strategy
+    end
+
+    def default_strategy_names
+      DEFAULT_STRATEGIES.map{ |strategy_class| strategy_class.new.name }
     end
 
     DEFAULT_STRATEGIES = [

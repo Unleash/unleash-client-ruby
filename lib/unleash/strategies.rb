@@ -24,10 +24,8 @@ module Unleash
 
     def add(strategy)
       if default_strategy_names.include?(strategy.name)
-        # rubocop:disable Style/StderrPuts
-        $stderr.puts "Warning: Overriding built in strategy '#{strategy.name}'. Overriding built in strategies is deprecated and will be \
-        removed in a future release."
-        # rubocop:enable Style/StderrPuts
+        Unleash.logger.error "Warning: Overriding built in strategy '#{strategy.name}'. Overriding built in strategies is \
+deprecated and will be removed in a future release."
       end
       self.internal_add(strategy)
     end

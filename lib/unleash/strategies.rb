@@ -24,7 +24,8 @@ module Unleash
 
     def add(strategy)
       if default_strategy_names.include?(strategy.name)
-        $stderr.puts "Warning: Overriding built in strategy '#{strategy.name}'. Overriding built in strategies is deprecated and will be removed in a future release."
+        $stderr.puts "Warning: Overriding built in strategy '#{strategy.name}'. Overriding built in strategies is deprecated and will be \
+        removed in a future release."
       end
       self.internal_add(strategy)
     end
@@ -68,7 +69,7 @@ module Unleash
     end
 
     def default_strategy_names
-      DEFAULT_STRATEGIES.map { |strategy_class| strategy_class.new.name }
+      DEFAULT_STRATEGIES.map{ |strategy_class| strategy_class.new.name }
     end
 
     DEFAULT_STRATEGIES = [

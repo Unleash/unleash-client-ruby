@@ -24,8 +24,8 @@ module Unleash
 
     def add(strategy)
       if default_strategy_names.include?(strategy.name)
-        Unleash.logger.error "Warning: Overriding built in strategy '#{strategy.name}'. Overriding built in strategies is \
-deprecated and will be removed in a future release."
+        Unleash.logger.error "WARNING: Overriding built in strategy '#{strategy.name}'. OVERIDING BUILT IN STRATEGIES IS \
+DEPRECATED AND WILL BE REMOVED IN A FUTURE RELEASE."
       end
       self.internal_add(strategy)
     end

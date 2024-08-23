@@ -294,7 +294,7 @@ PhusionPassenger.on_event(:starting_worker_process) do |forked|
 end
 ```
 
-### Add Initializer hooks when using within [Sidekiq](https://github.com/mperham/sidekiq)
+### 1.d Add Initializer hooks when using within [Sidekiq](https://github.com/mperham/sidekiq)
 
 Note that in this case we require that the code block for `Unleash.configure` is set beforehand.
 For example in `config/initializers/unleash.rb`.

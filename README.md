@@ -159,16 +159,18 @@ end
 
 ## Usage in a Rails Application
 
-### 1.a Add Initializer
+### 1. Add Initializer
+
+The initializer setup varies depending on whether you’re using a standard setup, Puma in clustered mode, Phusion Passenger, or Sidekiq.
+
+#### 1.a Initializer for standard Rails applications
 
 Put in `config/initializers/unleash.rb`:
 
 ```ruby
-require 'unleash'
-
 Unleash.configure do |config|
-  config.app_name = Rails.application.class.parent.to_s
-  config.url      = 'https://unleash.herokuapp.com/api'
+  config.app_name = Rails.application.class.module_parent_name
+  config.url      = '<YOUR_UNLEASH_URL>'
   # config.instance_id = "#{Socket.gethostname}"
   config.logger   = Rails.logger
   config.custom_http_headers = {'Authorization': '<YOUR_API_TOKEN>'}
@@ -195,7 +197,7 @@ Rails.application.console do
 end
 ```
 
-### 1.b Add Initializer if using [Puma in clustered mode](https://github.com/puma/puma#clustered-mode)
+#### 1.b Add Initializer if using [Puma in clustered mode](https://github.com/puma/puma#clustered-mode)
 
 That is, multiple workers configured in `puma.rb`:
 
@@ -203,7 +205,7 @@ That is, multiple workers configured in `puma.rb`:
 workers ENV.fetch("WEB_CONCURRENCY") { 2 }
 ```
 
-#### with `preload_app!`
+##### with `preload_app!`
 
 Then you may keep the client configuration still in `config/initializers/unleash.rb`:
 
@@ -234,7 +236,7 @@ on_worker_shutdown do
 end
 ```
 
-#### without `preload_app!`
+##### without `preload_app!`
 
 By not using `preload_app!`:
 
@@ -272,7 +274,7 @@ end
 
 Note that we also added shutdown hooks in `on_worker_shutdown`, to ensure a clean shutdown.
 
-### 1.c Add Initializer if using [Phusion Passenger](https://github.com/phusion/passenger)
+#### 1.c Add Initializer if using [Phusion Passenger](https://github.com/phusion/passenger)
 
 The unleash client needs to be configured and instantiated inside the `PhusionPassenger.on_event(:starting_worker_process)` code block due to [smart spawning](https://www.phusionpassenger.com/library/indepth/ruby/spawn_methods/#smart-spawning-caveats):
 
@@ -294,7 +296,7 @@ PhusionPassenger.on_event(:starting_worker_process) do |forked|
 end
 ```
 
-### 1.d Add Initializer hooks when using within [Sidekiq](https://github.com/mperham/sidekiq)
+#### 1.d Add Initializer hooks when using within [Sidekiq](https://github.com/mperham/sidekiq)
 
 Note that in this case we require that the code block for `Unleash.configure` is set beforehand.
 For example in `config/initializers/unleash.rb`.

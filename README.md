@@ -164,11 +164,14 @@ end
 Put in `config/initializers/unleash.rb`:
 
 ```ruby
+require 'unleash'
+
 Unleash.configure do |config|
   config.app_name = Rails.application.class.parent.to_s
   config.url      = 'https://unleash.herokuapp.com/api'
   # config.instance_id = "#{Socket.gethostname}"
   config.logger   = Rails.logger
+  config.custom_http_headers = {'Authorization': '<YOUR_API_TOKEN>'}
 end
 
 UNLEASH = Unleash::Client.new
@@ -269,7 +272,7 @@ end
 
 Note that we also added shutdown hooks in `on_worker_shutdown`, to ensure a clean shutdown.
 
-#### Add Initializer if using [Phusion Passenger](https://github.com/phusion/passenger)
+#### 1.c Add Initializer if using [Phusion Passenger](https://github.com/phusion/passenger)
 
 The unleash client needs to be configured and instantiated inside the `PhusionPassenger.on_event(:starting_worker_process)` code block due to [smart spawning](https://www.phusionpassenger.com/library/indepth/ruby/spawn_methods/#smart-spawning-caveats):
 

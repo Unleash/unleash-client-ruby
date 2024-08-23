@@ -272,7 +272,7 @@ end
 
 Note that we also added shutdown hooks in `on_worker_shutdown`, to ensure a clean shutdown.
 
-#### 1.c Add Initializer if using [Phusion Passenger](https://github.com/phusion/passenger)
+### 1.c Add Initializer if using [Phusion Passenger](https://github.com/phusion/passenger)
 
 The unleash client needs to be configured and instantiated inside the `PhusionPassenger.on_event(:starting_worker_process)` code block due to [smart spawning](https://www.phusionpassenger.com/library/indepth/ruby/spawn_methods/#smart-spawning-caveats):
 

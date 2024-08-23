@@ -336,7 +336,7 @@ Or if you see better fit, only in the controllers that you will be using unleash
 
 ### 3. Sample usage
 
-Then wherever in your Rails application that you need a feature toggle, you can use:
+Then wherever in your application that you need a feature toggle, you can use:
 
 ```ruby
 if UNLEASH.is_enabled? "AwesomeFeature", @unleash_context

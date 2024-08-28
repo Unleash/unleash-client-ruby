@@ -107,10 +107,10 @@ module Unleash
 
       v = self.value.dup
       context_value = context.get_by_name(self.context_name)
-      
+
       # always return false, if we are comparing a non string with a string operator:
       return false if !context_value.is_a?(String) && STRING_OPERATORS.include?(self.operator)
-     
+
       if self.case_insensitive
         v.map!(&:upcase)
         context_value.upcase!

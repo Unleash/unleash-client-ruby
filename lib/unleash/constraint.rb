@@ -22,6 +22,8 @@ module Unleash
       FALLBACK_VALIDATOR: ->(_context_v, _constraint_v){ false }
     }.freeze
 
+    STRING_OPERATORS = [:STR_STARTS_WITH, :STR_ENDS_WITH, :STR_CONTAINS].freeze
+
     LIST_OPERATORS = [:IN, :NOT_IN, :STR_STARTS_WITH, :STR_ENDS_WITH, :STR_CONTAINS].freeze
 
     def initialize(context_name, operator, value = [], inverted: false, case_insensitive: false)
@@ -105,9 +107,14 @@ module Unleash
 
       v = self.value.dup
       context_value = context.get_by_name(self.context_name)
-
-      v.map!(&:upcase) if self.case_insensitive
-      context_value = context_value.upcase if self.case_insensitive && context_value.is_a?(String)
+      
+      # always return false, if we are comparing a non string with a string operator:
+      return false if !context_value.is_a?(String) && STRING_OPERATORS.include?(self.operator)
+     
+      if self.case_insensitive
+        v.map!(&:upcase)
+        context_value.upcase!
+      end
 
       OPERATORS[self.operator].call(context_value, v)
     end

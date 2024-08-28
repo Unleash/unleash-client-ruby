@@ -24,10 +24,8 @@ context_params = {
   }
 }
 
-# feature_name = "AwesomeFeature"
 feature_name = "4343443"
 unleash_context = Unleash::Context.new(context_params)
-#unleash_context.user_id = 123
 
 sleep 1
 if @unleash.is_enabled?(feature_name, unleash_context)

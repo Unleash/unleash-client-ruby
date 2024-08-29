@@ -370,7 +370,10 @@ RSpec.describe Unleash::Constraint do
         session_id: 'verylongsesssionid',
         remote_address: '127.0.0.1',
         properties: {
-          env: 'development'
+          env: 'development',
+          complex: {
+            type: 'development'
+          }
         }
       }
       context = Unleash::Context.new(context_params)
@@ -382,6 +385,9 @@ RSpec.describe Unleash::Constraint do
 
       constraint = Unleash::Constraint.new('env', 'STR_CONTAINS', ['LOP'], case_insensitive: true)
       expect(constraint.matches_context?(context)).to be true
+
+      constraint = Unleash::Constraint.new('complex', 'STR_CONTAINS', ['development'], case_insensitive: true)
+      expect(constraint.matches_context?(context)).to be false
     end
 
     it 'matches based on case insensitive property when context is uppercased' do

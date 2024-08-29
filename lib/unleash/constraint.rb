@@ -111,12 +111,7 @@ module Unleash
       # always return false, if we are comparing a non string with a string operator:
       return false if !context_value.is_a?(String) && STRING_OPERATORS.include?(self.operator)
 
-      if self.case_insensitive
-        v.map!(&:upcase)
-        context_value.upcase!
-      end
-
-      OPERATORS[self.operator].call(context_value, v)
+      OPERATORS[self.operator].call(*self.case_insensitive ? [context_value.upcase, v.map(&:upcase)] : [context_value, v])
     end
   end
 end

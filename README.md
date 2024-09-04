@@ -16,17 +16,15 @@ Leverage the [Unleash Server](https://github.com/Unleash/unleash) for powerful f
   * MRI 3.0
   * MRI 2.7
   * MRI 2.6
-  * MRI 2.5
   * jruby 9.4
   * jruby 9.3
-  * jruby 9.2
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'unleash', '~> 5.0.0'
+gem 'unleash', '~> 5.0.4'
 ```
 
 And then execute:
@@ -529,7 +527,7 @@ You can also run `bin/console` for an interactive prompt that will allow you to 
 This SDK is also built against the Unleash Client Specification tests.
 To run the Ruby SDK against this test suite, you'll need to have a copy on your machine, you can clone the repository directly using:
 
-`git clone --depth 5 --branch v5.0.2 https://github.com/Unleash/client-specification.git client-specification`
+`git clone --branch v$(ruby echo_client_spec_version.rb) https://github.com/Unleash/client-specification.git`
 
 After doing this, `rake spec` will also run the client specification tests.
 

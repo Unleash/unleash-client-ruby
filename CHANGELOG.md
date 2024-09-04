@@ -13,6 +13,30 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [5.0.4] - 2024-07-15
+### Changed
+- Reverted "feat: automatically generated instance_id (#179)" (#185)
+
+## [5.0.3] - 2024-07-10
+### Fixed
+- Client spec version should be loaded without touching the gemspec
+
+## [5.0.2] - 2024-07-05
+### Changed
+- metrics data now includes information about the core engine (#178)
+- to_s method on the context object now includes current time (#175)
+- drop support for MRI 2.5 and JRuby 9.2 (#174)
+- current_time property on the context now handles DateTimes as well as strings (#173)
+
+## [5.0.1] - 2024-03-27
+### Changed
+- make user-agent headers more descriptive (#168)
+
+### Fixed
+- make client more resilient to non-conforming responses from `unleash-edge` (#162)
+  - while the unleash server provides always valid responses, (at least some versions of) unleash-edge can provide an unexpected JSON response (null instead of empty array).
+  - fixed the handling of the response, so we do not throw exceptions in this situation.
+
 ## [5.0.0] - 2023-10-30
 ### Added
 - change seed for variantutils to ensure fair distribution (#160)
@@ -115,7 +139,12 @@ Note: These changes are not considered notable:
 - only send metrics if there is data to send. (#58)
 - in Client#get_variant() allow context and fallback_variant as nil (#51)
 
-[unreleased]: https://git1hub.com/unleash/unleash-client-ruby/compare/v4.4.3...HEAD
+[unreleased]: https://github.com/unleash/unleash-client-ruby/compare/v5.0.1...HEAD
+[5.0.1]: https://github.com/unleash/unleash-client-ruby/compare/v5.0.0...v5.0.1
+[5.0.0]: https://github.com/unleash/unleash-client-ruby/compare/v4.6.0...v5.0.0
+[4.6.0]: https://github.com/unleash/unleash-client-ruby/compare/v4.5.0...v4.6.0
+[4.5.0]: https://github.com/unleash/unleash-client-ruby/compare/v4.4.4...v4.5.0
+[4.4.4]: https://github.com/unleash/unleash-client-ruby/compare/v4.4.3...v4.4.4
 [4.4.3]: https://github.com/unleash/unleash-client-ruby/compare/v4.4.2...v4.4.3
 [4.4.2]: https://github.com/unleash/unleash-client-ruby/compare/v4.4.1...v4.4.2
 [4.4.1]: https://github.com/unleash/unleash-client-ruby/compare/v4.4.0...v4.4.1

@@ -146,7 +146,8 @@ RSpec.describe Unleash do
           'X-API-KEY' => '123',
           'UNLEASH-APPNAME' => 'test-app',
           'UNLEASH-INSTANCEID' => config.instance_id,
-          'Unleash-Client-Spec' => '5.0.2'
+          'Unleash-Client-Spec' => '5.0.2',
+          'User-Agent' => "UnleashClientRuby/#{Unleash::VERSION} #{RUBY_ENGINE}/#{RUBY_VERSION} [#{RUBY_PLATFORM}]"
         }
       )
       expect(custom_headers_proc).to have_received(:call).exactly(1).times
@@ -183,6 +184,31 @@ RSpec.describe Unleash do
           disable_metrics: true
         )
       end.to raise_error(ArgumentError)
+    end
+
+    it "should send metadata on registration" do
+      WebMock \
+        .stub_request(:get, "http://test-url/api/client/features")
+        .to_return(status: 200, body: "", headers: {})
+
+      WebMock \
+        .stub_request(:post, "http://test-url/api/client/register")
+        .to_return(status: 200, body: "", headers: {})
+
+      Unleash::Client.new(
+        url: 'http://test-url/api',
+        app_name: 'test-app'
+      )
+
+      expect(WebMock).to have_requested(:post, 'http://test-url/api/client/register')
+        .with(
+          body: hash_including(
+            yggdrasilVersion: nil,
+            specVersion: anything,
+            platformName: anything,
+            platformVersion: anything
+          )
+        )
     end
   end
 end

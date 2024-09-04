@@ -18,6 +18,10 @@ module Unleash
       return nil if metrics.nil? || metrics.empty?
 
       {
+        'platformName': RUBY_ENGINE,
+        'platformVersion': RUBY_VERSION,
+        'yggdrasilVersion': nil,
+        'specVersion': Unleash::CLIENT_SPECIFICATION_VERSION,
         'appName': Unleash.configuration.app_name,
         'instanceId': Unleash.configuration.instance_id,
         'bucket': metrics

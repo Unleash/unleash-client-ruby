@@ -1,4 +1,5 @@
 require 'unleash/version'
+require 'unleash/spec_version'
 require 'unleash/configuration'
 require 'unleash/strategies'
 require 'unleash/context'

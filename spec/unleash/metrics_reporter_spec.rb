@@ -69,7 +69,7 @@ RSpec.describe Unleash::MetricsReporter do
           'Content-Type' => 'application/json',
           'Unleash-Appname' => 'my-test-app',
           'Unleash-Instanceid' => 'rspec/test',
-          'User-Agent' => 'Ruby'
+          'User-Agent' => "UnleashClientRuby/#{Unleash::VERSION} #{RUBY_ENGINE}/#{RUBY_VERSION} [#{RUBY_PLATFORM}]"
         }
       )
       .to_return(status: 200, body: "", headers: {})
@@ -110,5 +110,25 @@ RSpec.describe Unleash::MetricsReporter do
     metrics_reporter.post
 
     expect(WebMock).to_not have_requested(:post, 'http://test-url/client/metrics')
+  end
+
+  it "includes metadata in the report" do
+    WebMock.stub_request(:post, "http://test-url/client/metrics")
+      .to_return(status: 200, body: "", headers: {})
+
+    Unleash.engine = YggdrasilEngine.new
+    Unleash.engine.count_toggle('featureA', true)
+
+    metrics_reporter.post
+
+    expect(WebMock).to have_requested(:post, 'http://test-url/client/metrics')
+      .with(
+        body: hash_including(
+          yggdrasilVersion: nil,
+          specVersion: anything,
+          platformName: anything,
+          platformVersion: anything
+        )
+      )
   end
 end

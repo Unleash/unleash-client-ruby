@@ -1,6 +1,10 @@
 require 'unleash/context'
 
 RSpec.describe Unleash::Context do
+  before do
+    Unleash.configuration = Unleash::Configuration.new
+  end
+
   context 'parameters correctly assigned in initialization'
 
   it "when using snake_case" do

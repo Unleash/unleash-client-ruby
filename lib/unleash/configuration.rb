@@ -51,9 +51,10 @@ module Unleash
 
     def http_headers
       {
+        'User-Agent' => "UnleashClientRuby/#{Unleash::VERSION} #{RUBY_ENGINE}/#{RUBY_VERSION} [#{RUBY_PLATFORM}]",
         'UNLEASH-INSTANCEID' => self.instance_id,
         'UNLEASH-APPNAME' => self.app_name,
-        'Unleash-Client-Spec' => '5.0.2'
+        'Unleash-Client-Spec' => CLIENT_SPECIFICATION_VERSION
       }.merge!(generate_custom_http_headers)
     end
 

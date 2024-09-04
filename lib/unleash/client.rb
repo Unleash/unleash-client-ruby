@@ -80,7 +80,7 @@ module Unleash
         return fallback_variant
       end
 
-      toggle = Unleash::FeatureToggle.new(toggle_as_hash)
+      toggle = Unleash::FeatureToggle.new(toggle_as_hash, Unleash&.segment_cache)
       variant = toggle.get_variant(context, fallback_variant)
 
       if variant.nil?

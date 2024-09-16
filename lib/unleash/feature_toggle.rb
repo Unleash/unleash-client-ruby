@@ -49,7 +49,7 @@ module Unleash
       choice = evaluation_result.enabled? ? :yes : :no
       Unleash.toggle_metrics.increment_variant(self.name, choice, variant.name) unless Unleash.configuration.disable_metrics
 
-      variant.feature_enabled = evaluation_result.enabled? || false
+      variant.feature_enabled = evaluation_result.enabled?
 
       variant
     end

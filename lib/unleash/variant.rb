@@ -18,7 +18,8 @@ module Unleash
     end
 
     def ==(other)
-      self.name == other.name && self.enabled == other.enabled && self.payload == other.payload && self.feature_enabled == other.feature_enabled
+      self.name == other.name && self.enabled == other.enabled && self.payload == other.payload \
+        && self.feature_enabled == other.feature_enabled
     end
   end
 end

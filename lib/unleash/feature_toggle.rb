@@ -61,17 +61,18 @@ module Unleash
     private
 
     def resolve_variant(context, evaluation_result, group_id)
+      variant_strategy_stickiness = evaluation_result.strategy&.params.to_h['stickiness'] || 'default'
       variant_definitions = evaluation_result.strategy&.variant_definitions
       variant_definitions = self.variant_definitions if variant_definitions.nil? || variant_definitions.empty?
       return Unleash::FeatureToggle.disabled_variant unless evaluation_result.enabled?
       return Unleash::FeatureToggle.disabled_variant if sum_variant_defs_weights(variant_definitions) <= 0
 
       variant_from_override_match(context, variant_definitions) ||
-        variant_from_weights(context, resolve_stickiness(variant_definitions), variant_definitions, group_id)
+        variant_from_weights(context, resolve_stickiness(variant_definitions, variant_strategy_stickiness), variant_definitions, group_id)
     end
 
-    def resolve_stickiness(variant_definitions)
-      variant_definitions&.map(&:stickiness)&.compact&.first || "default"
+    def resolve_stickiness(variant_definitions, variant_strategy_stickiness)
+      variant_definitions&.map(&:stickiness)&.compact&.first || variant_strategy_stickiness
     end
 
     # only check if it is enabled, do not do metrics

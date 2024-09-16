@@ -48,11 +48,14 @@ module Unleash
 
       choice = evaluation_result.enabled? ? :yes : :no
       Unleash.toggle_metrics.increment_variant(self.name, choice, variant.name) unless Unleash.configuration.disable_metrics
+
+      variant.feature_enabled = evaluation_result.enabled? || false
+
       variant
     end
 
     def self.disabled_variant
-      Unleash::Variant.new(name: 'disabled', enabled: false)
+      Unleash::Variant.new(name: 'disabled', enabled: false, feature_enabled: false)
     end
 
     private

@@ -13,15 +13,16 @@ Ruby client for the [Unleash](https://github.com/Unleash/unleash) feature manage
     - [List of Arguments](#list-of-arguments)
 - [Usage in a plain Ruby Application](#usage-in-a-plain-ruby-application)
 - [Usage in a Rails Application](#usage-in-a-rails-application)
-    - [1.a Add Initializer](#add-initializer)
-    - [1.b Add Initializer if using Puma in clustered mode](#add-initializer-if-using-puma-in-clustered-mode)
+  - [1. Add Initializer](#1-add-initializer)
+    - [1.a Initializer for standard Rails applications](#1a-initializer-for-standard-rails-applications)
+    - [1.b Add Initializer if using Puma in clustered mode](#1b-add-initializer-if-using-puma-in-clustered-mode)
       - [with `preload_app!`](#with-preload_app)
       - [without `preload_app!`](#without-preload_app)
-    - [1.c Add Initializer if using Phusion Passenger](#add-initializer-if-using-phusion-passenger)
-    - [1.d Add Initializer hooks when using within Sidekiq](#add-initializer-hooks-when-using-within-sidekiq)
-    - [2. Set Unleash::Context](#set-unleashcontext)
-    - [3. Sample usage](#sample-usage)
-      - [Variations](#variations)
+    - [1.c Add Initializer if using Phusion Passenger](#1c-add-initializer-if-using-phusion-passenger)
+    - [1.d Add Initializer hooks when using within Sidekiq](#1d-add-initializer-hooks-when-using-within-sidekiq)
+  - [2. Set Unleash::Context](#2-set-unleashcontext)
+  - [3. Sample usage](#3-sample-usage)
+    - [Variations](#variations)
 - [Bootstrapping](#bootstrapping)
     - [Client methods](#client-methods)
 - [Local test client](#local-test-client)
@@ -349,6 +350,20 @@ or if client is set in `Rails.configuration.unleash`:
 ```ruby
 if Rails.configuration.unleash.is_enabled? "AwesomeFeature", @unleash_context
   puts "AwesomeFeature is enabled"
+end
+```
+
+If you don't want to check a feature is disabled with `unless`, you can also use `is_disabled?`:
+
+```ruby
+# so instead of:
+unless UNLEASH.is_enabled? "AwesomeFeature", @unleash_context
+  puts "AwesomeFeature is disabled"
+end
+
+# it might be more intelligible:
+if UNLEASH.is_disabled? "AwesomeFeature", @unleash_context
+  puts "AwesomeFeature is disabled"
 end
 ```
 

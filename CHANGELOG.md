@@ -13,6 +13,12 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [5.1.0] - 2024-09-18
+### Added
+- feature_enabled in variants (#197)
+
+### Fixed
+- fix issue with strategy variant stickiness (#198)
 
 ## [5.0.7] - 2024-09-04
 ### Changed

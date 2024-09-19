@@ -40,7 +40,7 @@ module Unleash
       end
 
       def random
-        Random.rand(0..10000)
+        Random.rand(0..10_000)
       end
 
       def resolve_stickiness(stickiness, context)

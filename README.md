@@ -426,7 +426,7 @@ Note: `if_enabled` (and `if_disabled`) only support `default_value`, but not `fa
 
 #### Variations
 
-If no variant is found in the server, use the fallback variant.
+If no flag is found in the server, use the fallback variant.
 
 ```ruby
 fallback_variant = Unleash::Variant.new(name: 'default', enabled: true, payload: {"color" => "blue"})

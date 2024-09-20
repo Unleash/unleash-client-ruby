@@ -113,10 +113,7 @@ RSpec.describe Unleash::Strategy::FlexibleRollout do
 
       rounds.times do |i|
         context = { session_id: i }
-
-        if strategy.is_enabled?(params, context)
-          enabled_count += 1
-        end
+        enabled_count += 1 if strategy.is_enabled?(params, context)
       end
 
       actual_percentage = ((enabled_count.to_f / rounds) * 100).round

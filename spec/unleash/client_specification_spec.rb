@@ -7,8 +7,6 @@ RSpec.describe Unleash::Client do
   # load client spec
   SPECIFICATION_PATH = 'client-specification/specifications'.freeze
 
-  DEFAULT_VARIANT = Unleash::Variant.new(name: 'unknown', enabled: false).freeze
-
   before do
     Unleash.configuration = Unleash::Configuration.new
 

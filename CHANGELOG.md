@@ -13,6 +13,25 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [5.1.0] - 2024-09-18
+### Added
+- feature_enabled in variants (#197)
+
+### Fixed
+- fix issue with strategy variant stickiness (#198)
+
+## [5.0.7] - 2024-09-04
+### Changed
+- segments now work with variants (#194)
+
+## [5.0.6] - 2024-08-29
+### Changed
+- do not fail when case insentive enabled while having a complex context object (#191)
+
+## [5.0.5] - 2024-07-31
+### Changed
+- emit warning when overriding a built in strategy (#187)
+
 ## [5.0.4] - 2024-07-15
 ### Changed
 - Reverted "feat: automatically generated instance_id (#179)" (#185)

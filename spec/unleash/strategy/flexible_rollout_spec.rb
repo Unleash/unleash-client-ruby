@@ -99,5 +99,29 @@ RSpec.describe Unleash::Strategy::FlexibleRollout do
       expect(strategy.is_enabled?(params, custom_context)).to be_falsey
       expect(strategy.is_enabled?(params, nil)).to be_falsey
     end
+
+    it 'should deviate at most one percentage point from the rollout percentage' do
+      percentage = 25
+      params = {
+        'groupId' => 'groupId',
+        'rollout' => percentage,
+        'stickiness' => 'default'
+      }
+
+      rounds = 200_000
+      enabled_count = 0
+
+      rounds.times do |i|
+        context = { session_id: i }
+        enabled_count += 1 if strategy.is_enabled?(params, context)
+      end
+
+      actual_percentage = ((enabled_count.to_f / rounds) * 100).round
+      high_mark = percentage + 1
+      low_mark = percentage - 1
+
+      expect(low_mark <= actual_percentage).to be_truthy
+      expect(high_mark >= actual_percentage).to be_truthy
+    end
   end
 end

@@ -102,9 +102,8 @@ RSpec.describe Unleash::Strategy::FlexibleRollout do
 
     it 'should deviate at most one percentage point from the rollout percentage' do
       percentage = 25
-      group_id = 'groupId'
       params = {
-        'groupId' => group_id,
+        'groupId' => 'groupId',
         'rollout' => percentage,
         'stickiness' => 'default'
       }
@@ -113,7 +112,6 @@ RSpec.describe Unleash::Strategy::FlexibleRollout do
       enabled_count = 0
 
       rounds.times do |i|
-        params = { percentage: percentage, group_id: group_id }
         context = { session_id: i }
 
         if strategy.is_enabled?(params, context)

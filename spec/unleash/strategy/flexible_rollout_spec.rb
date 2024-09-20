@@ -102,8 +102,9 @@ RSpec.describe Unleash::Strategy::FlexibleRollout do
 
     it 'should deviate at most one percentage point from the rollout percentage' do
       percentage = 25
+      group_id = 'groupId'
       params = {
-        'groupId' => 'groupId',
+        'groupId' => group_id,
         'rollout' => percentage,
         'stickiness' => 'default'
       }
@@ -124,8 +125,8 @@ RSpec.describe Unleash::Strategy::FlexibleRollout do
       high_mark = percentage + 1
       low_mark = percentage - 1
 
-      assert low_mark <= actual_percentage
-      assert high_mark >= actual_percentage
+      expect(low_mark <= actual_percentage).to be_truthy
+      expect(high_mark >= actual_percentage).to be_truthy
     end
   end
 end

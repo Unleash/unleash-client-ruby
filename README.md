@@ -577,14 +577,16 @@ To install this gem onto your local machine, run `bundle exec rake install`.
 
 Choose a new version number following [Semantic Versioning](https://semver.org/spec/v2.0.0.html) semantics and then:
 
-- update the version number in [./lib/unleash/version.rb](./lib/unleash/version.rb),
-- if a major or minor version bump, update the [Installation section](#installation) in [README.md](README.md)
-- update [CHANGELOG.md](CHANGELOG.md) following the format on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
-- commit with message `chore: bump version to x.y.z`
-- then run `bundle exec rake release`
-  - This will create a git tag for the version on the current commit,
-  - push git commits and tags to origin and
-  - push the `.gem` file to [rubygems.org](https://rubygems.org)
+1. On a separate branch:
+    1. update the version number in [./lib/unleash/version.rb](./lib/unleash/version.rb),
+    2. if a major or minor version bump, update the [Installation section](#installation) in [README.md](README.md)
+    3. update [CHANGELOG.md](CHANGELOG.md) following the format on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
+    4. commit with message `chore: bump version to x.y.z`
+    5. merge to main
+2. On the `main` branch, run `bundle exec rake release`.  This will
+    - create a git tag for the version on the current commit.
+    - push git commits and tags to origin and
+    - push the `.gem` file to [rubygems.org](https://rubygems.org)
 
 ## Contributing
 

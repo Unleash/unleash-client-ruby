@@ -48,7 +48,7 @@ Ruby client for the [Unleash](https://github.com/Unleash/unleash) feature manage
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'unleash', '~> 5.1.0'
+gem 'unleash', '~> 5.1.1'
 ```
 
 And then execute:

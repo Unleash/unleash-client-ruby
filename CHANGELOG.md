@@ -13,6 +13,10 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [5.1.1] - 2024-09-23
+### Fixed
+- increased accuracy of rollout distribution (#200)
+
 ## [5.1.0] - 2024-09-18
 ### Added
 - feature_enabled in variants (#197)

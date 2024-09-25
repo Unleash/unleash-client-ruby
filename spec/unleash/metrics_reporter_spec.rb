@@ -124,7 +124,7 @@ RSpec.describe Unleash::MetricsReporter do
     expect(WebMock).to have_requested(:post, 'http://test-url/client/metrics')
       .with(
         body: hash_including(
-          yggdrasilVersion: nil,
+          yggdrasilVersion: "0.13.2",
           specVersion: anything,
           platformName: anything,
           platformVersion: anything

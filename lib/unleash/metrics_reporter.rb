@@ -20,7 +20,7 @@ module Unleash
       {
         'platformName': RUBY_ENGINE,
         'platformVersion': RUBY_VERSION,
-        'yggdrasilVersion': nil,
+        'yggdrasilVersion': "0.13.2",
         'specVersion': Unleash::CLIENT_SPECIFICATION_VERSION,
         'appName': Unleash.configuration.app_name,
         'instanceId': Unleash.configuration.instance_id,

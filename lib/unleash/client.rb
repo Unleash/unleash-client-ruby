@@ -2,7 +2,7 @@ require 'unleash/configuration'
 require 'unleash/toggle_fetcher'
 require 'unleash/metrics_reporter'
 require 'unleash/scheduled_executor'
-require 'unleash/feature_toggle'
+require 'unleash/variant'
 require 'unleash/util/http'
 require 'logger'
 require 'time'
@@ -11,14 +11,17 @@ module Unleash
   class Client
     attr_accessor :fetcher_scheduled_executor, :metrics_scheduled_executor
 
+    # rubocop:disable Metrics/AbcSize
     def initialize(*opts)
       Unleash.configuration = Unleash::Configuration.new(*opts) unless opts.empty?
       Unleash.configuration.validate!
 
       Unleash.logger = Unleash.configuration.logger.clone
       Unleash.logger.level = Unleash.configuration.log_level
+      Unleash.engine = YggdrasilEngine.new
+      Unleash.engine.register_custom_strategies(Unleash.configuration.strategies.custom_strategies)
 
-      Unleash.toggle_fetcher = Unleash::ToggleFetcher.new
+      Unleash.toggle_fetcher = Unleash::ToggleFetcher.new Unleash.engine
       if Unleash.configuration.disable_client
         Unleash.logger.warn "Unleash::Client is disabled! Will only return default (or bootstrapped if available) results!"
         Unleash.logger.warn "Unleash::Client is disabled! Metrics and MetricsReporter are also disabled!"
@@ -30,6 +33,7 @@ module Unleash
       start_toggle_fetcher
       start_metrics unless Unleash.configuration.disable_metrics
     end
+    # rubocop:enable Metrics/AbcSize
 
     def is_enabled?(feature, context = nil, default_value_param = false, &fallback_blk)
       Unleash.logger.debug "Unleash::Client.is_enabled? feature: #{feature} with context #{context}"
@@ -40,15 +44,16 @@ module Unleash
                         default_value_param
                       end
 
-      toggle_as_hash = Unleash&.toggles&.select{ |toggle| toggle['name'] == feature }&.first
-      if toggle_as_hash.nil?
+      toggle_enabled = Unleash.engine.enabled?(feature, context)
+      if toggle_enabled.nil?
         Unleash.logger.debug "Unleash::Client.is_enabled? feature: #{feature} not found"
+        Unleash.engine.count_toggle(feature, false)
         return default_value
       end
 
-      toggle = Unleash::FeatureToggle.new(toggle_as_hash, Unleash&.segment_cache)
+      Unleash.engine.count_toggle(feature, toggle_enabled)
 
-      toggle.is_enabled?(context)
+      toggle_enabled
     end
 
     def is_disabled?(feature, context = nil, default_value_param = true, &fallback_blk)
@@ -71,22 +76,18 @@ module Unleash
     end
 
     def get_variant(feature, context = Unleash::Context.new, fallback_variant = disabled_variant)
-      Unleash.logger.debug "Unleash::Client.get_variant for feature: #{feature} with context #{context}"
-
-      toggle_as_hash = Unleash&.toggles&.select{ |toggle| toggle['name'] == feature }&.first
-
-      if toggle_as_hash.nil?
-        Unleash.logger.debug "Unleash::Client.get_variant feature: #{feature} not found"
-        return fallback_variant
-      end
-
-      toggle = Unleash::FeatureToggle.new(toggle_as_hash, Unleash&.segment_cache)
-      variant = toggle.get_variant(context, fallback_variant)
+      variant = Unleash.engine.get_variant(feature, context)
 
       if variant.nil?
         Unleash.logger.debug "Unleash::Client.get_variant variants for feature: #{feature} not found"
+        Unleash.engine.count_toggle(feature, false)
         return fallback_variant
       end
+
+      variant = Variant.new(variant)
+
+      Unleash.engine.count_variant(feature, variant.name)
+      Unleash.engine.count_toggle(feature, variant.feature_enabled)
 
       # TODO: Add to README: name, payload, enabled (bool)
 
@@ -96,7 +97,6 @@ module Unleash
     # safe shutdown: also flush metrics to server and toggles to disk
     def shutdown
       unless Unleash.configuration.disable_client
-        Unleash.toggle_fetcher.save!
         Unleash.reporter.post unless Unleash.configuration.disable_metrics
         shutdown!
       end
@@ -117,12 +117,12 @@ module Unleash
         'appName': Unleash.configuration.app_name,
         'instanceId': Unleash.configuration.instance_id,
         'sdkVersion': "unleash-client-ruby:" + Unleash::VERSION,
-        'strategies': Unleash.strategies.keys,
+        'strategies': Unleash.strategies.known_strategies,
         'started': Time.now.iso8601(Unleash::TIME_RESOLUTION),
         'interval': Unleash.configuration.metrics_interval_in_millis,
         'platformName': RUBY_ENGINE,
         'platformVersion': RUBY_VERSION,
-        'yggdrasilVersion': nil,
+        'yggdrasilVersion': "0.13.2",
         'specVersion': Unleash::CLIENT_SPECIFICATION_VERSION
       }
     end
@@ -140,7 +140,6 @@ module Unleash
     end
 
     def start_metrics
-      Unleash.toggle_metrics = Unleash::Metrics.new
       Unleash.reporter = Unleash::MetricsReporter.new
       self.metrics_scheduled_executor = Unleash::ScheduledExecutor.new(
         'MetricsReporter',
@@ -166,7 +165,7 @@ module Unleash
     end
 
     def disabled_variant
-      @disabled_variant ||= Unleash::FeatureToggle.disabled_variant
+      @disabled_variant ||= Unleash::Variant.disabled_variant
     end
 
     def first_fetch_is_eager

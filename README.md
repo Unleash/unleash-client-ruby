@@ -32,6 +32,10 @@ Ruby client for the [Unleash](https://github.com/Unleash/unleash) feature manage
 - [Releasing](#releasing)
 - [Contributing](#contributing)
 
+## Migrating to v6
+
+If you're using custom strategies or overriding built in strategies, please read the full [migration guide](./v6_MIGRATION_GUIDE.md) before upgrading to v6.
+
 ## Supported Ruby Interpreters
 
 - MRI 3.3

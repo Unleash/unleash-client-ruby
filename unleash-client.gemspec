@@ -24,7 +24,7 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = ">= 2.6"
 
   spec.add_dependency "murmurhash3", "~> 0.1.7"
-  spec.add_dependency "yggdrasil-engine", "~> 0.0.6.beta.3"
+  spec.add_dependency "yggdrasil-engine", "~> 0.0.6.beta.4"
 
   spec.add_development_dependency "bundler", "~> 2.1"
   spec.add_development_dependency "rake", "~> 12.3"

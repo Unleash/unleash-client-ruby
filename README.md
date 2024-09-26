@@ -6,7 +6,7 @@
 
 Ruby client for the [Unleash](https://github.com/Unleash/unleash) feature management service.
 
->  **Migrating to v6** 
+>  **Migrating to v6**
 >
 > If you use [custom strategies](#custom-strategies) or override built-in ones, read the complete [migration guide](./v6_MIGRATION_GUIDE.md) before upgrading to v6.
 
@@ -18,7 +18,6 @@ Ruby client for the [Unleash](https://github.com/Unleash/unleash) feature manage
 - MRI 3.1
 - MRI 3.0
 - MRI 2.7
-- MRI 2.6
 - jruby 9.4
 - jruby 9.3
 

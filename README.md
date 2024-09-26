@@ -10,19 +10,6 @@ Ruby client for the [Unleash](https://github.com/Unleash/unleash) feature manage
 >
 > If you use [custom strategies](#custom-strategies) or override built-in ones, read the complete [migration guide](./v6_MIGRATION_GUIDE.md) before upgrading to v6.
 
-- [Supported Ruby interpreters](#supported-ruby-interpreters)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Dynamic custom HTTP headers](#dynamic-custom-http-headers)
-- [Usage in a plain Ruby application](#usage-in-a-plain-ruby-application)
-- [Usage in a Rails application](#usage-in-a-rails-application)
-- [Bootstrapping](#bootstrapping)
-- [Local test client](#local-test-client)
-- [Available strategies](#available-strategies)
-- [Custom strategies](#custom-strategies)
-- [Development](#development)
-- [Releasing](#releasing)
-- [Contributing](#contributing)
 
 ## Supported Ruby interpreters
 

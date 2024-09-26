@@ -10,6 +10,8 @@ The deprecated `register_custom_strategies` method has been removed. You can con
 
 ## Direct access to strategy objects
 
+**Note:** If you're not using the method `known_strategies` this section doesn't affect you
+
 The objects for base strategies are no longer directly accessible via the SDK. The `known_strategies` method only returns custom strategies registered by the user. To check if a custom strategy will override either a built-in or custom strategy, use the `includes?` method (returns false if the name is available).
 
 It is strongly discouraged to access or modify any properties of the built-in strategies other than the name. In version 6+, this is a hard requirement.

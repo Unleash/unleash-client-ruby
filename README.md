@@ -19,7 +19,6 @@ Ruby client for the [Unleash](https://github.com/Unleash/unleash) feature manage
 - MRI 3.0
 - MRI 2.7
 - jruby 9.4
-- jruby 9.3
 
 ## Installation
 

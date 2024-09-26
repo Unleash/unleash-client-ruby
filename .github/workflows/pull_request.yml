@@ -29,7 +29,6 @@ jobs:
           - macos
         ruby-version:
           - jruby-9.4
-          - jruby-9.3
           - 3.3
           - 3.2
           - 3.1

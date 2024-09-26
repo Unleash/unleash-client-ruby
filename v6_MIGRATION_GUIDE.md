@@ -4,8 +4,6 @@ This guide highlights the key changes you should be aware of when upgrading to v
 
 ## Custom strategy changes
 
-There are some changes to custom strategies that may impact your application if you use custom strategies extensively.
-
 In version 6+, custom strategies cannot override the built-in strategies. Specifically, strategies `applicationHostname`, `default`, `flexibleRollout`, `gradualRolloutRandom`, `gradualRolloutSessionId`, `gradualRolloutUserId`, `remoteAddress` or `userWithId` throw an error on startup. Previously, creating a custom strategy would only generate a warning in the logs.
 
 The deprecated `register_custom_strategies` method has been removed. You can continue to [register custom strategies](./README.md#custom-strategies) using configuration.

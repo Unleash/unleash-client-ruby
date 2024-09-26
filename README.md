@@ -5,6 +5,11 @@
 [![Gem Version](https://badge.fury.io/rb/unleash.svg)](https://badge.fury.io/rb/unleash)
 
 Ruby client for the [Unleash](https://github.com/Unleash/unleash) feature management service.
+
+>  **Migrating to v6** 
+>
+> If you use [custom strategies](#custom-strategies) or override built-in ones, read the complete [migration guide](./v6_MIGRATION_GUIDE.md) before upgrading to v6.
+
 - [Supported Ruby interpreters](#supported-ruby-interpreters)
 - [Installation](#installation)
 - [Configuration](#configuration)
@@ -18,11 +23,6 @@ Ruby client for the [Unleash](https://github.com/Unleash/unleash) feature manage
 - [Development](#development)
 - [Releasing](#releasing)
 - [Contributing](#contributing)
-
-
->  **Migrating to v6** 
->
-> If you use [custom strategies](#custom-strategies) or override built-in ones, read the complete [migration guide](./v6_MIGRATION_GUIDE.md) before upgrading to v6.
 
 ## Supported Ruby interpreters
 
@@ -102,7 +102,7 @@ end
 | `app_name`            | Name of your program.                                                                                                                                                                                                                                                                                                         | Y         | String                            | N/A                                            |
 | `instance_id`         | Identifier for the running instance of your program—set this to be able trace where metrics are being collected from.                                                                                                                                                                  | N         | String                            | random UUID                                    |
 | `environment`         | Unleash context option, for example, `prod` or `dev`. Not yet in use. **Not** the same as the SDK's [Unleash environment](https://docs.getunleash.io/reference/environments).                                                                                                                                         | N         | String                            | `default`                                      |
-| `project_name`        | Name of the project to retrieve features flags from. If not set, all feature flags will be retrieved.                                                                                                                                                                                                                               | N         | String                            | nil                                            |
+| `project_name`        | Name of the project to retrieve feature flags from. If not set, all feature flags will be retrieved.                                                                                                                                                                                                                               | N         | String                            | nil                                            |
 | `refresh_interval`    | How often the Unleash client should check with the server for configuration changes.                                                                                                                                                                                                                                          | N         | Integer                           | 15                                             |
 | `metrics_interval`    | How often the Unleash client should send metrics to server.                                                                                                                                                                                                                                                                   | N         | Integer                           | 60                                             |
 | `disable_client`      | Disables all communication with the Unleash server, effectively taking it _offline_. If set, `is_enabled?` always answer with the `default_value` and configuration validation is skipped. Will also forcefully set `disable_metrics` to `true`. Defeats the entire purpose of using Unleash, except when running tests. | N         | Boolean                           | `false`                                        |
@@ -173,10 +173,8 @@ UNLEASH = Unleash::Client.new
 # Rails.configuration.unleash = Unleash::Client.new
 ```
 
-For `config.instance_id` use a string with a unique identification for the running instance.
-For example: it could be the hostname if you only run one App per host.
-Or the docker container id, if you are running in docker.
-If it is not set the client will generate a unique UUID for each execution.
+For `config.instance_id` use a string with a unique identification for the running instance. For example, it could be the hostname if you only run one App per host, or the docker container ID, if you are running in Docker.
+If not set, the client will generate a unique UUID for each execution.
 
 To have it available in the `rails console` command as well, also add to the file above:
 
@@ -231,14 +229,14 @@ end
 
 By not using `preload_app!`:
 
-- the `Rails` constant will NOT be available.
-- but phased restarts will be possible.
+- The `Rails` constant will **not** be available.
+- Phased restarts will be possible.
 
 You need to ensure that in `puma.rb`:
 
-- loading Unleash SDK with `require 'unleash'` explicitly, as it will not be pre-loaded.
-- all parameters must be explicitly set in the `on_worker_boot` block, as `config/initializers/unleash.rb` is not read.
-- there are no references to `Rails` constant, as that is not yet available.
+- The Unleash SDK is loaded with `require 'unleash'` explicitly, as it will not be pre-loaded.
+- All parameters are set explicitly in the `on_worker_boot` block, as `config/initializers/unleash.rb` is not read.
+- There are no references to `Rails` constant, as that is not yet available.
 
 Example for `puma.rb`:
 
@@ -466,7 +464,7 @@ First, save the toggles locally:
 curl -H 'Authorization: <YOUR_API_TOKEN>' -XGET '<YOUR_UNLEASH_URL>/api' > ./default-toggles.json
 ```
 
-Then use them on start-up:
+Then use them on startup:
 
 ```ruby
 
@@ -489,19 +487,19 @@ Be aware that the client initializer will block until bootstrapping is complete.
 
 #### Client methods
 
-| Method Name    | Description                                                                                                                                                                                     | Return Type        |
+| Method name    | Description                                                                                                                                                                                     | Return type        |
 | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
-| `is_enabled?`  | Checks if a feature toggle is enabled or not.                                                                                                                                                | Boolean            |
+| `is_enabled?`  | Checks if a feature toggle is enabled or not                                                                                                                                                | Boolean            |
 | `enabled?`     | A more idiomatic Ruby alias for the `is_enabled?` method                                                                                                                                     | Boolean            |
 | `if_enabled`   | Runs a code block, if a feature is enabled                                                                                                                                                      | `yield`            |
 | `is_disabled?` | Checks if feature toggle is enabled or not                                                                                                                                                | Boolean            |
 | `disabled?`    | A more idiomatic Ruby alias for the `is_disabled?` method                                                                                                                                    | Boolean            |
 | `if_disabled`  | Runs a code block, if a feature is disabled                                                                                                                                                     | `yield`            |
 | `get_variant`  | Gets variant for a given feature                                                                                                                                                                 | `Unleash::Variant` |
-| `shutdown`     | Saves metrics to disk, flushes metrics to server, and then kills `ToggleFetcher` and `MetricsReporter` threads—safe shutdown, not generally needed in long-running applications, like web applications | nil                |
+| `shutdown`     | Saves metrics to disk, flushes metrics to server, and then kills `ToggleFetcher` and `MetricsReporter` threads—a safe shutdown, not generally needed in long-running applications, like web applications | nil                |
 | `shutdown!`    | Kills `ToggleFetcher` and `MetricsReporter` threads immediately                                                                                                                                     | nil                |
 
-For the full method signatures, see [client.rb](lib/unleash/client.rb)
+For the full method signatures, see [client.rb](lib/unleash/client.rb).
 
 ## Local test client
 
@@ -565,7 +563,7 @@ To install this gem onto your local machine, run `bundle exec rake install`.
 
 ## Releasing
 
-To release a new version of the gem, follow these steps:
+To release a new version, follow these steps:
 
 1. Update version number:
      - Increment the version number in the `./lib/unleash/version.rb` file according to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) guidelines.
@@ -574,7 +572,7 @@ To release a new version of the gem, follow these steps:
      - Update [CHANGELOG.md](CHANGELOG.md) following the format on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 3. Commit changes:
      - Commit the changes with a message like: `chore: bump version to x.y.z.`
-4. Release the Gem:
+4. Release the gem:
    	- Run `bundle exec rake release` to create a git tag for the new version, push commits and tags to origin, and publish `.gem` file to [rubygems.org](https://rubygems.org).
 
 ## Contributing

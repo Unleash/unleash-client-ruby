@@ -558,7 +558,7 @@ To release a new version, follow these steps:
 3. Commit changes:
      - Commit the changes with a message like: `chore: bump version to x.y.z.`
 4. Release the gem:
-   	- Run `bundle exec rake release` to create a git tag for the new version, push commits and tags to origin, and publish `.gem` file to [rubygems.org](https://rubygems.org).
+   	- On the `main` branch, run `bundle exec rake release` to create a git tag for the new version, push commits and tags to origin, and publish `.gem` file to [rubygems.org](https://rubygems.org).
 
 ## Contributing
 

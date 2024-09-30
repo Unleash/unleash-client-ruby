@@ -6,49 +6,26 @@
 
 Ruby client for the [Unleash](https://github.com/Unleash/unleash) feature management service.
 
-- [Supported Ruby Interpreters](#supported-ruby-interpreters)
-- [Installation](#installation)
-- [Configure](#configure)
-- [Dynamic custom HTTP headers](#dynamic-custom-http-headers)
-    - [List of Arguments](#list-of-arguments)
-- [Usage in a plain Ruby Application](#usage-in-a-plain-ruby-application)
-- [Usage in a Rails Application](#usage-in-a-rails-application)
-  - [1. Add Initializer](#1-add-initializer)
-    - [1.a Initializer for standard Rails applications](#1a-initializer-for-standard-rails-applications)
-    - [1.b Add Initializer if using Puma in clustered mode](#1b-add-initializer-if-using-puma-in-clustered-mode)
-      - [with `preload_app!`](#with-preload_app)
-      - [without `preload_app!`](#without-preload_app)
-    - [1.c Add Initializer if using Phusion Passenger](#1c-add-initializer-if-using-phusion-passenger)
-    - [1.d Add Initializer hooks when using within Sidekiq](#1d-add-initializer-hooks-when-using-within-sidekiq)
-  - [2. Set Unleash::Context](#2-set-unleashcontext)
-  - [3. Sample usage](#3-sample-usage)
-    - [Variations](#variations)
-- [Bootstrapping](#bootstrapping)
-    - [Client methods](#client-methods)
-- [Local test client](#local-test-client)
-- [Available Strategies](#available-strategies)
-- [Custom Strategies](#custom-strategies)
-- [Development](#development)
-- [Releasing](#releasing)
-- [Contributing](#contributing)
+>  **Migrating to v6**
+>
+> If you use [custom strategies](#custom-strategies) or override built-in ones, read the complete [migration guide](./v6_MIGRATION_GUIDE.md) before upgrading to v6.
 
-## Supported Ruby Interpreters
+
+## Supported Ruby interpreters
 
 - MRI 3.3
 - MRI 3.2
 - MRI 3.1
 - MRI 3.0
 - MRI 2.7
-- MRI 2.6
 - jruby 9.4
-- jruby 9.3
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'unleash', '~> 5.1.0'
+gem 'unleash', '~> 5.1.1'
 ```
 
 And then execute:
@@ -59,72 +36,70 @@ Or install it yourself as:
 
     $ gem install unleash
 
-## Configure
+## Configuration
 
 It is **required** to configure:
 
-- `url` of the unleash server
-- `app_name` with the name of the runninng application.
-- `custom_http_headers` with `{'Authorization': '<API token>'}` when using Unleash v4.0.0 and later.
-
-Please substitute the example `'https://unleash.herokuapp.com/api'` for the url of your own instance.
+- `app_name` with the name of the running application
+- `url` of your Unleash server
+- `custom_http_headers` with `{'Authorization': '<YOUR_API_TOKEN>'}` when using Unleash v4+
 
 It is **highly recommended** to configure:
 
-- `instance_id` parameter with a unique identifier for the running instance.
+- `instance_id` parameter with a unique identifier for the running instance
 
 ```ruby
 Unleash.configure do |config|
   config.app_name            = 'my_ruby_app'
-  config.url                 = 'https://unleash.herokuapp.com/api'
-  config.custom_http_headers = {'Authorization': '<API token>'}
+  config.url                 = '<YOUR_UNLEASH_URL>/api'
+  config.custom_http_headers = {'Authorization': '<YOUR_API_TOKEN>'}
 end
 ```
 
 or instantiate the client with the valid configuration:
 
 ```ruby
-UNLEASH = Unleash::Client.new(url: 'https://unleash.herokuapp.com/api', app_name: 'my_ruby_app', custom_http_headers: {'Authorization': '<API token>'})
+UNLEASH = Unleash::Client.new(url: '<YOUR_UNLEASH_URL>/api', app_name: 'my_ruby_app', custom_http_headers: {'Authorization': '<YOUR_API_TOKEN>'})
 ```
 
 ## Dynamic custom HTTP headers
 
-If you need custom HTTP headers that change during the lifetime of the client, the `custom_http_headers` can be given as a `Proc`.
+If you need custom HTTP headers that change during the lifetime of the client, you can pass `custom_http_headers` as a `Proc`.
 
 ```ruby
 Unleash.configure do |config|
   config.app_name            = 'my_ruby_app'
-  config.url                 = 'https://unleash.herokuapp.com/api'
+  config.url                 = '<YOUR_UNLEASH_URL>/api'
   config.custom_http_headers =  proc do
     {
-      'Authorization': '<API token>',
+      'Authorization': '<YOUR_API_TOKEN>',
       'X-Client-Request-Time': Time.now.iso8601
     }
   end
 end
 ```
 
-#### List of Arguments
+#### List of arguments
 
-| Argument              | Description                                                                                                                                                                                                                                                                                                                   | Required? | Type                              | Default Value                                  |
+| Argument              | Description                                                                                                                                                                                                                                                                                                                   | Required? | Type                              | Default value                                  |
 | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | --------------------------------- | ---------------------------------------------- |
 | `url`                 | Unleash server URL.                                                                                                                                                                                                                                                                                                           | Y         | String                            | N/A                                            |
 | `app_name`            | Name of your program.                                                                                                                                                                                                                                                                                                         | Y         | String                            | N/A                                            |
-| `instance_id`         | Identifier for the running instance of program. Important so you can trace back to where metrics are being collected from. **Highly recommended be be set.**                                                                                                                                                                  | N         | String                            | random UUID                                    |
-| `environment`         | Unleash context option. Could be for example `prod` or `dev`. Not yet in use. **Not** the same as the SDK's [Unleash environment](https://docs.getunleash.io/reference/environments).                                                                                                                                         | N         | String                            | `default`                                      |
-| `project_name`        | Name of the project to retrieve features from. If not set, all feature flags will be retrieved.                                                                                                                                                                                                                               | N         | String                            | nil                                            |
-| `refresh_interval`    | How often the unleash client should check with the server for configuration changes.                                                                                                                                                                                                                                          | N         | Integer                           | 15                                             |
-| `metrics_interval`    | How often the unleash client should send metrics to server.                                                                                                                                                                                                                                                                   | N         | Integer                           | 60                                             |
-| `disable_client`      | Disables all communication with the Unleash server, effectively taking it _offline_. If set, `is_enabled?` will always answer with the `default_value` and configuration validation is skipped. Will also forcefully set `disable_metrics` to `true`. Defeats the entire purpose of using unleash, except when running tests. | N         | Boolean                           | `false`                                        |
+| `instance_id`         | Identifier for the running instance of your program—set this to be able trace where metrics are being collected from.                                                                                                                                                                  | N         | String                            | random UUID                                    |
+| `environment`         | Unleash context option, for example, `prod` or `dev`. Not yet in use. **Not** the same as the SDK's [Unleash environment](https://docs.getunleash.io/reference/environments).                                                                                                                                         | N         | String                            | `default`                                      |
+| `project_name`        | Name of the project to retrieve feature flags from. If not set, all feature flags will be retrieved.                                                                                                                                                                                                                               | N         | String                            | nil                                            |
+| `refresh_interval`    | How often the Unleash client should check with the server for configuration changes.                                                                                                                                                                                                                                          | N         | Integer                           | 15                                             |
+| `metrics_interval`    | How often the Unleash client should send metrics to server.                                                                                                                                                                                                                                                                   | N         | Integer                           | 60                                             |
+| `disable_client`      | Disables all communication with the Unleash server, effectively taking it _offline_. If set, `is_enabled?` always answer with the `default_value` and configuration validation is skipped. Will also forcefully set `disable_metrics` to `true`. Defeats the entire purpose of using Unleash, except when running tests. | N         | Boolean                           | `false`                                        |
 | `disable_metrics`     | Disables sending metrics to Unleash server. If the `disable_client` option is set to `true`, then this option will also be set to `true`, regardless of the value provided.                                                                                                                                                   | N         | Boolean                           | `false`                                        |
-| `custom_http_headers` | Custom headers to send to Unleash. As of Unleash v4.0.0, the `Authorization` header is required. For example: `{'Authorization': '<API token>'}`                                                                                                                                                                              | N         | Hash/Proc                         | {}                                             |
+| `custom_http_headers` | Custom headers to send to Unleash. As of Unleash v4.0.0, the `Authorization` header is required. For example: `{'Authorization': '<YOUR_API_TOKEN>'}`.                                                                                                                                                                              | N         | Hash/Proc                         | {}                                             |
 | `timeout`             | How long to wait for the connection to be established or wait in reading state (open_timeout/read_timeout)                                                                                                                                                                                                                    | N         | Integer                           | 30                                             |
 | `retry_limit`         | How many consecutive failures in connecting to the Unleash server are allowed before giving up. The default is to retry indefinitely.                                                                                                                                                                                         | N         | Float::INFINITY                   | 5                                              |
-| `backup_file`         | Filename to store the last known state from the Unleash server. Best to not change this from the default.                                                                                                                                                                                                                     | N         | String                            | `Dir.tmpdir + "/unleash-#{app_name}-repo.json` |
+| `backup_file`         | Filename to store the last known state from the Unleash server. It is best to not change this from the default.                                                                                                                                                                                                                     | N         | String                            | `Dir.tmpdir + "/unleash-#{app_name}-repo.json` |
 | `logger`              | Specify a custom `Logger` class to handle logs for the Unleash client.                                                                                                                                                                                                                                                        | N         | Class                             | `Logger.new(STDOUT)`                           |
 | `log_level`           | Change the log level for the `Logger` class. Constant from `Logger::Severity`.                                                                                                                                                                                                                                                | N         | Constant                          | `Logger::WARN`                                 |
-| `bootstrap_config`    | Bootstrap config on how to loaded data on start-up. This is useful for loading large states on startup without (or before) hitting the network.                                                                                                                                                                               | N         | Unleash::Bootstrap::Configuration | `nil`                                          |
-| `strategies`          | Strategies manager that holds all strategies and allows to add custom strategies                                                                                                                                                                                                                                              | N         | Unleash::Strategies               | `Unleash::Strategies.new`                      |
+| `bootstrap_config`    | Bootstrap config for loading data on startup—useful for loading large states on startup without (or before) hitting the network.                                                                                                                                                                               | N         | Unleash::Bootstrap::Configuration | `nil`                                          |
+| `strategies`          | Strategies manager that holds all strategies and allows to add custom strategies.                                                                                                                                                                                                                                              | N         | Unleash::Strategies               | `Unleash::Strategies.new`                      |
 
 For a more in-depth look, please see `lib/unleash/configuration.rb`.
 
@@ -133,13 +108,13 @@ For a more in-depth look, please see `lib/unleash/configuration.rb`.
 | `UNLEASH_BOOTSTRAP_FILE` | File to read bootstrap data from |
 | `UNLEASH_BOOTSTRAP_URL`  | URL to read bootstrap data from  |
 
-## Usage in a plain Ruby Application
+## Usage in a plain Ruby application
 
 ```ruby
 require 'unleash'
 require 'unleash/context'
 
-@unleash = Unleash::Client.new(app_name: 'my_ruby_app', url: 'https://unleash.herokuapp.com/api', custom_http_headers: { 'Authorization': '<API token>' })
+@unleash = Unleash::Client.new(app_name: 'my_ruby_app', url: '<YOUR_UNLEASH_URL>/api', custom_http_headers: { 'Authorization': '<YOUR_API_TOKEN>' })
 
 feature_name = "AwesomeFeature"
 unleash_context = Unleash::Context.new
@@ -158,7 +133,7 @@ else
 end
 ```
 
-## Usage in a Rails Application
+## Usage in a Rails application
 
 ### 1. Add Initializer
 
@@ -183,10 +158,8 @@ UNLEASH = Unleash::Client.new
 # Rails.configuration.unleash = Unleash::Client.new
 ```
 
-For `config.instance_id` use a string with a unique identification for the running instance.
-For example: it could be the hostname, if you only run one App per host.
-Or the docker container id, if you are running in docker.
-If it is not set the client will generate an unique UUID for each execution.
+For `config.instance_id` use a string with a unique identification for the running instance. For example, it could be the hostname if you only run one App per host, or the docker container ID, if you are running in Docker.
+If not set, the client will generate a unique UUID for each execution.
 
 To have it available in the `rails console` command as well, also add to the file above:
 
@@ -213,12 +186,12 @@ Then you may keep the client configuration still in `config/initializers/unleash
 ```ruby
 Unleash.configure do |config|
   config.app_name    = Rails.application.class.parent.to_s
-  config.url                 = 'https://unleash.herokuapp.com/api'
-  config.custom_http_headers = {'Authorization': '<API token>'}
+  config.url                 = '<YOUR_UNLEASH_URL>/api'
+  config.custom_http_headers = {'Authorization': '<YOUR_API_TOKEN>'}
 end
 ```
 
-But you must ensure that the unleash client is instantiated only after the process is forked.
+But you must ensure that the Unleash client is instantiated only after the process is forked.
 This is done by creating the client inside the `on_worker_boot` code block in `puma.rb` as below:
 
 ```ruby
@@ -241,14 +214,14 @@ end
 
 By not using `preload_app!`:
 
-- the `Rails` constant will NOT be available.
-- but phased restarts will be possible.
+- The `Rails` constant will **not** be available.
+- Phased restarts will be possible.
 
 You need to ensure that in `puma.rb`:
 
-- loading unleash sdk with `require 'unleash'` explicitly, as it will not be pre-loaded.
-- all parameters must be explicitly set in the `on_worker_boot` block, as `config/initializers/unleash.rb` is not read.
-- there are no references to `Rails` constant, as that is not yet available.
+- The Unleash SDK is loaded with `require 'unleash'` explicitly, as it will not be pre-loaded.
+- All parameters are set explicitly in the `on_worker_boot` block, as `config/initializers/unleash.rb` is not read.
+- There are no references to `Rails` constant, as that is not yet available.
 
 Example for `puma.rb`:
 
@@ -263,8 +236,8 @@ on_worker_boot do
 
   ::UNLEASH = Unleash::Client.new(
     app_name: 'my_rails_app',
-    url: 'https://unleash.herokuapp.com/api',
-    custom_http_headers: {'Authorization': '<API token>'},
+    url: '<YOUR_UNLEASH_URL>/api',
+    custom_http_headers: {'Authorization': '<YOUR_API_TOKEN>'},
   )
 end
 
@@ -277,7 +250,7 @@ Note that we also added shutdown hooks in `on_worker_shutdown`, to ensure a clea
 
 #### 1.c Add Initializer if using [Phusion Passenger](https://github.com/phusion/passenger)
 
-The unleash client needs to be configured and instantiated inside the `PhusionPassenger.on_event(:starting_worker_process)` code block due to [smart spawning](https://www.phusionpassenger.com/library/indepth/ruby/spawn_methods/#smart-spawning-caveats):
+The Unleash client needs to be configured and instantiated inside the `PhusionPassenger.on_event(:starting_worker_process)` code block due to [smart spawning](https://www.phusionpassenger.com/library/indepth/ruby/spawn_methods/#smart-spawning-caveats):
 
 The initializer in `config/initializers/unleash.rb` should look like:
 
@@ -288,8 +261,8 @@ PhusionPassenger.on_event(:starting_worker_process) do |forked|
       config.app_name    = Rails.application.class.parent.to_s
       # config.instance_id = "#{Socket.gethostname}"
       config.logger      = Rails.logger
-      config.url                 = 'https://unleash.herokuapp.com/api'
-      config.custom_http_headers = {'Authorization': '<API token>'}
+      config.url                 = '<YOUR_UNLEASH_URL>/api'
+      config.custom_http_headers = {'Authorization': '<YOUR_API_TOKEN>'}
     end
 
     UNLEASH = Unleash::Client.new
@@ -299,7 +272,7 @@ end
 
 #### 1.d Add Initializer hooks when using within [Sidekiq](https://github.com/mperham/sidekiq)
 
-Note that in this case we require that the code block for `Unleash.configure` is set beforehand.
+Note that in this case, we require that the code block for `Unleash.configure` is set beforehand.
 For example in `config/initializers/unleash.rb`.
 
 ```ruby
@@ -316,7 +289,7 @@ end
 
 ### 2. Set Unleash::Context
 
-Be sure to add the following method and callback in the application controller to have `@unleash_context` set for all requests:
+Add the following method and callback in the application controller to have `@unleash_context` set for all requests:
 
 Add in `app/controllers/application_controller.rb`:
 
@@ -333,7 +306,7 @@ Add in `app/controllers/application_controller.rb`:
   end
 ```
 
-Or if you see better fit, only in the controllers that you will be using unleash.
+Alternatively, you can add this method only to the controllers that use Unleash.
 
 ### 3. Sample usage
 
@@ -406,11 +379,11 @@ end
 
 Note:
 
-- The block/lambda/proc can use feature name and context as an arguments.
+- The block/lambda/proc can use the feature name and context as arguments.
 - The client will evaluate the fallback function once per call of `is_enabled()`.
-  Please keep this in mind when creating your fallback function!
+  Please keep this in mind when creating your fallback function.
 - The returned value of the block should be a boolean.
-  However, the client will coerce the result to boolean via `!!`.
+  However, the client will coerce the result to a boolean via `!!`.
 - If both a `default_value` and `fallback_function` are supplied,
   the client will define the default value by `OR`ing the default value and the output of the fallback function.
 
@@ -442,21 +415,21 @@ Bootstrapping can be configured by providing a bootstrap configuration when init
 
 ```ruby
 @unleash = Unleash::Client.new(
-    url: 'https://unleash.herokuapp.com/api',
+    url: '<YOUR_UNLEASH_URL>/api',
     app_name: 'my_ruby_app',
-    custom_http_headers: { 'Authorization': '<API token>' },
+    custom_http_headers: { 'Authorization': '<YOUR_API_TOKEN>' },
     bootstrap_config: Unleash::Bootstrap::Configuration.new({
-        url: "https://unleash.herokuapp.com/api/client/features",
-        url_headers: {'Authorization': '<API token>'}
+        url: "<YOUR_UNLEASH_URL>/api/client/features",
+        url_headers: {'Authorization': '<YOUR_API_TOKEN>'}
     })
 )
 ```
 
 The `Bootstrap::Configuration` initializer takes a hash with one of the following options specified:
 
-- `file_path` - An absolute or relative path to a file containing a JSON string of the response body from the Unleash server. This can also be set though the `UNLEASH_BOOTSTRAP_FILE` environment variable.
-- `url` - A url pointing to an Unleash server's features endpoint, the code sample above is illustrative. This can also be set though the `UNLEASH_BOOTSTRAP_URL` environment variable.
-- `url_headers` - Headers for the GET http request to the `url` above. Only used if the `url` parameter is also set. If this option isn't set then the bootstrapper will use the same url headers as the Unleash client.
+- `file_path` - An absolute or relative path to a file containing a JSON string of the response body from the Unleash server. This can also be set through the `UNLEASH_BOOTSTRAP_FILE` environment variable.
+- `url` - A url pointing to an Unleash server's features endpoint, the code sample above is illustrative. This can also be set through the `UNLEASH_BOOTSTRAP_URL` environment variable.
+- `url_headers` - Headers for the GET HTTP request to the `url` above. Only used if the `url` parameter is also set. If this option isn't set then the bootstrapper will use the same url headers as the Unleash client.
 - `data` - A raw JSON string as returned by the Unleash server.
 - `block` - A lambda containing custom logic if you need it, an example is provided below.
 
@@ -470,13 +443,13 @@ The order of preference is as follows:
 
 Example usage:
 
-First saving the toggles locally:
+First, save the toggles locally:
 
 ```shell
-curl -H 'Authorization: <API token>' -XGET 'https://unleash.herokuapp.com/api' > ./default-toggles.json
+curl -H 'Authorization: <YOUR_API_TOKEN>' -XGET '<YOUR_UNLEASH_URL>/api' > ./default-toggles.json
 ```
 
-Now using them on start up:
+Then use them on startup:
 
 ```ruby
 
@@ -486,8 +459,8 @@ custom_boostrapper = lambda {
 
 @unleash = Unleash::Client.new(
     app_name: 'my_ruby_app',
-    url: 'https://unleash.herokuapp.com/api',
-    custom_http_headers: { 'Authorization': '<API token>' },
+    url: '<YOUR_UNLEASH_URL>/api',
+    custom_http_headers: { 'Authorization': '<YOUR_API_TOKEN>' },
     bootstrap_config: Unleash::Bootstrap::Configuration.new({
         block: custom_boostrapper
     })
@@ -499,19 +472,19 @@ Be aware that the client initializer will block until bootstrapping is complete.
 
 #### Client methods
 
-| Method Name    | Description                                                                                                                                                                                     | Return Type        |
+| Method name    | Description                                                                                                                                                                                     | Return type        |
 | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
-| `is_enabled?`  | Check if feature toggle is to be enabled or not.                                                                                                                                                | Boolean            |
-| `enabled?`     | Alias to the `is_enabled?` method. But more ruby idiomatic.                                                                                                                                     | Boolean            |
-| `if_enabled`   | Run a code block, if a feature is enabled.                                                                                                                                                      | `yield`            |
-| `is_disabled?` | Check if feature toggle is to be enabled or not.                                                                                                                                                | Boolean            |
-| `disabled?`    | Alias to the `is_disabled?` method. But more ruby idiomatic.                                                                                                                                    | Boolean            |
-| `if_disabled`  | Run a code block, if a feature is disabled.                                                                                                                                                     | `yield`            |
-| `get_variant`  | Get variant for a given feature                                                                                                                                                                 | `Unleash::Variant` |
-| `shutdown`     | Save metrics to disk, flush metrics to server, and then kill ToggleFetcher and MetricsReporter threads. A safe shutdown. Not really useful in long running applications, like web applications. | nil                |
-| `shutdown!`    | Kill ToggleFetcher and MetricsReporter threads immediately.                                                                                                                                     | nil                |
+| `is_enabled?`  | Checks if a feature toggle is enabled or not                                                                                                                                                | Boolean            |
+| `enabled?`     | A more idiomatic Ruby alias for the `is_enabled?` method                                                                                                                                     | Boolean            |
+| `if_enabled`   | Runs a code block, if a feature is enabled                                                                                                                                                      | `yield`            |
+| `is_disabled?` | Checks if feature toggle is enabled or not                                                                                                                                                | Boolean            |
+| `disabled?`    | A more idiomatic Ruby alias for the `is_disabled?` method                                                                                                                                    | Boolean            |
+| `if_disabled`  | Runs a code block, if a feature is disabled                                                                                                                                                     | `yield`            |
+| `get_variant`  | Gets variant for a given feature                                                                                                                                                                 | `Unleash::Variant` |
+| `shutdown`     | Saves metrics to disk, flushes metrics to server, and then kills `ToggleFetcher` and `MetricsReporter` threads—a safe shutdown, not generally needed in long-running applications, like web applications | nil                |
+| `shutdown!`    | Kills `ToggleFetcher` and `MetricsReporter` threads immediately                                                                                                                                     | nil                |
 
-For the full method signatures, please see [client.rb](lib/unleash/client.rb)
+For the full method signatures, see [client.rb](lib/unleash/client.rb).
 
 ## Local test client
 
@@ -523,9 +496,9 @@ bundle exec bin/unleash-client --help
 bundle exec examples/simple.rb
 ```
 
-## Available Strategies
+## Available strategies
 
-This client comes with the all the required strategies out of the box:
+This client comes with all the required strategies out of the box:
 
 - ApplicationHostnameStrategy
 - DefaultStrategy
@@ -537,10 +510,10 @@ This client comes with the all the required strategies out of the box:
 - UnknownStrategy
 - UserWithIdStrategy
 
-## Custom Strategies
+## Custom strategies
 
-Client allows to add [custom activation strategies](https://docs.getunleash.io/advanced/custom_activation_strategy) using configuration.
-In order for strategy to work correctly it should support two methods `name` and `is_enabled?`
+You can add [custom activation strategies](https://docs.getunleash.io/advanced/custom_activation_strategy) using configuration.
+In order for the strategy to work correctly it should support two methods `name` and `is_enabled?`.
 
 ```ruby
 class MyCustomStrategy
@@ -575,18 +548,17 @@ To install this gem onto your local machine, run `bundle exec rake install`.
 
 ## Releasing
 
-Choose a new version number following [Semantic Versioning](https://semver.org/spec/v2.0.0.html) semantics and then:
+To release a new version, follow these steps:
 
-1. On a separate branch:
-    1. update the version number in [./lib/unleash/version.rb](./lib/unleash/version.rb),
-    2. if a major or minor version bump, update the [Installation section](#installation) in [README.md](README.md)
-    3. update [CHANGELOG.md](CHANGELOG.md) following the format on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
-    4. commit with message `chore: bump version to x.y.z`
-    5. merge to main
-2. On the `main` branch, run `bundle exec rake release`.  This will
-    - create a git tag for the version on the current commit.
-    - push git commits and tags to origin and
-    - push the `.gem` file to [rubygems.org](https://rubygems.org)
+1. Update version number:
+     - Increment the version number in the `./lib/unleash/version.rb` file according to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) guidelines.
+2. Update documentation:
+     - If the update includes a major or minor version change, update the [Installation section](#installation) in [README.md](README.md).
+     - Update [CHANGELOG.md](CHANGELOG.md) following the format on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+3. Commit changes:
+     - Commit the changes with a message like: `chore: bump version to x.y.z.`
+4. Release the gem:
+   	- On the `main` branch, run `bundle exec rake release` to create a git tag for the new version, push commits and tags to origin, and publish `.gem` file to [rubygems.org](https://rubygems.org).
 
 ## Contributing
 
@@ -596,4 +568,4 @@ Be sure to run both `bundle exec rspec` and `bundle exec rubocop` in your branch
 
 Please include tests with any pull requests, to avoid regressions.
 
-Check out our guide for more information on how to build and scale [feature flag systems](https://docs.getunleash.io/topics/feature-flags/feature-flag-best-practices)
+Check out our guide for more information on how to build and scale [feature flag systems](https://docs.getunleash.io/topics/feature-flags/feature-flag-best-practices).

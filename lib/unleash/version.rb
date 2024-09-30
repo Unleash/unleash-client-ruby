@@ -1,3 +1,3 @@
 module Unleash
-  VERSION = "5.1.0".freeze
+  VERSION = "6.0.5.pre".freeze
 end

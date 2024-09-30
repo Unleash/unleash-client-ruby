@@ -13,6 +13,16 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [6.0.0.pre] - 2024-09-25
+#### Changed
+- No longer possible to override built in strategies with custom strategies (#152)
+- No longer possible to access built in strategy's objects, these are now native code (#152)
+- Core of the SDK swapped for Yggdrasil engine (#152)
+
+## [5.1.1] - 2024-09-23
+### Fixed
+- increased accuracy of rollout distribution (#200)
+
 ## [5.1.0] - 2024-09-18
 ### Added
 - feature_enabled in variants (#197)

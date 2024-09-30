@@ -13,7 +13,9 @@ SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new(
   ]
 )
 
-SimpleCov.start
+SimpleCov.start do
+  add_filter '/spec/'
+end
 
 require "bundler/setup"
 require "unleash"

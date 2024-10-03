@@ -13,6 +13,10 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [6.0.0] - 2024-09-25
+#### Fixed
+- Upgrade core engine library to support ARM on Linux
+
 ## [6.0.0.pre] - 2024-09-25
 #### Changed
 - No longer possible to override built in strategies with custom strategies (#152)

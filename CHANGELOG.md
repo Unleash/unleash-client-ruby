@@ -13,6 +13,10 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [6.0.5] - 2024-09-25
+#### Fixed
+- Upgrade core engine library to support ARM on legacy Mac
+
 ## [6.0.0] - 2024-09-25
 #### Fixed
 - Upgrade core engine library to support ARM on Linux

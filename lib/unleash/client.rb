@@ -122,7 +122,7 @@ module Unleash
         'interval': Unleash.configuration.metrics_interval_in_millis,
         'platformName': RUBY_ENGINE,
         'platformVersion': RUBY_VERSION,
-        'yggdrasilVersion': "0.13.2",
+        'yggdrasilVersion': "0.13.3",
         'specVersion': Unleash::CLIENT_SPECIFICATION_VERSION
       }
     end

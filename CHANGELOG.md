@@ -14,6 +14,10 @@ Note: These changes are not considered notable:
 ## [Unreleased]
 
 ## [6.0.5] - 2024-09-25
+#### Changed
+- Upgrade core engine library to allow ffi version 1.16.3
+
+## [6.0.5] - 2024-09-25
 #### Fixed
 - Upgrade core engine library to support ARM on legacy Mac
 

@@ -23,7 +23,7 @@ module Unleash
       ",app_name=#{@app_name},environment=#{@environment},current_time=#{@current_time}>"
     end
 
-    def as_json
+    def as_json(*_options)
       {
         appName: to_safe_value(self.app_name),
         environment: to_safe_value(self.environment),

@@ -189,4 +189,8 @@ RSpec.describe Unleash::Context do
     context = Unleash::Context.new(params)
     expect(context.to_h).to eq(params)
   end
+
+  it "converts to json without error" do
+    expect { JSON.dump(Unleash::Context.new) }.not_to raise_error
+  end
 end

@@ -13,7 +13,11 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
-## [6.0.5] - 2024-09-25
+## [6.0.7] - 2024-10-24
+#### Fixed
+- Context object correctly dumps to JSON
+
+## [6.0.6] - 2024-10-23
 #### Changed
 - Upgrade core engine library to allow ffi version 1.16.3
 

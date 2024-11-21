@@ -24,6 +24,7 @@ module Unleash
       def self.http_connection(uri)
         http = Net::HTTP.new(uri.host, uri.port)
         http.use_ssl = true if uri.scheme == 'https'
+        http.response_body_encoding = 'UTF-8'
         http.open_timeout = Unleash.configuration.timeout # in seconds
         http.read_timeout = Unleash.configuration.timeout # in seconds
 

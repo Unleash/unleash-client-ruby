@@ -13,6 +13,14 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [6.0.9] - 2024-11-21
+### Fixed
+- Fixed an issue where the server not sending the encoding would break file saving (#215)
+
+## [6.0.8] - 2024-11-13
+### Fixed
+- Fixed an issue where the SDK running on aarch64 wouldn't load the binary correctly
+
 ## [6.0.7] - 2024-10-24
 #### Fixed
 - Context object correctly dumps to JSON

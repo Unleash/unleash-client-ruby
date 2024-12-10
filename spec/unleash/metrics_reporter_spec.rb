@@ -60,6 +60,19 @@ RSpec.describe Unleash::MetricsReporter do
     )
   end
 
+  it "generates the correct report with no metrics" do
+    Unleash.configure do |config|
+      config.url      = 'http://test-url/'
+      config.app_name = 'my-test-app'
+      config.instance_id = 'rspec/test'
+      config.disable_client = true
+    end
+    Unleash.engine = YggdrasilEngine.new
+
+    report = metrics_reporter.generate_report
+    expect(report).to be_nil
+  end
+
   it "sends the correct report" do
     WebMock.stub_request(:post, "http://test-url/client/metrics")
       .with(

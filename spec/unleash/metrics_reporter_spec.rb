@@ -16,6 +16,7 @@ RSpec.describe Unleash::MetricsReporter do
     # Do not test the scheduled calls from client/metrics:
     Unleash.configuration.disable_client = true
     Unleash.configuration.disable_metrics = true
+    metrics_reporter.last_time = Time.now
   end
 
   it "generates the correct report" do
@@ -58,19 +59,6 @@ RSpec.describe Unleash::MetricsReporter do
         yes: 1
       }
     )
-  end
-
-  it "generates the correct report with no metrics" do
-    Unleash.configure do |config|
-      config.url      = 'http://test-url/'
-      config.app_name = 'my-test-app'
-      config.instance_id = 'rspec/test'
-      config.disable_client = true
-    end
-    Unleash.engine = YggdrasilEngine.new
-
-    report = metrics_reporter.generate_report
-    expect(report).to be_nil
   end
 
   it "sends the correct report" do
@@ -123,6 +111,35 @@ RSpec.describe Unleash::MetricsReporter do
     metrics_reporter.post
 
     expect(WebMock).to_not have_requested(:post, 'http://test-url/client/metrics')
+  end
+
+  it "generates an empty report when no metrics after 10 minutes" do
+    WebMock.stub_request(:post, "http://test-url/client/metrics")
+      .to_return(status: 200, body: "", headers: {})
+    Unleash.configure do |config|
+      config.url      = 'http://test-url/'
+      config.app_name = 'my-test-app'
+      config.instance_id = 'rspec/test'
+      config.disable_client = true
+    end
+    Unleash.engine = YggdrasilEngine.new
+
+    metrics_reporter.last_time = Time.now - 601
+    report = metrics_reporter.generate_report
+    expect(report[:bucket]).to be_empty
+
+    metrics_reporter.post
+
+    expect(WebMock).to have_requested(:post, 'http://test-url/client/metrics')
+      .with(
+        body: hash_including(
+          yggdrasilVersion: anything,
+          specVersion: anything,
+          platformName: anything,
+          platformVersion: anything,
+          bucket: {}
+        )
+      )
   end
 
   it "includes metadata in the report" do

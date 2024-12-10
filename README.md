@@ -534,7 +534,7 @@ end
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies.
-Then, run `rake spec` to run the tests.
+Then, run `bundle exec rake spec` to run the tests.
 You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
 This SDK is also built against the Unleash Client Specification tests.
@@ -542,7 +542,7 @@ To run the Ruby SDK against this test suite, you'll need to have a copy on your 
 
 `git clone --branch v$(ruby echo_client_spec_version.rb) https://github.com/Unleash/client-specification.git`
 
-After doing this, `rake spec` will also run the client specification tests.
+After doing this, `bundle exec rake spec` will also run the client specification tests.
 
 To install this gem onto your local machine, run `bundle exec rake install`.
 

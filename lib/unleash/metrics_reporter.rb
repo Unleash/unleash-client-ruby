@@ -32,7 +32,7 @@ module Unleash
       Unleash.logger.debug "post() Report"
 
       bucket = self.generate_report
-      if bucket.nil? && !(Time.now - self.last_time < LONGEST_WITHOUT_A_REPORT) # and last time is less then 10 minutes...
+      if bucket.nil? && (Time.now - self.last_time >= LONGEST_WITHOUT_A_REPORT) # and last time is less then 10 minutes...
         Unleash.logger.debug "Report not posted to server, as it would have been empty. (and has been empty for up to 10 min)"
 
         return

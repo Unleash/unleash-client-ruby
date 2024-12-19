@@ -13,6 +13,10 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [6.0.10] - 2024-12-19
+### Fixed
+- Fixed an edge case issue where the client was failing to send metrics after 10 minutes of not having metrics (#219)
+
 ## [6.0.9] - 2024-11-21
 ### Fixed
 - Fixed an issue where the server not sending the encoding would break file saving (#215)

@@ -1,5 +1,7 @@
 require 'net/http'
 require 'uri'
+require 'zlib'
+require 'stringio'
 
 module Unleash
   module Util
@@ -8,6 +10,7 @@ module Unleash
         http = http_connection(uri)
 
         request = Net::HTTP::Get.new(uri.request_uri, http_headers(etag, headers_override))
+        request.delete('Content-Encoding')
 
         http.request(request)
       end
@@ -16,7 +19,15 @@ module Unleash
         http = http_connection(uri)
 
         request = Net::HTTP::Post.new(uri.request_uri, http_headers)
-        request.body = body
+        request_body =
+          if request['Content-Encoding'] == 'gzip'
+            request_body_writer = Zlib::GzipWriter.new(StringIO.new)
+            request_body_writer << body
+            request_body_writer.close.string
+          else
+            body
+          end
+        request.body = request_body
 
         http.request(request)
       end
@@ -33,6 +44,7 @@ module Unleash
 
       # @param etag [String, nil]
       # @param headers_override [Hash, nil]
+      # @return [Hash]
       def self.http_headers(etag = nil, headers_override = nil)
         Unleash.logger.debug "ETag: #{etag}" unless etag.nil?
 

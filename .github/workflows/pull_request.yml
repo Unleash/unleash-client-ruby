@@ -27,6 +27,7 @@ jobs:
         os:
           - ubuntu
           - macos
+          - windows
         ruby-version:
           - jruby-9.4
           - 3.3

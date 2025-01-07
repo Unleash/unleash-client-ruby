@@ -146,7 +146,7 @@ RSpec.describe Unleash do
           'X-API-KEY' => '123',
           'UNLEASH-APPNAME' => 'test-app',
           'UNLEASH-INSTANCEID' => config.instance_id,
-          'Unleash-Client-Spec' => '5.1.7',
+          'Unleash-Client-Spec' => '5.1.9',
           'User-Agent' => "UnleashClientRuby/#{Unleash::VERSION} #{RUBY_ENGINE}/#{RUBY_VERSION} [#{RUBY_PLATFORM}]"
         }
       )

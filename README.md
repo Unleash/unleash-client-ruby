@@ -13,6 +13,7 @@ Ruby client for the [Unleash](https://github.com/Unleash/unleash) feature manage
 
 ## Supported Ruby interpreters
 
+- MRI 3.4
 - MRI 3.3
 - MRI 3.2
 - MRI 3.1

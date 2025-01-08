@@ -24,7 +24,8 @@ RSpec.describe Unleash::Client do
 
   JSON.parse(File.read(SPECIFICATION_PATH + '/index.json')).each do |test_file|
     describe "for #{test_file}" do
-      current_test_set = JSON.parse(File.read(SPECIFICATION_PATH + '/' + test_file))
+      ## Encoding is set in this read purely for JRuby. Don't take this out, it'll work locally and then fail on CI
+      current_test_set = JSON.parse(File.read(SPECIFICATION_PATH + '/' + test_file, encoding: 'utf-8'))
       context "with #{current_test_set.fetch('name')} " do
         tests = current_test_set.fetch('tests', [])
         tests.each do |test|

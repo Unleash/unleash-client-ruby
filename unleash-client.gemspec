@@ -42,7 +42,7 @@ Gem::Specification.new do |spec|
 
   # NOTE: only require rbs/steep in supported ruby versions. In EOL ruby/jruby, just ignore.
   # rubocop:disable Gemspec/RubyVersionGlobalsUsage
-  if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('3.1')
+  if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('3.1') && RUBY_ENGINE != 'jruby'
     spec.add_development_dependency "rbs", "~> 3.8.1"
     spec.add_development_dependency "steep", "~> 1.9.3"
   end

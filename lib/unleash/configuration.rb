@@ -54,6 +54,9 @@ module Unleash
         'User-Agent' => "UnleashClientRuby/#{Unleash::VERSION} #{RUBY_ENGINE}/#{RUBY_VERSION} [#{RUBY_PLATFORM}]",
         'UNLEASH-INSTANCEID' => self.instance_id,
         'UNLEASH-APPNAME' => self.app_name,
+        'X-UNLEASH-APPNAME' => self.app_name,
+        'X-UNLEASH-CONNECTION-ID' => @connection_id,
+        'X-UNLEASH-SDK' => "unleash-ruby@#{Unleash::VERSION}",
         'Unleash-Client-Spec' => CLIENT_SPECIFICATION_VERSION
       }.merge!(generate_custom_http_headers)
     end
@@ -87,6 +90,7 @@ module Unleash
       self.environment      = 'default'
       self.url              = nil
       self.instance_id      = SecureRandom.uuid
+      @connection_id        = SecureRandom.uuid
       self.project_name     = nil
       self.disable_client   = false
       self.disable_metrics  = false

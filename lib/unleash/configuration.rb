@@ -90,7 +90,6 @@ module Unleash
       self.environment      = 'default'
       self.url              = nil
       self.instance_id      = SecureRandom.uuid
-      @connection_id        = SecureRandom.uuid
       self.project_name     = nil
       self.disable_client   = false
       self.disable_metrics  = false
@@ -104,6 +103,8 @@ module Unleash
       self.strategies       = Unleash::Strategies.new
 
       self.custom_http_headers = {}
+
+      @connection_id        = SecureRandom.uuid
     end
 
     def initialize_default_logger

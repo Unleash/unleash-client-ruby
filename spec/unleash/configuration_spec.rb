@@ -1,4 +1,5 @@
 require "unleash/configuration"
+require "securerandom"
 
 RSpec.describe Unleash do
   describe 'Configuration' do
@@ -124,7 +125,9 @@ RSpec.describe Unleash do
       expect{ config.validate! }.not_to raise_error
       expect(config.custom_http_headers).to include({ 'X-API-KEY': '123' })
       expect(config.http_headers).to include({ 'UNLEASH-APPNAME' => 'test-app' })
+      expect(config.http_headers).to include({ 'X-UNLEASH-APPNAME' => 'test-app' })
       expect(config.http_headers).to include('UNLEASH-INSTANCEID')
+      expect(config.http_headers).to include('X-UNLEASH-CONNECTION-ID')
     end
 
     it "should allow lambdas and procs for custom_https_headers via new client" do
@@ -132,6 +135,9 @@ RSpec.describe Unleash do
         { 'X-API-KEY' => '123' }
       end
       allow(custom_headers_proc).to receive(:call).and_call_original
+
+      fixed_uuid = "123e4567-e89b-12d3-a456-426614174000"
+      allow(SecureRandom).to receive(:uuid).and_return(fixed_uuid)
 
       config = Unleash::Configuration.new(
         url: 'https://testurl/api',
@@ -145,7 +151,10 @@ RSpec.describe Unleash do
         {
           'X-API-KEY' => '123',
           'UNLEASH-APPNAME' => 'test-app',
+          'X-UNLEASH-APPNAME' => 'test-app',
           'UNLEASH-INSTANCEID' => config.instance_id,
+          'X-UNLEASH-CONNECTION-ID' => fixed_uuid,
+          'X-UNLEASH-SDK' => "unleash-ruby@#{Unleash::VERSION}",
           'Unleash-Client-Spec' => '5.1.9',
           'User-Agent' => "UnleashClientRuby/#{Unleash::VERSION} #{RUBY_ENGINE}/#{RUBY_VERSION} [#{RUBY_PLATFORM}]"
         }

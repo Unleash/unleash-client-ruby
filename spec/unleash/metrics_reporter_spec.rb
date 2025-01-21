@@ -72,7 +72,7 @@ RSpec.describe Unleash::MetricsReporter do
           'X-Unleash-Appname' => 'my-test-app',
           'Unleash-Instanceid' => 'rspec/test',
           'User-Agent' => "UnleashClientRuby/#{Unleash::VERSION} #{RUBY_ENGINE}/#{RUBY_VERSION} [#{RUBY_PLATFORM}]",
-          'X-Unleash-Sdk' => "unleash-ruby@#{Unleash::VERSION}"
+          'X-Unleash-Sdk' => "unleash-client-ruby:#{Unleash::VERSION}"
         }
       )
       .to_return(status: 200, body: "", headers: {})

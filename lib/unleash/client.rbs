@@ -6,15 +6,15 @@ module Unleash
 
     def initialize: (*untyped opts) -> void
 
-    def is_enabled?: (untyped feature, ?Context? context, ?bool default_value_param) ?{ () -> bool } -> bool
+    def is_enabled?: (String feature, ?Context? context, ?bool default_value_param) ?{ () -> bool } -> bool
 
     # enabled? is a more ruby idiomatic method name than is_enabled?
     alias enabled? is_enabled?
 
     # execute a code block (passed as a parameter), if is_enabled? is true.
-    def if_enabled: (untyped feature, ?Context context, ?bool default_value) { (untyped) -> bool } -> (untyped | nil)
+    def if_enabled: (String feature, ?Context context, ?bool default_value) { (untyped) -> bool } -> (untyped | nil)
 
-    def get_variant: (untyped feature, ?Context context, ?Variant fallback_variant) -> Variant
+    def get_variant: (String feature, ?Context context, ?Variant fallback_variant) -> Variant
 
     # safe shutdown: also flush metrics to server and toggles to disk
     def shutdown: () -> nil

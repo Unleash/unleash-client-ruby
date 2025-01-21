@@ -13,6 +13,10 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [6.1.1] - 2024-01-21
+### Fixed
+- use existing sdk name convention (#226)
+
 ## [6.1.0] - 2025-01-21
 ### Added
 - standardised client identification headers (#224)

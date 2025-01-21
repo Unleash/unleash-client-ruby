@@ -13,6 +13,11 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [6.1.0] - 2025-01-21
+### Added
+- standardised client identification headers (#224)
+
+
 ## [6.0.10] - 2024-12-19
 ### Fixed
 - Fixed an edge case issue where the client was failing to send metrics after 10 minutes of not having metrics (#219)

@@ -25,7 +25,7 @@ Ruby client for the [Unleash](https://github.com/Unleash/unleash) feature manage
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'unleash', '~> 6.0.10'
+gem 'unleash', '~> 6.1.0'
 ```
 
 And then execute:

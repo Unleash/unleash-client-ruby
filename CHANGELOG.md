@@ -13,6 +13,10 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [6.1.2] - 2024-01-30
+### Fixed
+- drop x- header prefix (#229)
+
 ## [6.1.1] - 2024-01-21
 ### Fixed
 - use existing sdk name convention (#226)

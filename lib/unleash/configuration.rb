@@ -69,7 +69,7 @@ module Unleash
       else
         uri = URI("#{self.url_stripped_of_slash}/client/features")
       end
-      
+
       uri.query = "project=#{self.project_name}" unless self.project_name.nil?
       uri
     end

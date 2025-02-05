@@ -63,12 +63,14 @@ module Unleash
 
     def fetch_toggles_uri
       uri = nil
+      ## Personal feeling but Rubocop's suggestion here is too dense to be properly readable
+      # rubocop:disable Style/ConditionalAssignment
       if self.use_delta_api
         uri = URI("#{self.url_stripped_of_slash}/client/delta")
       else
         uri = URI("#{self.url_stripped_of_slash}/client/features")
       end
-
+      # rubocop:enable Style/ConditionalAssignment
       uri.query = "project=#{self.project_name}" unless self.project_name.nil?
       uri
     end

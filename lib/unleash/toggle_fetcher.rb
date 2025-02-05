@@ -82,7 +82,7 @@ module Unleash
 
       # notify all threads waiting for this resource to no longer wait
       self.toggle_resource.broadcast
-    rescue => e
+    rescue StandardError => e
       Unleash.logger.error "Failed to hydrate state: #{e.backtrace}"
     end
 

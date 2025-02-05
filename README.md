@@ -13,6 +13,7 @@ Ruby client for the [Unleash](https://github.com/Unleash/unleash) feature manage
 
 ## Supported Ruby interpreters
 
+- MRI 3.4
 - MRI 3.3
 - MRI 3.2
 - MRI 3.1
@@ -25,7 +26,7 @@ Ruby client for the [Unleash](https://github.com/Unleash/unleash) feature manage
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'unleash', '~> 6.1.0'
+gem 'unleash', '~> 6.1.2'
 ```
 
 And then execute:

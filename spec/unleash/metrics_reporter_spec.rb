@@ -69,10 +69,9 @@ RSpec.describe Unleash::MetricsReporter do
           'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
           'Content-Type' => 'application/json',
           'Unleash-Appname' => 'my-test-app',
-          'X-Unleash-Appname' => 'my-test-app',
           'Unleash-Instanceid' => 'rspec/test',
           'User-Agent' => "UnleashClientRuby/#{Unleash::VERSION} #{RUBY_ENGINE}/#{RUBY_VERSION} [#{RUBY_PLATFORM}]",
-          'X-Unleash-Sdk' => "unleash-client-ruby:#{Unleash::VERSION}"
+          'Unleash-Sdk' => "unleash-client-ruby:#{Unleash::VERSION}"
         }
       )
       .to_return(status: 200, body: "", headers: {})

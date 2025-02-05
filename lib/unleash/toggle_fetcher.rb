@@ -43,7 +43,8 @@ module Unleash
         Unleash.logger.debug "No changes according to the unleash server, nothing to do."
         return
       elsif response.code != '200'
-        raise IOError, "Unleash server returned a non 200/304 HTTP result."
+        raise IOError, "Unleash server returned unexpected HTTP response code #{response.code}."\
+          " Only handle response codes 200 (indicates changes) or 304 (no changes)."
       end
 
       self.etag = response['ETag']

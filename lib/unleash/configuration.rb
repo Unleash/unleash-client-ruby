@@ -55,9 +55,8 @@ module Unleash
         'User-Agent' => "UnleashClientRuby/#{Unleash::VERSION} #{RUBY_ENGINE}/#{RUBY_VERSION} [#{RUBY_PLATFORM}]",
         'UNLEASH-INSTANCEID' => self.instance_id,
         'UNLEASH-APPNAME' => self.app_name,
-        'X-UNLEASH-APPNAME' => self.app_name,
-        'X-UNLEASH-CONNECTION-ID' => @connection_id,
-        'X-UNLEASH-SDK' => "unleash-client-ruby:#{Unleash::VERSION}",
+        'UNLEASH-CONNECTION-ID' => @connection_id,
+        'UNLEASH-SDK' => "unleash-client-ruby:#{Unleash::VERSION}",
         'Unleash-Client-Spec' => CLIENT_SPECIFICATION_VERSION
       }.merge!(generate_custom_http_headers)
     end

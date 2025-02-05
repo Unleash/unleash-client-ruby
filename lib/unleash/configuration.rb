@@ -21,7 +21,8 @@ module Unleash
       :logger,
       :log_level,
       :bootstrap_config,
-      :strategies
+      :strategies,
+      :use_delta_api
 
     def initialize(opts = {})
       validate_custom_http_headers!(opts[:custom_http_headers]) if opts.has_key?(:custom_http_headers)
@@ -61,7 +62,15 @@ module Unleash
     end
 
     def fetch_toggles_uri
-      uri = URI("#{self.url_stripped_of_slash}/client/features")
+      uri = nil
+      ## Personal feeling but Rubocop's suggestion here is too dense to be properly readable
+      # rubocop:disable Style/ConditionalAssignment
+      if self.use_delta_api
+        uri = URI("#{self.url_stripped_of_slash}/client/delta")
+      else
+        uri = URI("#{self.url_stripped_of_slash}/client/features")
+      end
+      # rubocop:enable Style/ConditionalAssignment
       uri.query = "project=#{self.project_name}" unless self.project_name.nil?
       uri
     end
@@ -100,6 +109,7 @@ module Unleash
       self.log_level        = Logger::WARN
       self.bootstrap_config = nil
       self.strategies       = Unleash::Strategies.new
+      self.use_delta_api    = false
 
       self.custom_http_headers = {}
       @connection_id = SecureRandom.uuid

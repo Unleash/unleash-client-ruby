@@ -153,7 +153,7 @@ RSpec.describe Unleash do
           'UNLEASH-INSTANCEID' => config.instance_id,
           'UNLEASH-CONNECTION-ID' => fixed_uuid,
           'UNLEASH-SDK' => "unleash-client-ruby:#{Unleash::VERSION}",
-          'Unleash-Client-Spec' => '5.1.9',
+          'Unleash-Client-Spec' => '5.2.0',
           'User-Agent' => "UnleashClientRuby/#{Unleash::VERSION} #{RUBY_ENGINE}/#{RUBY_VERSION} [#{RUBY_PLATFORM}]"
         }
       )

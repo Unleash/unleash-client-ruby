@@ -119,7 +119,7 @@ RSpec.describe Unleash do
       config = Unleash::Configuration.new(
         url: 'https://testurl/api',
         app_name: 'test-app',
-        custom_http_headers: { 'X-API-KEY': '123', 'UNLEASH-CONNECTION-ID': 'ignore', 'UNLEASH-SDK': 'ignore' }
+        custom_http_headers: { 'X-API-KEY': '123', 'UNLEASH-CONNECTION-ID': 'ignore' }
       )
 
       expect{ config.validate! }.not_to raise_error

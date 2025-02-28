@@ -38,7 +38,7 @@ module Unleash
       return if Unleash.configuration.disable_client
 
       headers = (Unleash.configuration.http_headers || {}).dup
-      headers.merge!({'UNLEASH-INTERVAL' => Unleash.configuration.refresh_interval.to_s })
+      headers.merge!({ 'UNLEASH-INTERVAL' => Unleash.configuration.refresh_interval.to_s })
       response = Unleash::Util::Http.get(Unleash.configuration.fetch_toggles_uri, etag, headers)
 
       if response.code == '304'

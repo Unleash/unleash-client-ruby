@@ -102,7 +102,7 @@ module Unleash
       self.project_name     = nil
       self.disable_client   = false
       self.disable_metrics  = false
-      self.refresh_interval = 10
+      self.refresh_interval = 15
       self.metrics_interval = 60
       self.timeout          = 30
       self.retry_limit      = Float::INFINITY

@@ -57,7 +57,7 @@ RSpec.describe Unleash::ToggleFetcher do
   describe '#fetch!' do
     let(:engine) { YggdrasilEngine.new }
 
-    context 'when fetching toggles succeds' do
+    context 'when fetching toggles succeeds' do
       before do
         _toggle_fetcher = described_class.new engine
       end

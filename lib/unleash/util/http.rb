@@ -12,10 +12,10 @@ module Unleash
         http.request(request)
       end
 
-      def self.post(uri, body)
+      def self.post(uri, body, headers_override = nil)
         http = http_connection(uri)
 
-        request = Net::HTTP::Post.new(uri.request_uri, http_headers)
+        request = Net::HTTP::Post.new(uri.request_uri, http_headers(nil, headers_override))
         request.body = body
 
         http.request(request)

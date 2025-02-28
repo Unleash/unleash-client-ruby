@@ -71,7 +71,8 @@ RSpec.describe Unleash::MetricsReporter do
           'Unleash-Appname' => 'my-test-app',
           'Unleash-Instanceid' => 'rspec/test',
           'User-Agent' => "UnleashClientRuby/#{Unleash::VERSION} #{RUBY_ENGINE}/#{RUBY_VERSION} [#{RUBY_PLATFORM}]",
-          'Unleash-Sdk' => "unleash-client-ruby:#{Unleash::VERSION}"
+          'Unleash-Sdk' => "unleash-client-ruby:#{Unleash::VERSION}",
+          'Unleash-Interval' => "60"
         }
       )
       .to_return(status: 200, body: "", headers: {})

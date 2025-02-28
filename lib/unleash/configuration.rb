@@ -23,6 +23,7 @@ module Unleash
       :bootstrap_config,
       :strategies,
       :use_delta_api
+    attr_reader :connection_id
 
     def initialize(opts = {})
       validate_custom_http_headers!(opts[:custom_http_headers]) if opts.has_key?(:custom_http_headers)
@@ -102,7 +103,7 @@ module Unleash
       self.project_name     = nil
       self.disable_client   = false
       self.disable_metrics  = false
-      self.refresh_interval = 10
+      self.refresh_interval = 15
       self.metrics_interval = 60
       self.timeout          = 30
       self.retry_limit      = Float::INFINITY

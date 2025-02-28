@@ -37,7 +37,9 @@ module Unleash
       Unleash.logger.debug "fetch()"
       return if Unleash.configuration.disable_client
 
-      response = Unleash::Util::Http.get(Unleash.configuration.fetch_toggles_uri, etag)
+      headers = (Unleash.configuration.http_headers || {}).dup
+      headers.merge!({ 'UNLEASH-INTERVAL' => Unleash.configuration.refresh_interval.to_s })
+      response = Unleash::Util::Http.get(Unleash.configuration.fetch_toggles_uri, etag, headers)
 
       if response.code == '304'
         Unleash.logger.debug "No changes according to the unleash server, nothing to do."

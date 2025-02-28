@@ -17,7 +17,7 @@ RSpec.describe Unleash do
       expect(config.custom_http_headers).to eq({})
       expect(config.disable_metrics).to be_falsey
 
-      expect(config.refresh_interval).to eq(10)
+      expect(config.refresh_interval).to eq(15)
       expect(config.metrics_interval).to eq(60)
       expect(config.timeout).to eq(30)
       expect(config.retry_limit).to eq(Float::INFINITY)
@@ -213,7 +213,8 @@ RSpec.describe Unleash do
             yggdrasilVersion: anything,
             specVersion: anything,
             platformName: anything,
-            platformVersion: anything
+            platformVersion: anything,
+            connectionId: anything
           )
         )
     end

@@ -23,6 +23,7 @@ module Unleash
         'specVersion': Unleash::CLIENT_SPECIFICATION_VERSION,
         'appName': Unleash.configuration.app_name,
         'instanceId': Unleash.configuration.instance_id,
+        'connectionId': Unleash.configuration.connection_id,
         'bucket': metrics || {}
       }
     end
@@ -37,7 +38,9 @@ module Unleash
         return
       end
 
-      response = Unleash::Util::Http.post(Unleash.configuration.client_metrics_uri, report.to_json)
+      headers = (Unleash.configuration.http_headers || {}).dup
+      headers.merge!({ 'UNLEASH-INTERVAL' => Unleash.configuration.metrics_interval.to_s })
+      response = Unleash::Util::Http.post(Unleash.configuration.client_metrics_uri, report.to_json, headers)
 
       if ['200', '202'].include? response.code
         Unleash.logger.debug "Report sent to unleash server successfully. Server responded with http code #{response.code}"

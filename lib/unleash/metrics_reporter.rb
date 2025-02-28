@@ -23,6 +23,7 @@ module Unleash
         'specVersion': Unleash::CLIENT_SPECIFICATION_VERSION,
         'appName': Unleash.configuration.app_name,
         'instanceId': Unleash.configuration.instance_id,
+        'connectionId': Unleash.configuration.connection_id,
         'bucket': metrics || {}
       }
     end

@@ -159,7 +159,8 @@ RSpec.describe Unleash::MetricsReporter do
           yggdrasilVersion: anything,
           specVersion: anything,
           platformName: anything,
-          platformVersion: anything
+          platformVersion: anything,
+          connectionId: anything
         )
       )
   end

@@ -38,7 +38,7 @@ module Unleash
       end
 
       headers = (Unleash.configuration.http_headers || {}).dup
-      headers.merge!( { 'UNLEASH-INTERVAL' => Unleash.configuration.metrics_interval.to_s })
+      headers.merge!({ 'UNLEASH-INTERVAL' => Unleash.configuration.metrics_interval.to_s })
       response = Unleash::Util::Http.post(Unleash.configuration.client_metrics_uri, report.to_json, headers)
 
       if ['200', '202'].include? response.code

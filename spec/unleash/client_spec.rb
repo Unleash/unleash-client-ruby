@@ -279,7 +279,7 @@ RSpec.describe Unleash::Client do
           'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
           'User-Agent' => "UnleashClientRuby/#{Unleash::VERSION} #{RUBY_ENGINE}/#{RUBY_VERSION} [#{RUBY_PLATFORM}]",
           'Unleash-Sdk' => "unleash-client-ruby:#{Unleash::VERSION}",
-          'X-Api-Key' => '123',
+          'X-Api-Key' => '123'
         }
       )
       .to_return(status: 200, body: "", headers: {})

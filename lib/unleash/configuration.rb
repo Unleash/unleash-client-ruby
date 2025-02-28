@@ -23,6 +23,7 @@ module Unleash
       :bootstrap_config,
       :strategies,
       :use_delta_api
+    attr_reader :connection_id
 
     def initialize(opts = {})
       validate_custom_http_headers!(opts[:custom_http_headers]) if opts.has_key?(:custom_http_headers)

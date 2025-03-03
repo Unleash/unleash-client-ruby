@@ -13,6 +13,14 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [6.2.0] - 2024-02-28
+### Added
+- unleash-interval header (#236)
+- connectionId in metrics and registration payload (#236)
+- default interval changed from 10s to 15s (#236)
+- update Yggdrasil engine (#228)
+- delta API configuration option (#228)
+
 ## [6.1.2] - 2024-01-30
 ### Fixed
 - drop x- header prefix (#229)

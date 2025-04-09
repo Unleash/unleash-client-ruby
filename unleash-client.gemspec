@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "yggdrasil-engine", "~> 1.0.3"
 
   spec.add_dependency "base64", "~> 0.2.0"
-  spec.add_dependency "logger", "~> 1.6.5"
+  spec.add_dependency "logger", "~> 1.6"
 
   spec.add_development_dependency "bundler", "~> 2.1"
   spec.add_development_dependency "rake", "~> 12.3"

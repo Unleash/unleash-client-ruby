@@ -127,21 +127,28 @@ RSpec.describe Unleash::MetricsReporter do
     Unleash.engine = YggdrasilEngine.new
 
     metrics_reporter.last_time = Time.now - 601
-    report = metrics_reporter.generate_report
-    expect(report[:bucket]).to be_empty
+    metrics_reporter.generate_report
 
     metrics_reporter.post
 
-    expect(WebMock).to have_requested(:post, 'http://test-url/client/metrics')
-      .with(
-        body: hash_including(
-          yggdrasilVersion: anything,
-          specVersion: anything,
-          platformName: anything,
-          platformVersion: anything,
-          bucket: {}
-        )
-      )
+    expect(WebMock).to(have_requested(:post, 'http://test-url/client/metrics')
+      .with do |req|
+                         body = JSON.parse(req.body, symbolize_names: true)
+
+                         expect(body).to include(
+                           platformName: anything,
+                           platformVersion: anything,
+                           yggdrasilVersion: anything,
+                           specVersion: anything,
+                           bucket: include(
+                             start: anything,
+                             stop: anything,
+                             toggles: {}
+                           )
+                         )
+
+                         true # tell WebMock we're done matching
+                       end)
   end
 
   it "includes metadata in the report" do

@@ -13,6 +13,10 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [6.2.1] - 2025-04-14
+### Fixed
+-  metrics sending no longer fails after 10 minutes
+
 ## [6.2.0] - 2024-02-28
 ### Added
 - unleash-interval header (#236)

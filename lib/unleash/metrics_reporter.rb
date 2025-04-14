@@ -20,6 +20,17 @@ module Unleash
       generate_report_from_bucket metrics
     end
 
+    def post
+      Unleash.logger.debug "post() Report"
+
+      report = build_report
+      return unless report
+
+      send_report(report)
+    end
+
+    private
+
     def generate_report_from_bucket(bucket)
       {
         'platformName': RUBY_ENGINE,
@@ -33,24 +44,19 @@ module Unleash
       }
     end
 
-    def post
-      Unleash.logger.debug "post() Report"
+    def build_report
+      report = generate_report
+      return nil if report.nil? && Time.now - self.last_time < LONGEST_WITHOUT_A_REPORT
 
-      report = self.generate_report
+      report || generate_report_from_bucket({
+        'start': self.last_time.utc.iso8601,
+        'stop': Time.now.utc.iso8601,
+        'toggles': {}
+      })
+    end
 
-      if report.nil?
-        return if Time.now - self.last_time < LONGEST_WITHOUT_A_REPORT
-
-        Unleash.logger.debug "Sending empty report to server as 10 minutes have passed since last report"
-        report = self.generate_report_from_bucket({
-          'start': self.last_time.utc.iso8601,
-          'stop': Time.now.utc.iso8601,
-          'toggles': {}
-        })
-      end
-
+    def send_report(report)
       self.last_time = Time.now
-
       headers = (Unleash.configuration.http_headers || {}).dup
       headers.merge!({ 'UNLEASH-INTERVAL' => Unleash.configuration.metrics_interval.to_s })
       response = Unleash::Util::Http.post(Unleash.configuration.client_metrics_uri, report.to_json, headers)

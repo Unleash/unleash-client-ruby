@@ -7,8 +7,8 @@ module Unleash
     def initialize(params = {})
       raise ArgumentError, "Unleash::Context must be initialized with a hash." unless params.is_a?(Hash)
 
-      self.app_name = value_for("appName", params, Unleash&.configuration&.app_name)
-      self.environment = value_for("environment", params, Unleash&.configuration&.environment || "default")
+      self.app_name = value_for("appName", params, Unleash.configuration&.app_name)
+      self.environment = value_for("environment", params, Unleash.configuration&.environment || "default")
       self.user_id = value_for("userId", params)&.to_s
       self.session_id = value_for("sessionId", params)
       self.remote_address = value_for("remoteAddress", params)

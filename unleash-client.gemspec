@@ -36,7 +36,7 @@ Gem::Specification.new do |spec|
 
   # rubocop:disable Gemspec/RubyVersionGlobalsUsage, Style/IfUnlessModifier
   if Gem::Version.new(RUBY_VERSION) > Gem::Version.new('3.0')
-    spec.add_development_dependency "rubocop", "~> 1.51.0"
+    spec.add_development_dependency "rubocop", "~> 1.75"
   end
   # rubocop:enable Gemspec/RubyVersionGlobalsUsage, Style/IfUnlessModifier
 

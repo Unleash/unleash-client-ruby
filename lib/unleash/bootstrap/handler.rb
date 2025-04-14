@@ -15,7 +15,8 @@ module Unleash
         return configuration.data unless self.configuration.data.nil?
         return configuration.block.call if self.configuration.block.is_a?(Proc)
         return Provider::FromFile.read(configuration.file_path) unless self.configuration.file_path.nil?
-        return Provider::FromUrl.read(configuration.url, configuration.url_headers) unless self.configuration.url.nil?
+
+        Provider::FromUrl.read(configuration.url, configuration.url_headers) unless self.configuration.url.nil?
       end
     end
   end

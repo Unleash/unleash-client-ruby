@@ -14,7 +14,7 @@ module Unleash
     end
 
     def generate_report
-      metrics = Unleash&.engine&.get_metrics()
+      metrics = Unleash.engine&.get_metrics
 
       {
         'platformName': RUBY_ENGINE,

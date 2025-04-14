@@ -15,7 +15,12 @@ module Unleash
 
     def generate_report
       metrics = Unleash&.engine&.get_metrics()
+      return nil if metrics.nil?
 
+      generate_report_from_bucket metrics
+    end
+
+    def generate_report_from_bucket(bucket)
       {
         'platformName': RUBY_ENGINE,
         'platformVersion': RUBY_VERSION,
@@ -24,7 +29,7 @@ module Unleash
         'appName': Unleash.configuration.app_name,
         'instanceId': Unleash.configuration.instance_id,
         'connectionId': Unleash.configuration.connection_id,
-        'bucket': metrics || {}
+        'bucket': bucket
       }
     end
 
@@ -33,9 +38,15 @@ module Unleash
 
       report = self.generate_report
 
-      if report[:bucket].empty? && (Time.now - self.last_time < LONGEST_WITHOUT_A_REPORT) # and last time is less then 10 minutes...
-        Unleash.logger.debug "Report not posted to server, as it would have been empty. (and has been empty for up to 10 min)"
-        return
+      if report.nil?
+        return if Time.now - self.last_time < LONGEST_WITHOUT_A_REPORT
+
+        Unleash.logger.debug "Sending empty report to server as 10 minutes have passed since last report"
+        report = self.generate_report_from_bucket({
+          'start': self.last_time.utc.iso8601,
+          'stop': Time.now.utc.iso8601,
+          'toggles': {}
+        })
       end
 
       headers = (Unleash.configuration.http_headers || {}).dup
@@ -43,6 +54,7 @@ module Unleash
       response = Unleash::Util::Http.post(Unleash.configuration.client_metrics_uri, report.to_json, headers)
 
       if ['200', '202'].include? response.code
+        self.last_time = Time.now
         Unleash.logger.debug "Report sent to unleash server successfully. Server responded with http code #{response.code}"
       else
         # :nocov:

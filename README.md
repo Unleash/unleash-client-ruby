@@ -20,13 +20,14 @@ Ruby client for the [Unleash](https://github.com/Unleash/unleash) feature manage
 - MRI 3.0
 - MRI 2.7
 - jruby 9.4
+- jruby 10.0
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'unleash', '~> 6.1.2'
+gem 'unleash', '~> 6.2'
 ```
 
 And then execute:

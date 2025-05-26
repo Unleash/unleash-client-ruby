@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
   spec.required_ruby_version = ">= 2.7"
 
-  spec.add_dependency "yggdrasil-engine", "~> 1.0.3"
+  spec.add_dependency "yggdrasil-engine", "~> 1.0.4"
 
   spec.add_dependency "base64", "~> 0.2.0"
   spec.add_dependency "logger", "~> 1.6"

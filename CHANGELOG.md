@@ -13,6 +13,10 @@ Note: These changes are not considered notable:
 
 ## [Unreleased]
 
+## [6.3.0] - 2025-05-27
+### Fixed
+- Upgraded Yggdrasil engine to fix a memory leak in metrics.
+
 ## [6.3.0] - 2025-04-22
 ### Changed
 - Updated `logger` dependency to `~> 1.6` in the gemspec to allow compatibility with logger versions above 1.6.
